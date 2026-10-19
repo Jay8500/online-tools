@@ -6,6 +6,7 @@ import { CounterService } from '../core/counter.service';
 import { SeoService } from '../core/seo.service';
 import { SITE } from '../core/site.config';
 import { TOOL_LINKS } from '../core/tool-links';
+import { groupAnchor } from '../core/tools';
 import { DISCLAIMERS, ToolPageInfo, toolPage } from '../core/tool-pages';
 import { AdSlot } from '../shared/ad-slot';
 import { FaqList } from '../shared/faq-list';
@@ -43,9 +44,9 @@ import { UpiQrTool } from './tools/upi-qr-tool';
     <div [class]="wide() ? 'grid gap-x-6' : 'grid gap-x-6 lg:grid-cols-[minmax(0,1fr)_300px]'">
       <div class="min-w-0">
         <nav aria-label="Breadcrumb" class="mb-1 flex items-center gap-1 text-xs text-muted">
-          <a routerLink="/" class="hover:text-brand">Home</a><svg lucideIcon="chevron-right" [size]="12" />
-          <span>{{ t.group }}</span><svg lucideIcon="chevron-right" [size]="12" />
-          <span aria-current="page">{{ t.name }}</span>
+          <a routerLink="/" class="hover:text-brand hover:underline">Home</a><svg lucideIcon="chevron-right" [size]="12" />
+          <a routerLink="/" [fragment]="anchor()" class="hover:text-brand hover:underline">{{ t.group }}</a><svg lucideIcon="chevron-right" [size]="12" />
+          <span aria-current="page" class="font-medium text-ink">{{ t.name }}</span>
         </nav>
         <h1 class="text-lg leading-snug font-bold sm:text-2xl">{{ t.h1 }}</h1>
         <p class="mt-0.5 mb-3 text-sm text-muted">
@@ -120,6 +121,7 @@ export class ToolPageView {
   /** The invoice maker needs the full width for form + preview. */
   protected readonly wide = computed(() => this.info().id === 'gst-invoice');
   protected readonly related = computed(() => TOOL_LINKS.filter((t) => t.group === this.info().group && t.id !== this.info().id));
+  protected readonly anchor = computed(() => groupAnchor(this.info().group));
   protected readonly disclaimer = computed(() => DISCLAIMERS[this.info().disclaimer]);
 
   constructor() {

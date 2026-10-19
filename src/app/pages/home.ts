@@ -6,7 +6,7 @@ import { DOC_SHORT, DocKind, EXAMS, Exam, examPath } from '../core/exams';
 import { CounterService } from '../core/counter.service';
 import { SeoService } from '../core/seo.service';
 import { SITE } from '../core/site.config';
-import { TOOL_GROUPS } from '../core/tools';
+import { TOOL_GROUPS, groupAnchor } from '../core/tools';
 import { AdSlot } from '../shared/ad-slot';
 
 @Component({
@@ -49,7 +49,7 @@ import { AdSlot } from '../shared/ad-slot';
     </section>
 
     @for (g of groups(); track g.title) {
-      <section class="mt-6 scroll-mt-16" [attr.aria-label]="g.title" [id]="g.title === 'Money calculators' ? 'calculators' : null">
+      <section class="mt-6 scroll-mt-16" [attr.aria-label]="g.title" [id]="anchor(g.title)">
         <h2 class="mb-2 text-sm font-bold tracking-wide text-muted uppercase">{{ g.title }}</h2>
         <div class="grid grid-cols-1 gap-2 min-[400px]:grid-cols-2 md:grid-cols-4">
           @for (t of g.tools; track t.name) {
@@ -103,6 +103,10 @@ export class Home {
       path: '',
       jsonLd: [{ '@type': 'WebSite', name: SITE.name, url: SITE.url, inLanguage: 'en-IN' }],
     });
+  }
+
+  protected anchor(title: string) {
+    return groupAnchor(title);
   }
 
   protected path(e: Exam, k: DocKind) {

@@ -19,9 +19,9 @@ import { ImageTool, ToolSpec } from '../shared/image-tool';
     <div class="grid gap-x-6 lg:grid-cols-[minmax(0,1fr)_300px]">
       <div class="min-w-0">
         <nav aria-label="Breadcrumb" class="mb-1 flex items-center gap-1 text-xs text-muted">
-          <a routerLink="/" class="hover:text-brand">Home</a><svg lucideIcon="chevron-right" [size]="12" />
-          <a routerLink="/" fragment="exam-photo" class="hover:text-brand">Exam photos</a><svg lucideIcon="chevron-right" [size]="12" />
-          <span aria-current="page">{{ e.name }} {{ docShort() }}</span>
+          <a routerLink="/" class="hover:text-brand hover:underline">Home</a><svg lucideIcon="chevron-right" [size]="12" />
+          <a routerLink="/" fragment="exam-photo" class="hover:text-brand hover:underline">Exam photos</a><svg lucideIcon="chevron-right" [size]="12" />
+          <span aria-current="page" class="font-medium text-ink">{{ e.name }} {{ docShort() }}</span>
         </nav>
         <h1 class="text-lg leading-snug font-bold sm:text-2xl">{{ e.name }} {{ docLabel() }} Resize — {{ d.width }}×{{ d.height }} px, {{ d.minKb }}–{{ d.maxKb }} KB</h1>
         <p class="mt-0.5 mb-2 text-sm text-muted">

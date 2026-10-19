@@ -38,6 +38,11 @@ const CALC_BLURB: Record<string, string> = {
   salary: 'CTC to monthly take-home',
 };
 
+/** Home-page section id for a group ("Health calculators" → "health-calculators"); breadcrumbs link here. */
+export function groupAnchor(title: string): string {
+  return title === 'Money calculators' ? 'calculators' : title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+}
+
 export const TOOL_GROUPS: ToolGroup[] = [
   {
     title: 'Image tools',

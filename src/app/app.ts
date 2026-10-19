@@ -1,4 +1,4 @@
-import { Location } from '@angular/common';
+import { Location, ViewportScroller } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
@@ -116,6 +116,8 @@ export class App {
   protected readonly isHome = computed(() => this.url().split(/[?#]/)[0] === '/');
 
   constructor() {
+    // Anchor links (#health-calculators…) stop below the sticky 48px header
+    inject(ViewportScroller).setOffset([0, 60]);
     this.router.events.pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd)).subscribe((e) => {
       this.url.set(e.urlAfterRedirects);
       this.navs++;
