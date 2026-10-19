@@ -1,22 +1,19 @@
 import { isPlatformBrowser } from '@angular/common';
 import { Component, PLATFORM_ID, afterNextRender, computed, inject, signal } from '@angular/core';
 import { ConsentService } from '../core/consent.service';
-
-interface InstallEvent extends Event {
-  prompt(): Promise<void>;
-  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
-}
-type Kind = 'prompt' | 'ios' | 'android' | 'desktop';
+import { InstallKind, installEvent, installKind, isInstalled, promptInstall } from '../core/install';
+import { InstallSteps } from './install-steps';
 
 const KEY = 'install-hint';
 
 /**
  * One-time "install as an app" tip for first-time visitors, with the right steps for their device.
- * Uses the browser's own install prompt where available (Chrome/Edge/Android). Closing it (✕) hides it for good.
+ * Closing it (✕) hides it for good; the footer keeps a permanent install box.
  * Never shown when already installed, before the cookie choice, or in browsers that can't install.
  */
 @Component({
   selector: 'app-install-hint',
+  imports: [InstallSteps],
   template: `
     @if (visible()) {
       <aside class="install-hint fixed inset-x-3 z-40 mx-auto max-w-md rounded-2xl border border-brand/30 bg-surface p-3 shadow-2xl shadow-brand/20 sm:left-auto sm:right-5 sm:mx-0" role="dialog" aria-labelledby="ih-title">
@@ -26,20 +23,7 @@ const KEY = 'install-hint';
           <div class="min-w-0">
             <p id="ih-title" class="font-bold">Install SpreadApps Tools 📲</p>
             <p class="text-xs text-muted">Opens like an app from your home screen, works offline, no Play Store needed.</p>
-            @switch (kind()) {
-              @case ('prompt') {
-                <button type="button" class="btn-primary mt-2 min-h-9 text-sm" (click)="install()">Install app — free</button>
-              }
-              @case ('ios') {
-                <p class="mt-2 text-sm">Tap <b>Share</b>&nbsp;<span aria-hidden="true">⬆️</span> at the bottom, then <b>“Add to Home Screen”</b>&nbsp;<span aria-hidden="true">➕</span>.</p>
-              }
-              @case ('android') {
-                <p class="mt-2 text-sm">Tap the <b>⋮ menu</b> at the top-right, then <b>“Install app”</b> or <b>“Add to Home screen”</b>.</p>
-              }
-              @case ('desktop') {
-                <p class="mt-2 text-sm">Click the <b>install icon</b> <span aria-hidden="true">⊕</span> at the right end of the address bar (or <b>⋮ → Install</b>).</p>
-              }
-            }
+            <app-install-steps [kind]="kind()!" (install)="install()" />
           </div>
         </div>
       </aside>
@@ -56,45 +40,27 @@ export class InstallHint {
   private readonly browser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly ready = signal(false);
   private readonly done = signal(false);
-  protected readonly kind = signal<Kind | null>(null);
-  private deferred: InstallEvent | null = null;
+  protected readonly kind = signal<InstallKind | null>(null);
 
   /** Waits for the cookie banner to be answered so two bottom cards never stack. */
   protected readonly visible = computed(() => this.ready() && !this.done() && !!this.kind() && !this.consent.showBanner);
 
   constructor() {
     if (!this.browser) return;
-    this.deferred = ((window as { __installEvent?: Event }).__installEvent as InstallEvent) ?? null;
-    // Chrome/Edge/Android fire this when the site can be installed — keep it for our button
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      this.deferred = e as InstallEvent;
-      if (this.kind() !== null) this.kind.set('prompt');
-    });
+    window.addEventListener('beforeinstallprompt', () => this.kind() && this.kind.set('prompt'));
     window.addEventListener('appinstalled', () => this.remember('installed'));
     afterNextRender(() => {
-      if (this.seen() || matchMedia('(display-mode: standalone)').matches || (navigator as { standalone?: boolean }).standalone) return;
-      const ua = navigator.userAgent;
-      const ios = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
-      const android = /Android/.test(ua);
-      const chromium = /Chrome|Chromium|Edg\//.test(ua) && !/OPR\//.test(ua);
-      // iPhone: only Safari (and Chrome on iOS 16.4+) can add to home screen; desktop Firefox/Safari can't install
-      const k: Kind | null = this.deferred ? 'prompt' : ios ? 'ios' : android ? 'android' : chromium ? 'desktop' : null;
-      if (!k) return;
+      if (this.seen() || isInstalled() || !installKind()) return;
       // Let people use the page first
       setTimeout(() => {
-        this.kind.set(this.deferred ? 'prompt' : k);
+        this.kind.set(installEvent() ? 'prompt' : installKind());
         this.ready.set(true);
       }, 6000);
     });
   }
 
   protected async install() {
-    if (!this.deferred) return;
-    await this.deferred.prompt();
-    const { outcome } = await this.deferred.userChoice;
-    this.deferred = null;
-    this.remember(outcome === 'accepted' ? 'installed' : 'dismissed');
+    this.remember((await promptInstall()) ? 'installed' : 'dismissed');
   }
 
   protected close() {

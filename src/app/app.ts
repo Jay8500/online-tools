@@ -16,10 +16,11 @@ import { ToastHost } from './shared/toast-host';
 import { UpdateBanner } from './shared/update-banner';
 import { ScrollTop } from './shared/scroll-top';
 import { InstallHint } from './shared/install-hint';
+import { InstallFooter } from './shared/install-footer';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, Icon, Brand, Benefits, ToastHost, DialogHost, UpdateBanner, ConsentBanner, ScrollTop, InstallHint],
+  imports: [RouterOutlet, RouterLink, Icon, Brand, Benefits, ToastHost, DialogHost, UpdateBanner, ConsentBanner, ScrollTop, InstallHint, InstallFooter],
   template: `
     <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[200] focus:rounded-lg focus:bg-brand focus:px-3 focus:py-2 focus:text-brand-ink">Skip to tool</a>
     <header class="sticky top-0 z-40 border-b border-line bg-surface/90 backdrop-blur">
@@ -55,6 +56,7 @@ import { InstallHint } from './shared/install-hint';
             <svg lucideIcon="shield-check" [size]="16" class="mt-0.5 shrink-0 text-accent" />
             Free tools that run in your browser. Your photos and files never leave your device.
           </p>
+          @defer (on idle) { <app-install-footer /> }
         </div>
         <nav aria-label="Exam photo tools">
           <a routerLink="/exam-photo-signature-resize" class="mb-2 block font-semibold hover:text-brand">Exam photo & signature</a>
