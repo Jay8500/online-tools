@@ -1,4 +1,5 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { afterNextRender, Component, computed, DestroyRef, inject, PLATFORM_ID, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Icon } from '../shared/icon';
@@ -13,6 +14,43 @@ import { LiveBadge } from '../shared/live-badge';
 import { SOURCES } from '../core/sources';
 
 const HOME_PER_GROUP = 4;
+/** Rotating search hints — each one finds a tool when typed. */
+const HINTS = [
+  { icon: 'scale', text: 'gold rate' },
+  { icon: 'scan-face', text: 'SSC photo' },
+  { icon: 'calculator', text: 'EMI' },
+  { icon: 'map-pin', text: 'train route' },
+  { icon: 'thermometer', text: 'weather' },
+  { icon: 'file-stack', text: 'merge PDF' },
+  { icon: 'receipt', text: 'income tax' },
+  { icon: 'ruler', text: 'acre to gunta' },
+  { icon: 'qr-code', text: 'UPI QR' },
+  { icon: 'heart-pulse', text: 'BMI' },
+  { icon: 'languages', text: 'Telugu typing' },
+  { icon: 'image-up', text: '20 KB photo' },
+];
+/** Everyday words people type, per tool path. */
+const KEYWORDS: Record<string, string> = {
+  'gold-price-calculator': 'gold rate today silver price jewellery 22k 24k',
+  weather: 'weather temperature rain forecast climate',
+  'travel-planner': 'travel route distance bus train flight trip journey stops',
+  'land-area-converter': 'land acre to gunta cent ankanam gajam square yards plot',
+  'number-converter': 'lakh crore million dozen',
+  'emi-calculator': 'emi loan',
+  'income-tax-calculator': 'income tax regime slab',
+  'upi-qr-code-generator': 'upi qr payment gpay phonepe',
+  'gst-invoice-generator': 'gst invoice bill',
+  'bmi-calculator': 'bmi weight health',
+  'telugu-typing': 'telugu typing',
+  'resize-image-to-20kb': '20 kb photo',
+  'resize-image-to-kb': 'photo kb compress image',
+};
+/** Every typed word must appear somewhere (so "acre to gunta" and "gold rate" work). */
+function matches(q: string, hay: string): boolean {
+  const h = hay.toLowerCase();
+  return q.split(/\s+/).filter((w) => w && w !== 'to').every((w) => h.includes(w));
+}
+
 const HOME_EXAMS = 5;
 
 @Component({
@@ -27,7 +65,17 @@ const HOME_EXAMS = 5;
       <label class="relative block sm:w-72">
         <span class="sr-only">Search tools</span>
         <svg lucideIcon="search" [size]="16" class="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted" />
-        <input class="input pl-9" type="search" placeholder="Search: SSC, signature, 50 KB…" [ngModel]="q()" (ngModelChange)="q.set($event)" />
+        <input class="input pl-9" type="search" aria-label="Search tools" [ngModel]="q()" (ngModelChange)="q.set($event)" (focus)="focused.set(true)" (blur)="focused.set(false)" />
+        @if (!q() && !focused()) {
+          <!-- Rotating hint (like quick-commerce apps): changes every 2.5 s, sits behind the input text -->
+          <span class="pointer-events-none absolute inset-y-0 left-9 right-3 flex items-center overflow-hidden text-sm text-muted" aria-hidden="true">
+            Search “
+            @for (h of [hint()]; track h.text) {
+              <span class="animate-hint mx-0.5 inline-flex items-center gap-1 font-medium text-ink"><svg [lucideIcon]="h.icon" [size]="14" class="text-brand" />{{ h.text }}</span>
+            }
+            ”
+          </span>
+        }
       </label>
     </div>
 
@@ -100,21 +148,31 @@ const HOME_EXAMS = 5;
 })
 export class Home {
   protected readonly q = signal('');
+  protected readonly focused = signal(false);
+  private readonly hintIndex = signal(0);
+  protected readonly hint = computed(() => HINTS[this.hintIndex() % HINTS.length]);
   /** Home is a quick menu: top picks per group; the group pages ("See all") have everything + guides. Search shows all matches. */
   protected readonly searching = computed(() => this.q().trim().length > 0);
   protected readonly examTotal = EXAMS.length;
   protected readonly exams = computed(() => {
     const q = this.q().trim().toLowerCase();
     if (!q) return EXAMS.slice(0, HOME_EXAMS);
-    return EXAMS.filter((e) => `${e.name} ${e.full} photo signature thumb resize`.toLowerCase().includes(q));
+    return EXAMS.filter((e) => matches(q, `${e.name} ${e.full} photo signature thumb declaration resize size kb exam`));
   });
   protected readonly groups = computed(() => {
     const q = this.q().trim().toLowerCase();
     if (!q) return TOOL_GROUPS.map((g) => ({ ...g, total: g.tools.length, tools: g.tools.slice(0, HOME_PER_GROUP) }));
-    return TOOL_GROUPS.map((g) => ({ ...g, total: g.tools.length, tools: g.tools.filter((t) => `${t.name} ${t.blurb}`.toLowerCase().includes(q)) })).filter((g) => g.tools.length);
+    return TOOL_GROUPS.map((g) => ({ ...g, total: g.tools.length, tools: g.tools.filter((t) => matches(q, `${t.name} ${t.blurb} ${t.path ?? ''} ${KEYWORDS[t.path ?? ''] ?? ''}`)) })).filter((g) => g.tools.length);
   });
 
   constructor() {
+    const browser = isPlatformBrowser(inject(PLATFORM_ID));
+    const destroy = inject(DestroyRef);
+    afterNextRender(() => {
+      if (!browser || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const t = setInterval(() => this.hintIndex.update((i) => i + 1), 2500);
+      destroy.onDestroy(() => clearInterval(t));
+    });
     inject(CounterService).view('home');
     inject(SeoService).set({
       title: `${SITE.name} — Exam Photo Resizer, Image to KB & Free Indian Tools`,
