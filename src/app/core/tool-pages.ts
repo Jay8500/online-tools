@@ -152,6 +152,7 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
     intro: 'Type in English letters and get Telugu script instantly — copy it anywhere.',
     steps: ['Type the word as it sounds in English letters (e.g. “nEnu”).', 'Use capitals for harder sounds: T ట, D డ, N ణ, L ళ, E ఏ, O ఓ.', 'Tap Copy or WhatsApp to use the Telugu text.'],
     faqs: [
+      { q: 'Does it translate English to Telugu?', a: 'No — it is phonetic typing. Type the Telugu words as they sound, e.g. “mIru elA unnAru” gives మీరు ఎలా ఉన్నారు. Typing English words like “how are you” just spells them in Telugu letters.' },
       { q: 'How do I type ం (sunna)?', a: 'Type M, e.g. “aMdaru” → అందరు. A word ending in m after a vowel becomes ం automatically: “pustakam” → పుస్తకం.' },
       { q: 'How do I type conjuncts like క్ష or శ్రీ?', a: 'Just type the letters together: “x” or “ksh” → క్ష, “SrI” → శ్రీ, “amma” → అమ్మ.' },
       { q: 'Is my text saved?', a: 'Only on this device, so you don’t lose it if you close the page. It is never uploaded.' },

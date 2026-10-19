@@ -13,9 +13,9 @@ const DRAFT = 'telugu-draft';
     <div class="grid gap-3 md:grid-cols-2">
       <div>
         <label class="label" for="en">Type in English letters</label>
-        <textarea id="en" class="input min-h-40 font-mono text-base" rows="6" placeholder="nEnu telugu nErchukuMTunnAnu" spellcheck="false"
+        <textarea id="en" class="input min-h-40 font-mono text-base" rows="6" placeholder="mIru elA unnAru?" spellcheck="false"
                   autocapitalize="none" autocomplete="off" [value]="text()" (input)="setText($event)"></textarea>
-        <p class="mt-1 text-xs text-muted">Capital letters matter: <b>t</b> త but <b>T</b> ట, <b>e</b> ఎ but <b>E</b> ఏ.</p>
+        <p class="mt-1 text-xs text-muted">Type <b>Telugu words</b> in English letters — this is not translation. Example: <code>mIru elA unnAru</code> → <span lang="te">మీరు ఎలా ఉన్నారు</span>. Capitals matter: <b>t</b> త / <b>T</b> ట, <b>e</b> ఎ / <b>E</b> ఏ.</p>
       </div>
       <div>
         <p class="label">తెలుగు</p>
