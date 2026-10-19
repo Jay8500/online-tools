@@ -2,6 +2,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Icon } from '../shared/icon';
 import { SeoService } from '../core/seo.service';
+import { SITE } from '../core/site.config';
 import { ToastService } from '../core/toast.service';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -14,7 +15,8 @@ const NAME_RE = /^[\p{L}][\p{L} .'-]{1,59}$/u;
   template: `
     <div class="mx-auto max-w-xl">
       <h1 class="text-xl font-bold sm:text-2xl">Contact us</h1>
-      <p class="mt-1 text-sm text-muted">Found a wrong exam size, a bug, or want a new tool? Write to us — we reply within 2 working days.</p>
+      <p class="mt-1 text-sm text-muted">Found a wrong exam size, a bug, or want a new tool? Write to us — we reply within 2 working days.
+        You can also email <a class="font-medium text-brand underline" [href]="'mailto:' + site.email">{{ site.email }}</a>.</p>
 
       @if (sent()) {
         <div class="card animate-fade-up mt-4 flex items-start gap-3 p-4">
@@ -48,6 +50,7 @@ const NAME_RE = /^[\p{L}][\p{L} .'-]{1,59}$/u;
   `,
 })
 export class Contact {
+  protected readonly site = SITE;
   private readonly toast = inject(ToastService);
   protected readonly name = signal('');
   protected readonly email = signal('');

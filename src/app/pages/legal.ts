@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ConsentService } from '../core/consent.service';
 import { SeoService } from '../core/seo.service';
+import { SITE } from '../core/site.config';
 
 const UPDATED = '19 October 2026';
 
@@ -18,6 +19,12 @@ const UPDATED = '19 October 2026';
         Our tools run inside your browser. <strong>Photos, signatures, documents and numbers you enter are processed on your own
         device and are never uploaded to us.</strong> We use Google Analytics (only if you accept) and Google AdSense to keep the
         site free.
+      </p>
+
+      <h2>Who we are</h2>
+      <p>
+        SpreadApps Tools (tools.spreadapps.in) is run by <strong>{{ site.operator }}</strong>, an independent developer based in
+        {{ site.location }}, under the brand name SpreadApps. Email: <a [href]="'mailto:' + site.email">{{ site.email }}</a>.
       </p>
 
       <h2>1. Files and data you use in the tools</h2>
@@ -61,7 +68,8 @@ const UPDATED = '19 October 2026';
       <h2>7. Your rights</h2>
       <p>
         Under India’s Digital Personal Data Protection Act, 2023 you may ask us what personal data we hold about you, ask for it
-        to be corrected or deleted, and raise a grievance. Use the <a routerLink="/contact">contact page</a>; we reply within 30 days.
+        to be corrected or deleted, and raise a grievance. Grievance contact: {{ site.operator }},
+        <a [href]="'mailto:' + site.email">{{ site.email }}</a> (or the <a routerLink="/contact">contact page</a>). We reply within 30 days.
       </p>
 
       <h2>8. Changes</h2>
@@ -70,6 +78,7 @@ const UPDATED = '19 October 2026';
   `,
 })
 export class Privacy {
+  protected readonly site = SITE;
   protected readonly consent = inject(ConsentService);
   protected readonly updated = UPDATED;
   constructor() {
@@ -84,6 +93,10 @@ export class Privacy {
     <article class="prose-tool mx-auto max-w-3xl">
       <h1 class="text-xl font-bold text-ink sm:text-2xl">Terms of use</h1>
       <p class="text-xs">Last updated: {{ updated }}</p>
+      <p>
+        These terms are an agreement between you and {{ site.operator }} ({{ site.location }}), who runs SpreadApps Tools under
+        the brand name SpreadApps.
+      </p>
       <h2>Using the tools</h2>
       <p>SpreadApps Tools is free to use for personal and business purposes. Please don’t misuse the site, try to break it, or copy it in bulk.</p>
       <h2>No guarantee</h2>
@@ -102,11 +115,12 @@ export class Privacy {
       <h2>Ads and links</h2>
       <p>We show ads from Google AdSense. We are not responsible for advertisers’ products or for other websites we link to.</p>
       <h2>Law</h2>
-      <p>These terms are governed by the laws of India. Questions? <a routerLink="/contact">Contact us</a>.</p>
+      <p>These terms are governed by the laws of India; courts in Hyderabad, Telangana have jurisdiction. Questions? Email <a [href]="'mailto:' + site.email">{{ site.email }}</a> or use the <a routerLink="/contact">contact page</a>.</p>
     </article>
   `,
 })
 export class Terms {
+  protected readonly site = SITE;
   protected readonly updated = UPDATED;
   constructor() {
     inject(SeoService).set({ title: 'Terms of Use', description: 'Terms of use for SpreadApps Tools — free online tools for India.', path: 'terms' });
@@ -121,7 +135,7 @@ export class Terms {
       <h1 class="text-xl font-bold text-ink sm:text-2xl">About SpreadApps Tools</h1>
       <p>
         SpreadApps Tools is a free collection of everyday tools for India, made by <a href="https://spreadapps.in">SpreadApps</a>,
-        a small software studio. We started with the problem every student knows: an exam form that keeps rejecting your photo
+        the brand of {{ site.operator }}, an independent developer from {{ site.location }}. We started with the problem every student knows: an exam form that keeps rejecting your photo
         because it is 52 KB instead of 50 KB.
       </p>
       <h2>What makes it different</h2>
@@ -137,6 +151,7 @@ export class Terms {
   `,
 })
 export class About {
+  protected readonly site = SITE;
   constructor() {
     inject(SeoService).set({ title: 'About Us', description: 'SpreadApps Tools: free, private, fast online tools for India — exam photo resizer, image to KB and more.', path: 'about' });
   }

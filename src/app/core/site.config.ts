@@ -6,6 +6,10 @@ export const SITE = {
   name: 'SpreadApps Tools',
   url: 'https://tools.spreadapps.in',
   owner: 'SpreadApps',
+  /** Person behind the brand (no company registered yet). */
+  operator: 'Lakkoju Jaya Krishna',
+  location: 'Hyderabad, Telangana, India',
+  email: 'contact@spreadapps.in',
   /** GA4 measurement ID, e.g. 'G-ABC123XYZ' (loaded only after analytics consent). */
   ga4Id: 'G-DXSGQK0JV0',
   /** AdSense publisher ID, e.g. 'ca-pub-1234567890123456'. */
