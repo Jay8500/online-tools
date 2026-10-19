@@ -1,6 +1,7 @@
 import { isPlatformBrowser } from '@angular/common';
 import { Component, DestroyRef, PLATFORM_ID, afterNextRender, inject, input, signal } from '@angular/core';
 import { FUEL } from '../core/fuel-data';
+import { dailyRates } from '../core/rates-client';
 
 /** One shared request per page for every badge of the same kind. */
 let metalsP: Promise<{ gold24PerG: number; silverPerKg: number } | null> | null = null;
@@ -69,7 +70,8 @@ export class LiveBadge {
 
   private async load() {
     if (this.kind() === 'fuel') {
-      const h = FUEL.find((c) => c.city === 'Hyderabad')!;
+      const live = await dailyRates();
+      const h = (live?.fuel ?? FUEL).find((c) => c.city === 'Hyderabad')!;
       const diff = +(h.petrol - h.prevPetrol).toFixed(2);
       const recent = !!h.changedOn && Date.now() - new Date(h.changedOn).getTime() < 7 * 86400000;
       this.text.set(`₹${h.petrol.toFixed(2)}`);

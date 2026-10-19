@@ -1,6 +1,7 @@
 import { isPlatformBrowser } from '@angular/common';
 import { Component, PLATFORM_ID, afterNextRender, computed, inject, signal } from '@angular/core';
-import { REF_PRICES } from '../../core/grocery-data';
+import { REF_PRICES, RefPrice } from '../../core/grocery-data';
+import { dailyRates } from '../../core/rates-client';
 import { Icon } from '../../shared/icon';
 
 interface Rec {
@@ -73,7 +74,7 @@ const kg = (perQuintal: number) => perQuintal / 100;
     <section class="mt-5" aria-labelledby="ref-h">
       <h3 id="ref-h" class="mb-2 text-sm font-bold">Milk & eggs in Hyderabad</h3>
       <div class="grid gap-2 sm:grid-cols-2">
-        @for (p of ref; track p.item) {
+        @for (p of ref(); track p.item) {
           <div class="rounded-xl border border-line bg-surface p-3">
             <p class="text-sm font-semibold">{{ p.item }}</p>
             <p class="text-lg font-bold tabular-nums">₹{{ p.price }} <span class="text-xs font-normal text-muted">/ {{ p.pack }}</span>
@@ -89,7 +90,7 @@ const kg = (perQuintal: number) => perQuintal / 100;
 })
 export class GroceryTool {
   protected readonly states = STATES;
-  protected readonly ref = REF_PRICES;
+  protected readonly ref = signal<RefPrice[]>(REF_PRICES);
   protected readonly state = signal('Telangana');
   protected readonly district = signal('Hyderabad');
   protected readonly q = signal('');
@@ -110,7 +111,22 @@ export class GroceryTool {
 
   constructor() {
     const browser = isPlatformBrowser(inject(PLATFORM_ID));
-    afterNextRender(() => browser && this.load());
+    afterNextRender(() => {
+      if (!browser) return;
+      void this.load();
+      // Today's NECC egg rate (7 am job) replaces the built-in one
+      dailyRates().then((r) => {
+        const e = r?.eggs.find((x) => x.city === 'Hyderabad');
+        if (!r || !e) return;
+        this.ref.update((rows) =>
+          rows.map((p) =>
+            p.item.startsWith('Eggs')
+              ? { ...p, price: e.per100, prev: e.prev, changedOn: e.changedOn ?? undefined, checked: r.eggDate || p.checked, source: `NECC daily rate${r.eggDate ? ', ' + new Date(r.eggDate + 'T00:00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : ''}` }
+              : p,
+          ),
+        );
+      });
+    });
   }
 
   protected pickState(s: string) {

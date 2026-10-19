@@ -61,7 +61,8 @@ No database, no login — files are processed in the browser.
 - [ ] Later: live gold/silver rate from a metals API key (shown as approximate)
 - [x] Travel planner (/travel-planner): estimates for car/bike/bus/train/flight/walk/cycle + IRCTC/NTES/TGSRTC/APSRTC/Google links; road route + towns timeline via netlify/functions/route.mts — [ ] OWNER: free OpenRouteService key → Netlify env ORS_API_KEY
 - [x] Hyderabad Metro fare (/hyderabad-metro-fare): 57 stations from OSM, track km, shortest route incl. 2 changes, ₹11–₹69 chart (24 May 2025)
-- [x] Petrol & diesel (/petrol-diesel-price): 11 cities, ▲▼ + blinking alert for 7 days after a change — update with node scripts/update-fuel.mjs "City" petrol diesel [date]
+- [x] Petrol & diesel (/petrol-diesel-price): 11 cities, ▲▼ + blinking alert for 7 days after a change — auto-updated daily 7:00 IST by netlify/functions/rates-update.mts (Goodreturns city pages + NECC egg rate → Blobs → /api/rates; static fuel-data.ts is the fallback; manual: node scripts/update-fuel.mjs). Owner can force a refresh: POST /api/rates?key=STATS_KEY
+- [ ] When income allows: paid fuel API (option 2) to replace page reading
 - [x] Vegetable & grocery prices (/vegetable-prices-today): govt mandi/Rythu Bazar data via netlify/functions/mandi.mts — [ ] OWNER: data.gov.in key → Netlify env DATA_GOV_IN_API_KEY; milk/egg reference table in core/grocery-data.ts (update by hand)
 - [x] Live gold/silver estimate (/api/metals: gold-api.com + ExchangeRate-API + 15% duty) with LIVE badges on cards; data-source credits on cards/pages
 - [x] Home search: rotating hints with icons, multi-word search

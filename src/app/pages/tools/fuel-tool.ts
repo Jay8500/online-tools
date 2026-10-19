@@ -1,6 +1,7 @@
 import { isPlatformBrowser } from '@angular/common';
 import { Component, PLATFORM_ID, afterNextRender, computed, inject, signal } from '@angular/core';
 import { FUEL, FUEL_AS_OF, FuelCity } from '../../core/fuel-data';
+import { dailyRates } from '../../core/rates-client';
 
 const DAY = 86400000;
 /** A change in the last 7 days is "new" and gets a blinking alert. */
@@ -15,10 +16,10 @@ export function recentChange(c: FuelCity, now = Date.now()): boolean {
       <div class="min-w-48 flex-1">
         <label class="label" for="f-city">Your city</label>
         <select id="f-city" class="input" (change)="setCity($event)">
-          @for (c of cities; track c.city) { <option [value]="c.city" [selected]="c.city === city()">{{ c.city }} ({{ c.state }})</option> }
+          @for (c of rows(); track c.city) { <option [value]="c.city" [selected]="c.city === city()">{{ c.city }} ({{ c.state }})</option> }
         </select>
       </div>
-      <p class="text-xs text-muted">Prices as on {{ asOf }} · revised daily at 6 am</p>
+      <p class="text-xs text-muted">Prices as on {{ asOf() }} · {{ auto() ? 'auto-updated daily at 7 am' : 'revised daily at 6 am' }}</p>
     </div>
 
     @if (sel(); as c) {
@@ -49,7 +50,7 @@ export function recentChange(c: FuelCity, now = Date.now()): boolean {
       <table class="w-full text-sm tabular-nums">
         <thead class="bg-surface-2 text-left text-xs text-muted"><tr><th class="px-3 py-2">City</th><th class="px-3 py-2 text-right">Petrol</th><th class="px-3 py-2 text-right">Diesel</th><th class="px-3 py-2">Last change</th></tr></thead>
         <tbody class="divide-y divide-line bg-surface">
-          @for (c of cities; track c.city) {
+          @for (c of rows(); track c.city) {
             <tr [class.bg-brand/5]="c.city === city()">
               <td class="px-3 py-2 font-medium">{{ c.city }}</td>
               <td class="px-3 py-2 text-right whitespace-nowrap">₹{{ c.petrol.toFixed(2) }} {{ arrow(c.petrol, c.prevPetrol) }}</td>
@@ -63,14 +64,17 @@ export function recentChange(c: FuelCity, now = Date.now()): boolean {
   `,
 })
 export class FuelTool {
-  protected readonly cities = FUEL;
+  protected readonly rows = signal<FuelCity[]>(FUEL);
+  private readonly asOfIso = signal(FUEL_AS_OF);
   protected readonly fuels = [
     { key: 'petrol' as const, label: 'Petrol' },
     { key: 'diesel' as const, label: 'Diesel' },
   ];
-  protected readonly asOf = new Date(FUEL_AS_OF + 'T00:00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+  protected readonly asOf = computed(() => new Date(this.asOfIso() + 'T00:00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }));
+  /** True once today's auto-updated prices have loaded */
+  protected readonly auto = signal(false);
   protected readonly city = signal('Hyderabad');
-  protected readonly sel = computed(() => FUEL.find((c) => c.city === this.city()));
+  protected readonly sel = computed(() => this.rows().find((c) => c.city === this.city()));
   private readonly now = signal(new Date(FUEL_AS_OF + 'T12:00:00+05:30').getTime());
 
   constructor() {
@@ -78,6 +82,12 @@ export class FuelTool {
     afterNextRender(() => {
       if (!browser) return;
       this.now.set(Date.now());
+      dailyRates().then((r) => {
+        if (!r) return;
+        this.rows.set(r.fuel);
+        if (r.fuelDate) this.asOfIso.set(r.fuelDate);
+        this.auto.set(true);
+      });
       try {
         const saved = localStorage.getItem('fuel-city');
         if (saved && FUEL.some((c) => c.city === saved)) this.city.set(saved);
