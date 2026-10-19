@@ -56,3 +56,8 @@
   for = "/pdfjs/*.mjs"
   [headers.values]
     Content-Type = "text/javascript; charset=utf-8"
+
+[[headers]]
+  for = "/pdfjs/wasm/*.wasm"
+  [headers.values]
+    Content-Type = "application/wasm"
