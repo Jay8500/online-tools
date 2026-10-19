@@ -25,6 +25,8 @@ export class ConsentService {
   /** null = visitor hasn't chosen yet */
   readonly choice = signal<ConsentChoice | null>(null);
   readonly settingsOpen = signal(false);
+  /** True once the saved choice has been read in the browser — the prerendered HTML never contains the banner. */
+  private readonly ready = signal(false);
   private gaLoaded = false;
   private adsLoaded = false;
 
@@ -37,6 +39,7 @@ export class ConsentService {
       /* storage blocked */
     }
     if (saved === 'all' || saved === 'necessary') this.choice.set(saved);
+    this.ready.set(true);
     // Wait until the page is idle so ads/analytics never slow down the first paint.
     const idle = (cb: () => void) => ('requestIdleCallback' in window ? requestIdleCallback(cb, { timeout: 4000 }) : setTimeout(cb, 2500));
     idle(() => {
@@ -47,7 +50,7 @@ export class ConsentService {
 
   /** Our banner is hidden when Google's certified CMP is in charge. */
   get showBanner() {
-    return !SITE.useGoogleCmp && this.choice() === null;
+    return this.ready() && !SITE.useGoogleCmp && this.choice() === null;
   }
 
   choose(c: ConsentChoice) {
