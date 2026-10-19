@@ -1,4 +1,8 @@
 import {
+  Banknote,
+  Cpu,
+  Smartphone,
+  Tv,
   Footprints,
   CalendarDays,
   TrafficCone,
@@ -68,6 +72,10 @@ import {
 
 /** Every icon used in templates (`<svg lucideIcon="name">`). Only these are bundled. */
 export const ICONS: Record<string, IconNode> = {
+  banknote: Banknote,
+  cpu: Cpu,
+  smartphone: Smartphone,
+  tv: Tv,
   footprints: Footprints,
   'calendar-days': CalendarDays,
   'traffic-cone': TrafficCone,

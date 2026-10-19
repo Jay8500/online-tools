@@ -26,6 +26,10 @@ import { HolidayTool } from './tools/holiday-tool';
 import { TrafficTool } from './tools/traffic-tool';
 import { NearbyTool } from './tools/nearby-tool';
 import { StepsTool } from './tools/steps-tool';
+import { CurrencyTool } from './tools/currency-tool';
+import { TechTermsTool } from './tools/tech-terms-tool';
+import { RechargeTool } from './tools/recharge-tool';
+import { OttTool } from './tools/ott-tool';
 import { MetroTool } from './tools/metro-tool';
 import { FuelTool } from './tools/fuel-tool';
 import { GroceryTool } from './tools/grocery-tool';
@@ -61,6 +65,10 @@ import { GroceryTool } from './tools/grocery-tool';
     TrafficTool,
     NearbyTool,
     StepsTool,
+    CurrencyTool,
+    TechTermsTool,
+    RechargeTool,
+    OttTool,
     MetroTool,
     FuelTool,
     GroceryTool,
@@ -99,6 +107,10 @@ import { GroceryTool } from './tools/grocery-tool';
             @case ('grocery') { @defer (on immediate) { <app-grocery-tool /> } @placeholder { <div class="h-[32rem]"></div> } }
             @case ('holidays') { @defer (on immediate) { <app-holiday-tool /> } @placeholder { <div class="h-96"></div> } }
             @case ('traffic') { @defer (on immediate) { <app-traffic-tool /> } @placeholder { <div class="h-96"></div> } }
+            @case ('currency') { @defer (on immediate) { <app-currency-tool /> } @placeholder { <div class="h-96"></div> } }
+            @case ('techterms') { @defer (on immediate) { <app-tech-terms-tool /> } @placeholder { <div class="h-96"></div> } }
+            @case ('recharge') { @defer (on immediate) { <app-recharge-tool /> } @placeholder { <div class="h-96"></div> } }
+            @case ('ott') { @defer (on immediate) { <app-ott-tool /> } @placeholder { <div class="h-96"></div> } }
             @case ('steps') { @defer (on immediate) { <app-steps-tool /> } @placeholder { <div class="h-96"></div> } }
             @case ('police') { @defer (on immediate) { <app-nearby-tool kind="police" /> } @placeholder { <div class="h-96"></div> } }
             @case ('bunks') { @defer (on immediate) { <app-nearby-tool kind="fuel" /> } @placeholder { <div class="h-96"></div> } }

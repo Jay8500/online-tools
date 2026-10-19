@@ -14,10 +14,11 @@ import { ConsentBanner } from './shared/consent-banner';
 import { DialogHost } from './shared/dialog-host';
 import { ToastHost } from './shared/toast-host';
 import { UpdateBanner } from './shared/update-banner';
+import { ScrollTop } from './shared/scroll-top';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, Icon, Brand, Benefits, ToastHost, DialogHost, UpdateBanner, ConsentBanner],
+  imports: [RouterOutlet, RouterLink, Icon, Brand, Benefits, ToastHost, DialogHost, UpdateBanner, ConsentBanner, ScrollTop],
   template: `
     <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[200] focus:rounded-lg focus:bg-brand focus:px-3 focus:py-2 focus:text-brand-ink">Skip to tool</a>
     <header class="sticky top-0 z-40 border-b border-line bg-surface/90 backdrop-blur">
@@ -98,6 +99,7 @@ import { UpdateBanner } from './shared/update-banner';
 
     <app-consent-banner />
     <app-update-banner />
+    <app-scroll-top />
     <app-toast-host />
     <app-dialog-host />
   `,

@@ -79,6 +79,10 @@ No database, no login — files are processed in the browser.
 - [x] Step counter & calories (/step-counter): DeviceMotion peak detection while page open + wake lock; manual steps from health app; km/kcal/min from height & weight; 7-day chart on device
 - [x] Weather card on home/Daily tools uses the solid live sky (sky-card)
 - [x] Fixed: pregnancy due date + GST invoice used UTC date (wrong day 00:00–05:30 IST) → core/dates.ts localIso
+- [x] Currency converter (/api/fx, open.er-api daily, 25 currencies, bank/card/forex markup view, offline cache)
+- [x] Computer full forms (122 terms, core/tech-terms.ts) + data size ladder + download-time calc
+- [x] Mobile recharge plans + OTT prices (core/plans.ts, hand-copied from OFFICIAL sites 20 Oct 2026 via local Chrome) — [ ] re-check monthly (PLANS_CHECKED); aha/ETV Win/Sun NXT need sign-in to see prices
+- [x] Scroll-to-top bubble with SpreadApps logo; sky/festival CSS moved into components (initial 437 kB)
 - [ ] On hold: movie finder / cast & crew (TMDB is non-commercial only; needs commercial licence or paid API)
 - [x] Declined: song lyrics (copyrighted; would break AdSense policy)
 - [x] Home = quick menu (top 4 per group / 5 exams, "See all N"); group pages carry guides (exam size table, tax slabs, Indian BMI chart, land unit table, GST invoice checklist, PDF task table, gold purity, Telugu letters)

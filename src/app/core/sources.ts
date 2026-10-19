@@ -32,6 +32,16 @@ export const SOURCES: Record<string, Source[]> = {
     { name: 'Motor Vehicles Act (India Code)', url: 'https://www.indiacode.nic.in/handle/123456789/1798' },
     { name: 'Parivahan e-Challan', url: 'https://echallan.parivahan.gov.in/' },
   ],
+  'currency-converter': [{ name: 'ExchangeRate-API', url: 'https://www.exchangerate-api.com/' }],
+  'mobile-recharge-plans': [
+    { name: 'Jio', url: 'https://www.jio.com/selfcare/plans/mobility/prepaid-plans-list/' },
+    { name: 'Airtel', url: 'https://www.airtel.in/recharge-online' },
+    { name: 'Vi', url: 'https://www.myvi.in/prepaid/online-mobile-recharge' },
+    { name: 'BSNL', url: 'https://www.bsnl.co.in/' },
+  ],
+  'ott-subscription-prices': [
+    { name: 'Official app websites', url: 'https://help.netflix.com/en/node/24926' },
+  ],
   'police-station-near-me': [{ name: 'OpenStreetMap', url: 'https://www.openstreetmap.org/copyright' }],
   'petrol-bunk-near-me': [{ name: 'OpenStreetMap', url: 'https://www.openstreetmap.org/copyright' }],
   'cinemas-near-me': [{ name: 'OpenStreetMap', url: 'https://www.openstreetmap.org/copyright' }],

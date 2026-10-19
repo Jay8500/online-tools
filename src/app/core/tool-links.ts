@@ -31,7 +31,11 @@ export type ToolKind =
   | 'traffic'
   | 'police'
   | 'bunks'
-  | 'steps';
+  | 'steps'
+  | 'currency'
+  | 'techterms'
+  | 'recharge'
+  | 'ott';
 
 export type ToolGroupName = 'PDF tools' | 'Business tools' | 'Health calculators' | 'Language tools' | 'Converters' | 'Daily tools';
 
@@ -66,8 +70,11 @@ export const TOOL_LINKS: ToolLinkLite[] = [
   { id: 'traffic', path: 'traffic-challan-fines', name: 'Traffic fines & rules', group: 'Daily tools', icon: 'traffic-cone', blurb: 'Challan amounts for TS & AP, rules in short' },
   { id: 'police', path: 'police-station-near-me', name: 'Police station near me', group: 'Daily tools', icon: 'shield-check', blurb: 'Nearest stations + 112 / 100 call' },
   { id: 'bunks', path: 'petrol-bunk-near-me', name: 'Petrol bunk near me', group: 'Daily tools', icon: 'gauge', blurb: 'Nearest pumps by brand & distance' },
+  { id: 'recharge', path: 'mobile-recharge-plans', name: 'Mobile recharge plans', group: 'Daily tools', icon: 'smartphone', blurb: 'Jio, Airtel, Vi, BSNL — cost per day' },
+  { id: 'ott', path: 'ott-subscription-prices', name: 'OTT subscription prices', group: 'Daily tools', icon: 'tv', blurb: 'Netflix, Prime, JioHotstar, aha & more' },
   { id: 'cinema', path: 'cinemas-near-me', name: 'Cinemas near me', group: 'Daily tools', icon: 'clapperboard', blurb: 'Theatres by distance, shows & tickets' },
   { id: 'travel', path: 'travel-planner', name: 'Travel planner', group: 'Daily tools', icon: 'map-pin', blurb: 'Route, stops & time by road, rail, air' },
+  { id: 'currency', path: 'currency-converter', name: 'Currency converter', group: 'Converters', icon: 'banknote', blurb: 'Dollar, dirham, riyal ↔ rupee, live' },
   { id: 'land', path: 'land-area-converter', name: 'Land area & price', group: 'Converters', icon: 'ruler', blurb: 'Acre, gunta, cent, ankanam, gajam' },
   { id: 'length', path: 'length-converter', name: 'Length converter', group: 'Converters', icon: 'ruler', blurb: 'km, miles, feet, inches' },
   { id: 'weight', path: 'weight-converter', name: 'Weight converter', group: 'Converters', icon: 'scale', blurb: 'kg, pounds, tola, quintal' },
@@ -76,5 +83,6 @@ export const TOOL_LINKS: ToolLinkLite[] = [
   { id: 'volume', path: 'volume-converter', name: 'Volume converter', group: 'Converters', icon: 'cup-soda', blurb: 'Litres, ml, gallons' },
   { id: 'speed', path: 'speed-converter', name: 'Speed converter', group: 'Converters', icon: 'gauge', blurb: 'km/h, mph, m/s' },
   { id: 'data', path: 'data-size-converter', name: 'Data size converter', group: 'Converters', icon: 'hard-drive', blurb: 'KB, MB, GB, Mbps' },
+  { id: 'techterms', path: 'computer-abbreviations', name: 'Computer full forms', group: 'Language tools', icon: 'cpu', blurb: '120+ IT abbreviations + data maths' },
   { id: 'telugu', path: 'telugu-typing', name: 'Telugu typing', group: 'Language tools', icon: 'languages', blurb: 'Type English, get తెలుగు' },
 ];

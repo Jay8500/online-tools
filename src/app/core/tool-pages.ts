@@ -1,7 +1,7 @@
 import { Faq } from './seo.service';
 import { TOOL_LINKS, ToolKind, ToolLinkLite } from './tool-links';
 
-export type Disclaimer = 'files' | 'health' | 'invoice' | 'upi' | 'language' | 'land' | 'units' | 'gold' | 'weather' | 'travel' | 'metro' | 'fuel' | 'grocery' | 'cinema' | 'holidays' | 'traffic' | 'nearby';
+export type Disclaimer = 'files' | 'health' | 'invoice' | 'upi' | 'language' | 'land' | 'units' | 'gold' | 'weather' | 'travel' | 'metro' | 'fuel' | 'grocery' | 'cinema' | 'holidays' | 'traffic' | 'nearby' | 'currency' | 'plans';
 
 export interface ToolPageInfo extends ToolLinkLite {
   h1: string;
@@ -244,6 +244,58 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
     ],
     disclaimer: 'health',
   },
+  currency: {
+    h1: 'Currency Converter — Dollar, Dirham, Riyal to Rupees',
+    title: 'Currency Converter to INR — USD, AED, SAR, GBP, EUR to Indian Rupees Today',
+    description: 'Convert US dollars, UAE dirhams, Saudi riyals, pounds, euros and 25 currencies to Indian rupees at today’s rate — and see what you actually get after bank, card or forex-card charges.',
+    intro: 'Today’s exchange rate for 25 currencies — plus how much you really receive after bank or card charges.',
+    steps: ['Type the amount.', 'Pick the currency (or tap a quick chip like AED → ₹).', 'See the market rate and the lakh/crore amount.', 'Check “What you’ll actually get” for bank transfers, forex cards and cards abroad.'],
+    faqs: [
+      { q: 'Why does my bank give less than this rate?', a: 'This is the market (mid) rate. Banks and cards add a markup — usually 1–3% on transfers and about 3.5% + 18% GST on cards used abroad.' },
+      { q: 'What is the cheapest way to send money from the Gulf to India?', a: 'Remittance apps and exchange houses usually give rates closest to the market rate. Compare the final rupee amount, not just the fee.' },
+      { q: 'How often are rates updated?', a: 'Once a day from a market data source. For large transfers, check the live rate with your bank.' },
+    ],
+    disclaimer: 'currency',
+  },
+  techterms: {
+    h1: 'Computer Full Forms & Abbreviations',
+    title: 'Computer Full Forms List — CPU, RAM, ROM, URL, OTP, IMEI & 120+ Abbreviations',
+    description: '120+ computer and IT abbreviations with full forms and simple meanings — hardware, internet, networking, mobile, security and file types — plus data size and download-time calculations. Useful for exams.',
+    intro: 'Full forms and simple meanings of the computer terms you see every day and in exams — plus easy data calculations.',
+    steps: ['Search an abbreviation like RAM or URL.', 'Or pick a category such as Networking or Mobile.', 'Read the full form and a one-line meaning.', 'Use the calculator to see how long a download takes.'],
+    faqs: [
+      { q: 'What is the difference between RAM and ROM?', a: 'RAM is fast temporary memory used while apps run and is cleared when power is off. ROM keeps start-up instructions permanently.' },
+      { q: 'Is 1 GB 1000 MB or 1024 MB?', a: 'Computers count 1 GB = 1,024 MB. Disk makers use 1,000, which is why a 1 TB disk shows about 931 GB.' },
+      { q: 'What is the difference between Mbps and MBps?', a: 'Mbps is megabits per second (internet speed). Divide by 8 to get megabytes per second — 100 Mbps ≈ 12.5 MB/s.' },
+    ],
+    disclaimer: 'units',
+  },
+  recharge: {
+    h1: 'Mobile Recharge Plans — Jio, Airtel, Vi, BSNL',
+    title: 'Jio, Airtel, Vi, BSNL Recharge Plans 2026 — Compare Price, Data & Cost per Day',
+    description: 'Compare prepaid recharge plans from Jio, Airtel (AP & Telangana), Vi and BSNL: price, validity, daily data, 5G and OTT benefits, sorted by cost per day with best-value picks. Prices from official websites.',
+    intro: 'All popular prepaid plans in one place — filter by validity and data, and see the real cost per day.',
+    steps: ['Pick one or more operators (or leave all).', 'Choose validity — 1 month, 84 days or yearly.', 'Choose data per day or “With OTT”.', 'Plans are sorted by cost per day; “Best value” marks the cheapest of its kind.'],
+    faqs: [
+      { q: 'Which is cheaper — monthly or 84-day plans?', a: 'Longer plans usually cost less per day. Compare the “per day” price shown on each plan.' },
+      { q: 'Are these prices the same everywhere?', a: 'Jio prices are all-India. Airtel prices shown are for the AP & Telangana circle. Vi can differ slightly by circle. Always confirm in the app before paying.' },
+      { q: 'What does “Unlimited 5G” mean?', a: 'On a 5G phone in a 5G area, data is not counted against your daily limit. On 4G, the daily GB limit applies.' },
+    ],
+    disclaimer: 'plans',
+  },
+  ott: {
+    h1: 'OTT Subscription Prices in India',
+    title: 'OTT Subscription Prices India 2026 — Netflix, Prime Video, JioHotstar, SonyLIV, ZEE5, aha',
+    description: 'Current Netflix, Amazon Prime, JioHotstar, SonyLIV and ZEE5 plan prices in India with devices and quality, cost per month, and which recharge plans include them free. Telugu apps aha, ETV Win and Sun NXT too.',
+    intro: 'What every streaming app costs, what you get, and which recharges include it free.',
+    steps: ['Browse the apps, or pick “Telugu-first apps”.', 'Compare monthly vs yearly — tick “Show cost per month”.', 'See which mobile recharges include the app free.', 'Tap “Official prices” to subscribe.'],
+    faqs: [
+      { q: 'Which is the cheapest Netflix plan?', a: 'Netflix Mobile at ₹149 a month (one phone or tablet, 480p).' },
+      { q: 'Is a yearly plan worth it?', a: 'Usually yes — for example JioHotstar Super yearly works out to about ₹92 a month versus ₹149 monthly.' },
+      { q: 'Can I get OTT free with my recharge?', a: 'Yes. Some Jio and Airtel plans include JioHotstar, Netflix Basic or Amazon Prime — see “Free with” on each card.' },
+    ],
+    disclaimer: 'plans',
+  },
   police: {
     h1: 'Police Station Near Me — Hyderabad, Telangana & AP',
     title: 'Police Station Near Me — Nearest Police Stations in Hyderabad, Telangana & Andhra Pradesh',
@@ -447,6 +499,8 @@ export const DISCLAIMERS: Record<Disclaimer, string> = {
   grocery: 'Market prices are wholesale/Rythu Bazar rates published by the Government of India; shop prices are usually higher. Milk and egg prices are checked by hand — dates shown.',
   holidays: 'Holiday dates are from the official government orders. Moon-based festivals can shift by a day — follow the government announcement. Banks and schools may follow different lists.',
   traffic: 'Fines shown are those in the Motor Vehicles Act, 1988 (as amended in 2019); the amount actually charged may be lower where a state compounds the offence. This is general information, not legal advice — the e-challan portal and traffic police are final.',
+  currency: 'Market (mid) rates from a public data source, updated daily — banks, cards and exchange houses apply their own rates and fees. Not financial advice.',
+  plans: 'Prices copied from each company’s official website on the date shown; plans, offers and circle prices change often. Confirm in the official app before paying. We are not linked to any operator or app.',
   nearby: 'Places come from OpenStreetMap and may be missing, closed or moved. Distances are straight-line. In an emergency call 112.',
   cinema: 'Cinema list from OpenStreetMap and may miss new or recently closed theatres. Distances are straight-line. Shows, prices and bookings are on the cinema’s or booking app’s site, not ours.',
   travel: 'Times are estimates. Check IRCTC/NTES, TGSRTC/APSRTC or the airline for real timetables, and follow traffic and safety advisories.',
