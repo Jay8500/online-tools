@@ -23,6 +23,7 @@ export const SOURCES: Record<string, Source[]> = {
     { name: 'data.gov.in (Agmarknet)', url: 'https://data.gov.in/' },
     { name: 'NECC', url: 'https://www.e2necc.com/' },
   ],
+  'cinemas-near-me': [{ name: 'OpenStreetMap', url: 'https://www.openstreetmap.org/copyright' }],
   'travel-planner': [
     { name: 'OpenStreetMap', url: 'https://www.openstreetmap.org/copyright' },
     { name: 'openrouteservice', url: 'https://openrouteservice.org/' },

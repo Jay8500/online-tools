@@ -21,6 +21,7 @@ import { LandTool, UnitTool } from './tools/convert-tools';
 import { GoldTool } from './tools/gold-tool';
 import { WeatherTool } from './tools/weather-tool';
 import { TravelTool } from './tools/travel-tool';
+import { CinemaTool } from './tools/cinema-tool';
 import { MetroTool } from './tools/metro-tool';
 import { FuelTool } from './tools/fuel-tool';
 import { GroceryTool } from './tools/grocery-tool';
@@ -51,6 +52,7 @@ import { GroceryTool } from './tools/grocery-tool';
     GoldTool,
     WeatherTool,
     TravelTool,
+    CinemaTool,
     MetroTool,
     FuelTool,
     GroceryTool,
@@ -87,6 +89,7 @@ import { GroceryTool } from './tools/grocery-tool';
             @case ('metro') { @defer (on immediate) { <app-metro-tool /> } @placeholder { <div class="h-96"></div> } }
             @case ('fuel') { @defer (on immediate) { <app-fuel-tool /> } @placeholder { <div class="h-96"></div> } }
             @case ('grocery') { @defer (on immediate) { <app-grocery-tool /> } @placeholder { <div class="h-[32rem]"></div> } }
+            @case ('cinema') { @defer (on immediate) { <app-cinema-tool /> } @placeholder { <div class="h-96"></div> } }
             @case ('travel') { @defer (on immediate) { <app-travel-tool /> } @placeholder { <div class="h-96"></div> } }
             @case ('weather') { @defer (on immediate) { <app-weather-tool /> } @placeholder { <div class="h-96"></div> } }
             @case ('land') { @defer (on immediate) { <app-land-tool /> } @placeholder { <div class="h-96"></div> } }

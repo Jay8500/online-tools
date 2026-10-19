@@ -22,6 +22,7 @@ const HINTS = [
   { icon: 'calculator', text: 'EMI' },
   { icon: 'map-pin', text: 'train route' },
   { icon: 'thermometer', text: 'weather' },
+  { icon: 'clapperboard', text: 'cinemas near me' },
   { icon: 'file-stack', text: 'merge PDF' },
   { icon: 'receipt', text: 'income tax' },
   { icon: 'ruler', text: 'acre to gunta' },
@@ -34,6 +35,7 @@ const HINTS = [
 const KEYWORDS: Record<string, string> = {
   'gold-price-calculator': 'gold rate today silver price jewellery 22k 24k',
   weather: 'weather temperature rain forecast climate',
+  'cinemas-near-me': 'cinema movie theatre theater film show ticket pvr inox near me',
   'travel-planner': 'travel route distance bus train flight trip journey stops',
   'land-area-converter': 'land acre to gunta cent ankanam gajam square yards plot',
   'number-converter': 'lakh crore million dozen',

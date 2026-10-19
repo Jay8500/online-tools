@@ -45,3 +45,4 @@ Thumbs.db
 
 # Netlify CLI
 .netlify
+scripts/cinemas/*.json

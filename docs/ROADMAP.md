@@ -67,6 +67,7 @@ No database, no login — files are processed in the browser.
 - [x] Live gold/silver estimate (/api/metals: gold-api.com + ExchangeRate-API + 15% duty) with LIVE badges on cards; data-source credits on cards/pages
 - [x] Home search: rotating hints with icons, multi-word search
 - [ ] Later: nutrition facts (protein, minerals) for vegetables/groceries from USDA/IFCT; curd prices
+- [x] Cinemas near me (/cinemas-near-me): 352 cinemas in TS/AP from OSM (112 Hyderabad), distance from typed area (1,094 built-in places, else /api/geocode via ORS) or device location; Shows & tickets = Google showtimes search, District/BookMyShow links. No showtimes/prices copied (booking sites have no public API; scraping breaks ToS). Refresh data: scripts/cinemas/build-cinemas.cjs (few times a year)
 - [ ] On hold: movie finder / cast & crew (TMDB is non-commercial only; needs commercial licence or paid API)
 - [x] Declined: song lyrics (copyrighted; would break AdSense policy)
 - [x] Home = quick menu (top 4 per group / 5 exams, "See all N"); group pages carry guides (exam size table, tax slabs, Indian BMI chart, land unit table, GST invoice checklist, PDF task table, gold purity, Telugu letters)

@@ -1,7 +1,7 @@
 import { Faq } from './seo.service';
 import { TOOL_LINKS, ToolKind, ToolLinkLite } from './tool-links';
 
-export type Disclaimer = 'files' | 'health' | 'invoice' | 'upi' | 'language' | 'land' | 'units' | 'gold' | 'weather' | 'travel' | 'metro' | 'fuel' | 'grocery';
+export type Disclaimer = 'files' | 'health' | 'invoice' | 'upi' | 'language' | 'land' | 'units' | 'gold' | 'weather' | 'travel' | 'metro' | 'fuel' | 'grocery' | 'cinema';
 
 export interface ToolPageInfo extends ToolLinkLite {
   h1: string;
@@ -202,6 +202,25 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
     ],
     disclaimer: 'grocery',
   },
+  cinema: {
+    h1: 'Cinemas Near Me — Theatres by Distance',
+    title: 'Cinemas Near Me in Hyderabad, Vijayawada, Vizag — Movie Theatres by Distance',
+    description: 'Find movie theatres near you in Hyderabad and across Telangana and Andhra Pradesh: 350+ cinemas (PVR, INOX, Cinepolis, AMB, Prasads and single screens) sorted by distance, with directions and links to today’s shows and ticket prices.',
+    intro: 'Find the cinemas closest to you, then open today’s shows, ticket prices and directions in one tap.',
+    steps: [
+      'Pick your city (Hyderabad is selected).',
+      'Type your area (e.g. Kukatpally) or tap the location button.',
+      'Cinemas are sorted nearest first, with the distance.',
+      'Tap “Shows & tickets” for today’s shows and seat prices, or “Directions” for the route.',
+    ],
+    faqs: [
+      { q: 'Why don’t you show showtimes and ticket prices here?', a: 'Shows and seat prices change for every show, day and film, and only the booking apps (BookMyShow, District, the cinema’s own app) have the live list. “Shows & tickets” opens today’s list for that theatre so you always see the correct price.' },
+      { q: 'Is my location sent anywhere?', a: 'No. When you tap the location button, distances are worked out on your phone. A typed area that isn’t in our list is looked up once on a map service to find its position; we don’t store it.' },
+      { q: 'Is the distance the road distance?', a: 'It is the straight-line distance, which is the quickest way to compare which theatre is closest. The road distance is usually 20–40% more; tap “Directions” for the exact route and time.' },
+      { q: 'A theatre is missing or has closed. Can I fix it?', a: 'Yes. The list comes from OpenStreetMap, the free map anyone can edit. Add or correct the cinema there and it will appear in our next update.' },
+    ],
+    disclaimer: 'cinema',
+  },
   travel: {
     h1: 'Travel Planner — Route, Stops & Travel Time',
     title: 'Travel Planner India — Distance, Route, Stops & Time by Car, Bus, Train, Flight',
@@ -357,6 +376,7 @@ export const DISCLAIMERS: Record<Disclaimer, string> = {
   metro: 'Fares follow the published HMRL chart (after the 24 May 2025 cut); distances are measured from OpenStreetMap and may differ slightly near a fare band. Check at the station.',
   fuel: 'Prices from the oil companies’ daily revision as published on 19 Oct 2026; your pump may differ by a few paise. Tap a source to check today’s rate.',
   grocery: 'Market prices are wholesale/Rythu Bazar rates published by the Government of India; shop prices are usually higher. Milk and egg prices are checked by hand — dates shown.',
+  cinema: 'Cinema list from OpenStreetMap and may miss new or recently closed theatres. Distances are straight-line. Shows, prices and bookings are on the cinema’s or booking app’s site, not ours.',
   travel: 'Times are estimates. Check IRCTC/NTES, TGSRTC/APSRTC or the airline for real timetables, and follow traffic and safety advisories.',
   weather: 'Forecasts can change. For cyclone, heavy-rain and heatwave warnings follow IMD (mausam.imd.gov.in) and local authorities.',
   units: 'Conversions use standard international definitions and run on your device.',
