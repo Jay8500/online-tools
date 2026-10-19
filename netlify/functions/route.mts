@@ -113,7 +113,7 @@ async function reverse([lon, lat]: [number, number], key: string): Promise<strin
 
 /** 'hyderabad' → 'Hyderabad' (keeps what the visitor typed, tidied). */
 function title(s: string) {
-  return s.trim().replace(/s+/g, ' ').replace(/(^|[s(,-])(p{Ll})/gu, (m, a, c) => a + c.toUpperCase());
+  return s.trim().replace(/\s+/g, ' ').replace(/(^|[\s(,-])(\p{Ll})/gu, (_m, a: string, c: string) => a + c.toUpperCase());
 }
 
 function hav(a: [number, number], b: [number, number]) {
