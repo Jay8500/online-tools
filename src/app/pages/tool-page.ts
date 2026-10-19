@@ -16,6 +16,7 @@ import { InvoiceTool } from './tools/invoice-tool';
 import { ImageToPdf, PdfCompress, PdfMerge, PdfSplit, PdfToImage } from './tools/pdf-tools';
 import { TeluguTool } from './tools/telugu-tool';
 import { UpiQrTool } from './tools/upi-qr-tool';
+import { LandTool, UnitTool } from './tools/convert-tools';
 
 /** Pages for PDF, business, health and language tools (route data `tool` = id from core/tool-links.ts). */
 @Component({
@@ -38,6 +39,8 @@ import { UpiQrTool } from './tools/upi-qr-tool';
     PdfCompress,
     ImageToPdf,
     PdfToImage,
+    LandTool,
+    UnitTool,
   ],
   template: `
     @let t = info();
@@ -67,6 +70,14 @@ import { UpiQrTool } from './tools/upi-qr-tool';
             @case ('pdf-split') { @defer (on immediate) { <app-pdf-split /> } @placeholder { <div class="h-48"></div> } }
             @case ('pdf-compress') { @defer (on immediate) { <app-pdf-compress /> } @placeholder { <div class="h-48"></div> } }
             @case ('image-to-pdf') { @defer (on immediate) { <app-image-to-pdf /> } @placeholder { <div class="h-48"></div> } }
+            @case ('land') { @defer (on immediate) { <app-land-tool /> } @placeholder { <div class="h-96"></div> } }
+            @case ('length') { @defer (on immediate) { <app-unit-tool category="length" /> } @placeholder { <div class="h-96"></div> } }
+            @case ('weight') { @defer (on immediate) { <app-unit-tool category="weight" /> } @placeholder { <div class="h-96"></div> } }
+            @case ('volume') { @defer (on immediate) { <app-unit-tool category="volume" /> } @placeholder { <div class="h-96"></div> } }
+            @case ('temperature') { @defer (on immediate) { <app-unit-tool category="temperature" /> } @placeholder { <div class="h-96"></div> } }
+            @case ('speed') { @defer (on immediate) { <app-unit-tool category="speed" /> } @placeholder { <div class="h-96"></div> } }
+            @case ('data') { @defer (on immediate) { <app-unit-tool category="data" /> } @placeholder { <div class="h-96"></div> } }
+            @case ('count') { @defer (on immediate) { <app-unit-tool category="count" /> } @placeholder { <div class="h-96"></div> } }
             @case ('pdf-to-image') { @defer (on immediate) { <app-pdf-to-image /> } @placeholder { <div class="h-48"></div> } }
           }
         </section>

@@ -1,7 +1,7 @@
 import { Faq } from './seo.service';
 import { TOOL_LINKS, ToolKind, ToolLinkLite } from './tool-links';
 
-export type Disclaimer = 'files' | 'health' | 'invoice' | 'upi' | 'language';
+export type Disclaimer = 'files' | 'health' | 'invoice' | 'upi' | 'language' | 'land' | 'units';
 
 export interface ToolPageInfo extends ToolLinkLite {
   h1: string;
@@ -145,6 +145,98 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
     ],
     disclaimer: 'health',
   },
+  land: {
+    h1: 'Land Area Converter & Price Calculator (Telangana & AP)',
+    title: 'Land Area Converter — Acre, Gunta, Cent, Ankanam, Sq Yards (Telangana, AP)',
+    description: 'Convert acres, guntas, cents, ankanams, square yards (gajam) and sq ft for Hyderabad, Telangana and Andhra Pradesh. Plot size and land price calculator.',
+    intro: 'Convert land measures used in Hyderabad, Telangana and Andhra Pradesh, work out a plot’s area from its length and width, and estimate its price.',
+    steps: ['Choose “I know the area” and pick the unit (e.g. 10 guntas), or choose “Plot length × width” (e.g. 30 × 40 ft).', 'See the area in every unit at once — acres, guntas, cents, ankanams, square yards, sq ft.', 'Optionally enter the rate (e.g. ₹45,000 per sq yard) to see the total land value.'],
+    faqs: [
+      { q: 'How many guntas are in an acre?', a: '1 acre = 40 guntas (kuntas). One gunta is 121 square yards or 1,089 square feet.' },
+      { q: 'How many cents are in an acre?', a: '1 acre = 100 cents. One cent is 48.4 square yards or 435.6 square feet — cents are common in Andhra Pradesh, Kerala and Tamil Nadu.' },
+      { q: 'What is an ankanam?', a: 'An ankanam is used in coastal Andhra Pradesh for house sites: 1 ankanam = 72 sq ft = 8 square yards.' },
+      { q: 'How many square yards is a 30 × 40 plot?', a: '30 × 40 feet = 1,200 sq ft = 133.33 square yards (gajam).' },
+    ],
+    disclaimer: 'land',
+  },
+  length: {
+    h1: 'Length Converter — km, Miles, Feet, Inches',
+    title: 'Length Converter — 1 km = How Many Miles, Feet to cm, Inches',
+    description: 'Convert kilometres, miles, metres, feet, inches and yards instantly. 1 km = 0.621 miles, 1 foot = 30.48 cm. Free and works offline.',
+    intro: 'Convert any length — 1 km = 1,000 m = 0.621 miles.',
+    steps: ['Type a number.', 'Pick the unit you have and the unit you want.', 'Read the answer, or see it in every unit at once.'],
+    faqs: [
+      { q: '1 km is how many miles?', a: '1 kilometre = 0.6214 miles, and 1 mile = 1.609 kilometres.' },
+      { q: 'How many cm is 5 feet 6 inches?', a: '5 ft 6 in = 66 inches = 167.64 cm.' },
+    ],
+    disclaimer: 'units',
+  },
+  weight: {
+    h1: 'Weight Converter — kg, Pounds, Tola, Quintal',
+    title: 'Weight Converter — kg to Pounds, Tola to Grams, Quintal',
+    description: 'Convert kilograms, grams, pounds, tola, quintal, tonne, ounces and carats. 1 tola = 11.66 g, 1 kg = 2.2 lb. Free.',
+    intro: 'Convert weights used in India and abroad — including tola (gold) and quintal (crops).',
+    steps: ['Type a number.', 'Pick the units.', 'Read the answer and the full table.'],
+    faqs: [
+      { q: '1 tola is how many grams?', a: '1 tola = 11.6638 grams. Jewellers often round it to 11.66 g; some use 10 g as a “market tola”, so confirm with your jeweller.' },
+      { q: '1 quintal is how many kg?', a: '1 quintal = 100 kg, and 10 quintals = 1 tonne.' },
+    ],
+    disclaimer: 'units',
+  },
+  volume: {
+    h1: 'Volume Converter — Litres, ml, Gallons',
+    title: 'Volume Converter — Litres to Gallons, ml, Cubic Feet',
+    description: 'Convert litres, millilitres, cubic metres, cubic feet, US and UK gallons, cups and spoons. Free and instant.',
+    intro: 'Convert liquids and volumes — litres, gallons, cubic feet and kitchen measures.',
+    steps: ['Type a number.', 'Pick the units.', 'Read the answer.'],
+    faqs: [{ q: '1 gallon is how many litres?', a: 'A US gallon is 3.785 litres; a UK (imperial) gallon is 4.546 litres.' }],
+    disclaimer: 'units',
+  },
+  temperature: {
+    h1: 'Temperature Converter — Celsius to Fahrenheit',
+    title: 'Celsius to Fahrenheit Converter — °C to °F, Body Temperature',
+    description: 'Convert Celsius, Fahrenheit and Kelvin. 37 °C = 98.6 °F. Free, instant, works offline.',
+    intro: 'Convert °C, °F and K — handy for fever readings, weather and cooking.',
+    steps: ['Type the temperature.', 'Pick °C, °F or K.', 'Read the converted value.'],
+    faqs: [
+      { q: 'What is 37 °C in Fahrenheit?', a: '37 °C = 98.6 °F, normal body temperature. A fever is usually 100.4 °F (38 °C) or higher.' },
+      { q: 'What is the formula?', a: '°F = °C × 9 ÷ 5 + 32, and °C = (°F − 32) × 5 ÷ 9.' },
+    ],
+    disclaimer: 'units',
+  },
+  speed: {
+    h1: 'Speed Converter — km/h, mph, m/s',
+    title: 'Speed Converter — km/h to mph, m/s, Knots',
+    description: 'Convert speeds between km/h, miles per hour, metres per second and knots. Free and instant.',
+    intro: 'Convert speeds — 100 km/h = 62.1 mph.',
+    steps: ['Type a speed.', 'Pick the units.', 'Read the answer.'],
+    faqs: [{ q: '100 km/h is how many mph?', a: '100 km/h = 62.14 miles per hour = 27.78 metres per second.' }],
+    disclaimer: 'units',
+  },
+  data: {
+    h1: 'Data Size Converter — KB, MB, GB',
+    title: 'KB to MB Converter — Data Size, GB, Mbps',
+    description: 'Convert bytes, KB, MB, GB and TB (1 MB = 1,024 KB), and internet speed in Mbps to MB per second. Free.',
+    intro: 'Convert file sizes the way exam portals and Windows count them (1 MB = 1,024 KB).',
+    steps: ['Type a size.', 'Pick the units.', 'Read the answer.'],
+    faqs: [
+      { q: 'How many KB is 1 MB?', a: 'Most portals and Windows use 1 MB = 1,024 KB. Some storage makers use 1,000, which is why a “64 GB” phone shows less space.' },
+      { q: 'Is 100 Mbps the same as 100 MB per second?', a: 'No. Internet speed is in megabits; 100 Mbps ≈ 11.9 MB per second.' },
+    ],
+    disclaimer: 'units',
+  },
+  count: {
+    h1: 'Lakh, Crore, Million & Dozen Converter',
+    title: 'Lakh to Million Converter — Crore, Billion, Dozen, Gross',
+    description: 'Convert lakh and crore to million and billion, and count in dozens, scores and gross. 1 crore = 10 million, 1 dozen = 12.',
+    intro: 'Switch between Indian and international numbers, and everyday counting units like dozen and gross.',
+    steps: ['Type a number.', 'Pick lakh, crore, million, dozen…', 'Read the answer in every unit.'],
+    faqs: [
+      { q: '1 crore is how many million?', a: '1 crore = 10 million = 100 lakh. 10 lakh = 1 million, and 100 crore = 1 billion.' },
+      { q: '1 dozen means how many?', a: '1 dozen = 12. A score is 20, and a gross is 144 (12 dozen).' },
+    ],
+    disclaimer: 'units',
+  },
   telugu: {
     h1: 'Telugu Typing — English to Telugu',
     title: 'Telugu Typing Online — Type English, Get తెలుగు',
@@ -172,5 +264,7 @@ export const DISCLAIMERS: Record<Disclaimer, string> = {
   health: 'Health tools are not medical advice. Talk to a doctor before changing your diet, exercise or treatment.',
   invoice: 'This tool helps you format an invoice; it is not tax advice. Check GST rates, HSN codes and e-invoicing rules with your CA.',
   upi: 'Always test the QR by paying ₹1 with your own UPI app before printing. We never handle your money.',
+  land: 'Conversions use standard definitions (1 acre = 40 guntas = 100 cents). Always confirm the area in your sale deed, pahani/1-B or registration documents. Prices exclude stamp duty and registration.',
+  units: 'Conversions use standard international definitions and run on your device.',
   language: 'Typing happens on your device. Spellings follow a phonetic scheme — check important text before sending.',
 };

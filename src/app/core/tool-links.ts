@@ -11,9 +11,17 @@ export type ToolKind =
   | 'pdf-split'
   | 'pdf-compress'
   | 'image-to-pdf'
-  | 'pdf-to-image';
+  | 'pdf-to-image'
+  | 'land'
+  | 'length'
+  | 'weight'
+  | 'volume'
+  | 'temperature'
+  | 'speed'
+  | 'data'
+  | 'count';
 
-export type ToolGroupName = 'PDF tools' | 'Business tools' | 'Health calculators' | 'Language tools';
+export type ToolGroupName = 'PDF tools' | 'Business tools' | 'Health calculators' | 'Language tools' | 'Converters';
 
 export interface ToolLinkLite {
   id: ToolKind;
@@ -36,5 +44,13 @@ export const TOOL_LINKS: ToolLinkLite[] = [
   { id: 'calorie', path: 'calorie-calculator', name: 'Calorie calculator', group: 'Health calculators', icon: 'flame', blurb: 'BMR & daily calories' },
   { id: 'ideal-weight', path: 'ideal-weight-calculator', name: 'Ideal weight', group: 'Health calculators', icon: 'scale', blurb: 'Healthy range for your height' },
   { id: 'due-date', path: 'pregnancy-due-date-calculator', name: 'Pregnancy due date', group: 'Health calculators', icon: 'baby', blurb: 'Due date & week by week' },
+  { id: 'land', path: 'land-area-converter', name: 'Land area & price', group: 'Converters', icon: 'ruler', blurb: 'Acre, gunta, cent, ankanam, gajam' },
+  { id: 'length', path: 'length-converter', name: 'Length converter', group: 'Converters', icon: 'ruler', blurb: 'km, miles, feet, inches' },
+  { id: 'weight', path: 'weight-converter', name: 'Weight converter', group: 'Converters', icon: 'scale', blurb: 'kg, pounds, tola, quintal' },
+  { id: 'temperature', path: 'temperature-converter', name: 'Temperature converter', group: 'Converters', icon: 'thermometer', blurb: '°C ↔ °F ↔ Kelvin' },
+  { id: 'count', path: 'number-converter', name: 'Lakh, crore & dozen', group: 'Converters', icon: 'hash', blurb: 'Lakh ↔ million, dozen, gross' },
+  { id: 'volume', path: 'volume-converter', name: 'Volume converter', group: 'Converters', icon: 'cup-soda', blurb: 'Litres, ml, gallons' },
+  { id: 'speed', path: 'speed-converter', name: 'Speed converter', group: 'Converters', icon: 'gauge', blurb: 'km/h, mph, m/s' },
+  { id: 'data', path: 'data-size-converter', name: 'Data size converter', group: 'Converters', icon: 'hard-drive', blurb: 'KB, MB, GB, Mbps' },
   { id: 'telugu', path: 'telugu-typing', name: 'Telugu typing', group: 'Language tools', icon: 'languages', blurb: 'Type English, get తెలుగు' },
 ];

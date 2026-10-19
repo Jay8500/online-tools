@@ -55,6 +55,8 @@ No database, no login — files are processed in the browser.
 - [x] Health: BMI (Indian/Asian bands), calories (Mifflin–St Jeor), ideal weight, pregnancy due date — "not medical advice"
 - [x] Telugu typing (RTS/Lekhini-style phonetic, copy/WhatsApp, draft on device)
 - [x] 7 category pages (/exam-photo-signature-resize, /image-tools, /money-calculators, /pdf-tools, /business-tools, /health-calculators, /language-tools) with CollectionPage JSON-LD; breadcrumbs, header, home "See all" and footer link to them
+- [x] Converters group (/unit-converters): land area & price for Telangana/AP (acre, gunta, cent, ankanam, gajam, plot L×W, rate→total), length, weight (tola, quintal), volume, temperature, speed, data size, lakh/crore/dozen
+- [ ] Live gold/silver rates and weather — need an external data source (owner decision on provider/API key)
 - [x] Back button on every non-home page (history back, or home when landed directly)
 - [ ] Later: Hindi typing, PDF password unlock/protect, page reorder/rotate thumbnails, invoice multi-template + saved customers, UPI QR with logo, HEIC support
 

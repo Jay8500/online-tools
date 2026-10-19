@@ -18,7 +18,7 @@ let seq = 0;
       <div class="relative">
         @if (prefix()) { <span class="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-sm text-muted">{{ prefix() }}</span> }
         <input class="input text-right font-semibold tabular-nums" [class.pl-7]="!!prefix()" [class.pr-14]="!!suffix()"
-               [id]="id" type="text" inputmode="decimal" autocomplete="off" [value]="text()"
+               [id]="id" type="text" [attr.inputmode]="min() < 0 ? 'text' : 'decimal'" autocomplete="off" [value]="text()"
                (input)="onInput($event)" (focus)="focused.set(true)" (blur)="onBlur()" [attr.aria-describedby]="id + '-msg'"
                [attr.aria-invalid]="!!error()" />
         @if (suffix()) { <span class="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-sm text-muted">{{ suffix() }}</span> }
@@ -75,7 +75,9 @@ export class NumField {
   protected onInput(e: Event) {
     const el = e.target as HTMLInputElement;
     // Allow digits, one dot; drop commas/spaces people type or paste.
-    const cleaned = el.value.replace(/[^\d.]/g, '').replace(/(\..*)\./g, '$1');
+    // A leading minus is kept only where negatives are valid (e.g. −10 °C).
+    const neg = this.min() < 0 && el.value.trim().startsWith('-');
+    const cleaned = (neg ? '-' : '') + el.value.replace(/[^\d.]/g, '').replace(/(\..*)\./g, '$1');
     if (cleaned !== el.value) el.value = cleaned;
     this.raw.set(cleaned);
     this.check(cleaned);
@@ -94,7 +96,7 @@ export class NumField {
   }
 
   private check(s: string) {
-    if (!s) return this.error.set('Enter a number');
+    if (!s || s === '-') return this.error.set('Enter a number');
     const v = Number(s);
     if (!Number.isFinite(v)) return this.error.set('Enter a valid number');
     const fmt = (n: number) => `${this.prefix()}${FMT.format(n)}${this.suffix() ? ' ' + this.suffix() : ''}`;

@@ -8,6 +8,7 @@ export const HUB_PATHS: Record<string, string> = {
   'Business tools': 'business-tools',
   'Health calculators': 'health-calculators',
   'Language tools': 'language-tools',
+  Converters: 'unit-converters',
 };
 
 export const HUB_ROUTES = [...new Set(Object.values(HUB_PATHS))];

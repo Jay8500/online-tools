@@ -1,4 +1,9 @@
 import {
+  CupSoda,
+  Gauge,
+  HardDrive,
+  Hash,
+  Thermometer,
   ArrowDown,
   ArrowUp,
   Baby,
@@ -56,6 +61,11 @@ import {
 
 /** Every icon used in templates (`<svg lucideIcon="name">`). Only these are bundled. */
 export const ICONS: Record<string, IconNode> = {
+  'cup-soda': CupSoda,
+  'gauge': Gauge,
+  'hard-drive': HardDrive,
+  'hash': Hash,
+  'thermometer': Thermometer,
   'arrow-left': ArrowLeft,
   'arrow-down': ArrowDown,
   'arrow-up': ArrowUp,

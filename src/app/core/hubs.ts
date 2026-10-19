@@ -120,6 +120,17 @@ export const HUBS: Hub[] = [
     faqs: [{ q: 'Are these medical advice?', a: 'No. They are estimates to help you understand your numbers. Please talk to a doctor before changing your diet, exercise or treatment.' }],
   },
   {
+    id: 'converters',
+    path: 'unit-converters',
+    name: 'Converters',
+    h1: 'Unit & Land Converters',
+    title: 'Unit Converters — Land (Acre, Gunta, Cent), Length, Weight, Lakh–Crore',
+    description: 'Free converters for India: land units for Telangana & AP (acre, gunta, cent, ankanam, sq yards), km to miles, kg to pounds, tola, °C to °F, lakh to million, dozen.',
+    intro: 'Everyday conversions in one place — including land measures used in Hyderabad, Telangana and Andhra Pradesh.',
+    items: fromGroup('Converters'),
+    faqs: [{ q: 'How accurate are these conversions?', a: 'They use exact standard definitions (for example 1 inch = 2.54 cm, 1 acre = 43,560 sq ft). For land, always confirm the area in your registration documents.' }],
+  },
+  {
     id: 'language',
     path: 'language-tools',
     name: 'Language tools',

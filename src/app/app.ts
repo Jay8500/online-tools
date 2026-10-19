@@ -71,7 +71,7 @@ import { UpdateBanner } from './shared/update-banner';
         </nav>
         <nav aria-label="More free tools">
           <p class="mb-2 font-semibold">PDF, business & more</p>
-          <p class="mb-2 flex flex-wrap gap-x-3 gap-y-1 text-xs"><a routerLink="/pdf-tools" class="text-brand hover:underline">PDF tools</a><a routerLink="/business-tools" class="text-brand hover:underline">Business</a><a routerLink="/health-calculators" class="text-brand hover:underline">Health</a><a routerLink="/language-tools" class="text-brand hover:underline">Language</a></p>
+          <p class="mb-2 flex flex-wrap gap-x-3 gap-y-1 text-xs"><a routerLink="/pdf-tools" class="text-brand hover:underline">PDF tools</a><a routerLink="/business-tools" class="text-brand hover:underline">Business</a><a routerLink="/health-calculators" class="text-brand hover:underline">Health</a><a routerLink="/language-tools" class="text-brand hover:underline">Language</a><a routerLink="/unit-converters" class="text-brand hover:underline">Converters</a></p>
           <ul class="grid grid-cols-2 gap-x-3 gap-y-1.5 text-muted">
             @for (t of tools; track t.id) {
               <li><a [routerLink]="'/' + t.path" class="hover:text-brand">{{ t.name }}</a></li>
