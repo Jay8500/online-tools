@@ -99,7 +99,7 @@ export class Home {
     inject(SeoService).set({
       title: `${SITE.name} — Exam Photo Resizer, Image to KB & Free Indian Tools`,
       description:
-        'Free tools for India: exam photo & signature resizer (SSC, UPSC, IBPS, RRB, TSPSC, APPSC, NEET, JEE), image to KB, EMI, SIP, FD, PPF, income tax, GST, HRA and salary calculators.',
+        'Free tools for India: exam photo resizer, image to KB, EMI, SIP, income tax & GST calculators, PDF merge/compress, UPI QR, GST invoice, BMI and Telugu typing. Private, no upload.',
       path: '',
       jsonLd: [{ '@type': 'WebSite', name: SITE.name, url: SITE.url, inLanguage: 'en-IN' }],
     });

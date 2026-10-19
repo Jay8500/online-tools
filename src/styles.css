@@ -135,3 +135,45 @@
 @media (prefers-reduced-motion: reduce) {
   .animate-fade-up, .animate-fade-in { animation: none; }
 }
+
+/* Printing (GST invoice): only the .print-area is printed, on A4, in light colours. */
+@media print {
+  @page {
+    size: A4;
+    margin: 10mm;
+  }
+  html,
+  body {
+    background: #fff !important;
+  }
+  body * {
+    visibility: hidden !important;
+  }
+  .print-area,
+  .print-area * {
+    visibility: visible !important;
+  }
+  .print-area {
+    position: absolute;
+    inset: 0 0 auto 0;
+    border: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+@media print {
+  /* Remove (not just hide) everything around the invoice — blur effects of hidden elements still paint */
+  header,
+  footer,
+  app-toast-host,
+  app-consent-banner,
+  app-update-banner,
+  app-dialog-host,
+  main > button {
+    display: none !important;
+  }
+}

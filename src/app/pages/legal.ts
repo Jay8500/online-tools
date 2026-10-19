@@ -142,10 +142,10 @@ export class Terms {
       <ul class="list-disc space-y-1 pl-5">
         <li><strong>Private:</strong> files are processed on your device — nothing is uploaded.</li>
         <li><strong>Fast on any phone:</strong> small pages that open quickly even on slow connections, and work offline once installed.</li>
-        <li><strong>Made for India:</strong> presets for SSC, UPSC, IBPS, SBI, RRB, TSPSC, APPSC, NEET and JEE, with more tools on the way.</li>
+        <li><strong>Made for India:</strong> exam photo presets (SSC, UPSC, IBPS, SBI, RRB, TSPSC, APPSC, NEET, JEE), money and tax calculators, PDF tools, UPI QR, GST invoices, health calculators and Telugu typing.</li>
       </ul>
       <h2>Coming next</h2>
-      <p>EMI, SIP, FD, PPF and income-tax calculators, PDF tools, a UPI QR generator, a GST invoice maker, health calculators and Telugu typing.</p>
+      <p>More exams, Hindi and Telugu versions of every page, and more everyday tools. Tell us what you need.</p>
       <p>Have an idea or found a wrong size? <a routerLink="/contact">Tell us</a> — we read every message.</p>
     </article>
   `,

@@ -1,4 +1,5 @@
 import { CALC_LINKS } from './calc-links';
+import { TOOL_LINKS, ToolGroupName } from './tool-links';
 import { DOC_LABEL, EXAMS, examPath } from './exams';
 
 /** Catalogue shown on the home page + footer. `path` null = coming soon (stays honest about what exists). */
@@ -56,14 +57,8 @@ export const TOOL_GROUPS: ToolGroup[] = [
       blurb: CALC_BLURB[c.id] ?? '',
     })),
   },
-  {
-    title: 'Coming soon',
-    tools: [
-      { name: 'PDF merge, split & compress', path: null, icon: 'file-stack', blurb: 'On your device' },
-      { name: 'UPI QR code generator', path: null, icon: 'qr-code', blurb: 'For shops & payments' },
-      { name: 'GST invoice maker', path: null, icon: 'file-text', blurb: 'Print-ready invoices' },
-      { name: 'BMI & health calculators', path: null, icon: 'heart-pulse', blurb: 'Quick estimates' },
-      { name: 'Telugu typing', path: null, icon: 'languages', blurb: 'Type in Telugu easily' },
-    ],
-  },
+  ...(['PDF tools', 'Business tools', 'Health calculators', 'Language tools'] as ToolGroupName[]).map((title) => ({
+    title,
+    tools: TOOL_LINKS.filter((t) => t.group === title).map((t) => ({ name: t.name, path: t.path, icon: t.icon, blurb: t.blurb })),
+  })),
 ];

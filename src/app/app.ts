@@ -1,8 +1,11 @@
-import { Component, inject } from '@angular/core';
-import { RouterLink, RouterOutlet } from '@angular/router';
+import { Location } from '@angular/common';
+import { Component, computed, inject, signal } from '@angular/core';
+import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
+import { filter } from 'rxjs';
 import { Icon } from './shared/icon';
 import { ConsentService } from './core/consent.service';
 import { CALC_LINKS } from './core/calc-links';
+import { TOOL_LINKS } from './core/tool-links';
 import { EXAMS, examPath } from './core/exams';
 import { ThemeService } from './core/theme.service';
 import { Brand } from './shared/brand';
@@ -32,11 +35,17 @@ import { UpdateBanner } from './shared/update-banner';
     </header>
 
     <main id="main" class="mx-auto min-h-[70vh] max-w-6xl px-3 pt-3 pb-8 sm:px-4">
+      @if (!isHome()) {
+        <button type="button" class="mb-2 -ml-1 inline-flex items-center gap-1 rounded-lg px-2 py-1 text-sm font-semibold text-muted transition hover:bg-surface-2 hover:text-ink"
+                (click)="back()" [attr.aria-label]="canGoBack() ? 'Go back' : 'Go to all tools'">
+          <svg lucideIcon="arrow-left" [size]="16" /> {{ canGoBack() ? 'Back' : 'All tools' }}
+        </button>
+      }
       <router-outlet />
     </main>
 
     <footer class="border-t border-line bg-surface">
-      <div class="mx-auto grid max-w-6xl gap-6 px-4 py-8 text-sm sm:grid-cols-2 lg:grid-cols-4">
+      <div class="mx-auto grid max-w-6xl gap-6 px-4 py-8 text-sm sm:grid-cols-2 lg:grid-cols-5">
         <div>
           <a href="https://spreadapps.in" aria-label="SpreadApps website"><app-brand [size]="26" /></a>
           <p class="mt-2 flex items-start gap-1.5 text-muted">
@@ -57,6 +66,14 @@ import { UpdateBanner } from './shared/update-banner';
           <ul class="grid grid-cols-2 gap-x-3 gap-y-1.5 text-muted">
             @for (c of calcs; track c.id) {
               <li><a [routerLink]="'/' + c.path" class="hover:text-brand">{{ c.name }}</a></li>
+            }
+          </ul>
+        </nav>
+        <nav aria-label="More free tools">
+          <p class="mb-2 font-semibold">PDF, business & more</p>
+          <ul class="grid grid-cols-2 gap-x-3 gap-y-1.5 text-muted">
+            @for (t of tools; track t.id) {
+              <li><a [routerLink]="'/' + t.path" class="hover:text-brand">{{ t.name }}</a></li>
             }
           </ul>
         </nav>
@@ -86,11 +103,31 @@ export class App {
   protected readonly theme = inject(ThemeService);
   protected readonly consent = inject(ConsentService);
   protected readonly exams = EXAMS;
+  protected readonly tools = TOOL_LINKS;
   protected readonly calcs = CALC_LINKS.filter((c) => !/-loan-emi$/.test(c.id));
   protected readonly year = new Date().getFullYear();
 
+  private readonly router = inject(Router);
+  private readonly location = inject(Location);
+  private readonly url = signal('/');
+  /** Pages opened inside the app this visit (1 = landed directly, e.g. from Google). */
+  private navs = 0;
+  protected readonly canGoBack = signal(false);
+  protected readonly isHome = computed(() => this.url().split(/[?#]/)[0] === '/');
+
   constructor() {
+    this.router.events.pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd)).subscribe((e) => {
+      this.url.set(e.urlAfterRedirects);
+      this.navs++;
+      this.canGoBack.set(this.navs > 1);
+    });
     this.consent.init();
+  }
+
+  /** Back to the previous page in the app; if the visitor landed here directly, go to the home page. */
+  protected back() {
+    if (this.canGoBack()) this.location.back();
+    else this.router.navigateByUrl('/');
   }
 
   protected photoPath(e: (typeof EXAMS)[number]) {

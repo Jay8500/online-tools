@@ -184,8 +184,8 @@ export class GstCalc {
         <div>
           <label class="label" for="hra-city">City you live in</label>
           <select id="hra-city" class="input" [value]="city()" (change)="setCity($event)">
-            @for (c of metros; track c) { <option [value]="c">{{ c }} (metro, 50%)</option> }
-            <option value="other">Any other city (40%)</option>
+            @for (c of metros; track c) { <option [value]="c" [selected]="c === city()">{{ c }} (metro, 50%)</option> }
+            <option value="other" [selected]="city() === 'other'">Any other city (40%)</option>
           </select>
         </div>
       </div>

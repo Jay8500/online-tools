@@ -48,11 +48,14 @@ No database, no login — files are processed in the browser.
 - [ ] After every Budget / quarter: update `TAX_YEAR`, slabs, `PPF_RATE`, GST rates in `core/finance.ts`
 - [ ] Later: shareable result links (?amount=…), prepayment in EMI, capital-gains tax, NPS/EPF/SSY/RD calculators, Hindi/Telugu
 
-## Phase 3 — PDF tools (lazy-loaded pdf-lib / pdf.js)
-Merge, split, compress, image → PDF, PDF → image. All on device.
-
-## Phase 4+
-UPI QR generator → GST invoice maker (print/PDF) → health calculators (BMI, BMR, due date — "not medical advice") → Telugu typing.
+## Phase 3+ — PDF, business, health, language ✅ built (2026-10-19)
+- [x] PDF (on device; pdf-lib + pdf.js lazy, worker/fonts self-hosted in /pdfjs): merge, split (keep/remove/every page), compress (light / image 120 dpi / 90 dpi), JPG→PDF (A4/Letter/fit), PDF→JPG/PNG
+- [x] UPI QR generator (upi://pay link, VPA validation, printable A6 poster PNG, share)
+- [x] GST invoice maker (GSTIN check digit, state from GSTIN, CGST/SGST vs IGST, HSN, amount in words, logo, draft on device, print → PDF)
+- [x] Health: BMI (Indian/Asian bands), calories (Mifflin–St Jeor), ideal weight, pregnancy due date — "not medical advice"
+- [x] Telugu typing (RTS/Lekhini-style phonetic, copy/WhatsApp, draft on device)
+- [x] Back button on every non-home page (history back, or home when landed directly)
+- [ ] Later: Hindi typing, PDF password unlock/protect, page reorder/rotate thumbnails, invoice multi-template + saved customers, UPI QR with logo, HEIC support
 
 ## Testing (how phase 1 was verified)
 `npm run build`, then a Netlify-like static server + Puppeteer script (kept in the session scratchpad):

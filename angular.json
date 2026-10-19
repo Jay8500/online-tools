@@ -22,6 +22,31 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "pdf.worker.min.mjs",
+                "input": "node_modules/pdfjs-dist/build",
+                "output": "pdfjs"
+              },
+              {
+                "glob": "**/*",
+                "input": "node_modules/pdfjs-dist/cmaps",
+                "output": "pdfjs/cmaps"
+              },
+              {
+                "glob": "**/*",
+                "input": "node_modules/pdfjs-dist/standard_fonts",
+                "output": "pdfjs/standard_fonts"
+              },
+              {
+                "glob": "**/*",
+                "input": "node_modules/pdfjs-dist/wasm",
+                "output": "pdfjs/wasm"
+              },
+              {
+                "glob": "**/*",
+                "input": "node_modules/pdfjs-dist/iccs",
+                "output": "pdfjs/iccs"
               }
             ],
             "styles": [
@@ -29,14 +54,19 @@
             ],
             "server": "src/main.server.ts",
             "outputMode": "static",
-            "allowedCommonJsDependencies": []
+            "allowedCommonJsDependencies": [
+              "qrcode",
+              "pdf-lib",
+              "dijkstrajs",
+              "pako"
+            ]
           },
           "configurations": {
             "production": {
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "400kB",
+                  "maximumWarning": "420kB",
                   "maximumError": "600kB"
                 },
                 {

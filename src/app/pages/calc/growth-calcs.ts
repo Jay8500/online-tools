@@ -186,7 +186,7 @@ export class FdCalc {
         <div>
           <label class="label" for="ppf-years">Duration</label>
           <select id="ppf-years" class="input" [value]="years()" (change)="setYears($event)">
-            @for (y of yearOptions; track y) { <option [value]="y">{{ y }} years{{ y === 15 ? ' (maturity)' : ' (extended)' }}</option> }
+            @for (y of yearOptions; track y) { <option [value]="y" [selected]="y === years()">{{ y }} years{{ y === 15 ? ' (maturity)' : ' (extended)' }}</option> }
           </select>
         </div>
       </div>
