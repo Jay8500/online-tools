@@ -1,0 +1,164 @@
+import { Component, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { ConsentService } from '../core/consent.service';
+import { SeoService } from '../core/seo.service';
+
+const UPDATED = '19 October 2026';
+
+@Component({
+  selector: 'app-privacy',
+  imports: [RouterLink],
+  template: `
+    <article class="prose-tool mx-auto max-w-3xl">
+      <h1 class="text-xl font-bold text-ink sm:text-2xl">Privacy policy</h1>
+      <p class="text-xs">Last updated: {{ updated }}</p>
+
+      <h2>The short version</h2>
+      <p>
+        Our tools run inside your browser. <strong>Photos, signatures, documents and numbers you enter are processed on your own
+        device and are never uploaded to us.</strong> We use Google Analytics (only if you accept) and Google AdSense to keep the
+        site free.
+      </p>
+
+      <h2>1. Files and data you use in the tools</h2>
+      <p>
+        When you open a photo or file, it is read by your browser and processed with JavaScript on your device. It is not sent to
+        our servers or anyone else, and it disappears when you close the page. The optional “White background” feature downloads
+        an AI model to your browser (from our site and the jsDelivr CDN); your photo still stays on your device.
+      </p>
+
+      <h2>2. Cookies and similar technology</h2>
+      <ul class="list-disc space-y-1 pl-5">
+        <li><strong>Necessary:</strong> your theme and cookie choice are saved in your browser’s local storage. The app is cached for offline use.</li>
+        <li><strong>Analytics (Google Analytics 4):</strong> only after you click “Accept all”. It counts visits, pages and tool use with an anonymised IP.</li>
+        <li>
+          <strong>Advertising (Google AdSense):</strong> Google and its partners may use cookies to show ads. Without your consent,
+          Google shows non-personalised ads. Learn how Google uses data at
+          <a href="https://policies.google.com/technologies/partner-sites" rel="noopener" target="_blank">policies.google.com/technologies/partner-sites</a>.
+          You can turn off personalised ads at <a href="https://adssettings.google.com" rel="noopener" target="_blank">adssettings.google.com</a>.
+        </li>
+      </ul>
+      <p>You can change your choice any time: <button class="font-medium text-brand underline" (click)="consent.openSettings()">Cookie settings</button>.</p>
+
+      <h2>3. Usage counter</h2>
+      <p>
+        Some pages show how many times a tool was used. When you download a result, your browser sends only the tool’s name.
+        To stop spam, a one-way hash of your IP address is kept for one day. Nothing else is stored.
+      </p>
+
+      <h2>4. Contact form</h2>
+      <p>
+        If you write to us through the <a routerLink="/contact">contact form</a>, we receive your name, email and message
+        (stored by our host, Netlify) and use them only to reply. Ask us any time to delete them.
+      </p>
+
+      <h2>5. Hosting</h2>
+      <p>The site is hosted by Netlify, which keeps standard server logs (such as IP address and browser type) for security.</p>
+
+      <h2>6. Children</h2>
+      <p>The tools are suitable for students. We do not knowingly collect personal data from anyone, including children.</p>
+
+      <h2>7. Your rights</h2>
+      <p>
+        Under India’s Digital Personal Data Protection Act, 2023 you may ask us what personal data we hold about you, ask for it
+        to be corrected or deleted, and raise a grievance. Use the <a routerLink="/contact">contact page</a>; we reply within 30 days.
+      </p>
+
+      <h2>8. Changes</h2>
+      <p>We will update this page if anything changes and show the new date at the top.</p>
+    </article>
+  `,
+})
+export class Privacy {
+  protected readonly consent = inject(ConsentService);
+  protected readonly updated = UPDATED;
+  constructor() {
+    inject(SeoService).set({ title: 'Privacy Policy', description: 'How SpreadApps Tools handles your data: files never leave your device; analytics only with consent; AdSense cookies explained.', path: 'privacy' });
+  }
+}
+
+@Component({
+  selector: 'app-terms',
+  imports: [RouterLink],
+  template: `
+    <article class="prose-tool mx-auto max-w-3xl">
+      <h1 class="text-xl font-bold text-ink sm:text-2xl">Terms of use</h1>
+      <p class="text-xs">Last updated: {{ updated }}</p>
+      <h2>Using the tools</h2>
+      <p>SpreadApps Tools is free to use for personal and business purposes. Please don’t misuse the site, try to break it, or copy it in bulk.</p>
+      <h2>No guarantee</h2>
+      <p>
+        We work hard to keep size rules and calculations correct, but exam bodies change their rules often.
+        <strong>Always check the official notification for the latest size rules</strong> before you apply. You are responsible
+        for checking a file before you upload it to any portal.
+      </p>
+      <ul class="list-disc space-y-1 pl-5">
+        <li>Calculators give estimates, not financial or tax advice.</li>
+        <li>Health tools are not medical advice — talk to a doctor.</li>
+        <li>Files are processed on your device; keep your own copy of originals.</li>
+      </ul>
+      <h2>Liability</h2>
+      <p>The tools are provided “as is”. To the extent the law allows, SpreadApps is not liable for any loss from using them, including a rejected application.</p>
+      <h2>Ads and links</h2>
+      <p>We show ads from Google AdSense. We are not responsible for advertisers’ products or for other websites we link to.</p>
+      <h2>Law</h2>
+      <p>These terms are governed by the laws of India. Questions? <a routerLink="/contact">Contact us</a>.</p>
+    </article>
+  `,
+})
+export class Terms {
+  protected readonly updated = UPDATED;
+  constructor() {
+    inject(SeoService).set({ title: 'Terms of Use', description: 'Terms of use for SpreadApps Tools — free online tools for India.', path: 'terms' });
+  }
+}
+
+@Component({
+  selector: 'app-about',
+  imports: [RouterLink],
+  template: `
+    <article class="prose-tool mx-auto max-w-3xl">
+      <h1 class="text-xl font-bold text-ink sm:text-2xl">About SpreadApps Tools</h1>
+      <p>
+        SpreadApps Tools is a free collection of everyday tools for India, made by <a href="https://spreadapps.in">SpreadApps</a>,
+        a small software studio. We started with the problem every student knows: an exam form that keeps rejecting your photo
+        because it is 52 KB instead of 50 KB.
+      </p>
+      <h2>What makes it different</h2>
+      <ul class="list-disc space-y-1 pl-5">
+        <li><strong>Private:</strong> files are processed on your device — nothing is uploaded.</li>
+        <li><strong>Fast on any phone:</strong> small pages that open quickly even on slow connections, and work offline once installed.</li>
+        <li><strong>Made for India:</strong> presets for SSC, UPSC, IBPS, SBI, RRB, TSPSC, APPSC, NEET and JEE, with more tools on the way.</li>
+      </ul>
+      <h2>Coming next</h2>
+      <p>EMI, SIP, FD, PPF and income-tax calculators, PDF tools, a UPI QR generator, a GST invoice maker, health calculators and Telugu typing.</p>
+      <p>Have an idea or found a wrong size? <a routerLink="/contact">Tell us</a> — we read every message.</p>
+    </article>
+  `,
+})
+export class About {
+  constructor() {
+    inject(SeoService).set({ title: 'About Us', description: 'SpreadApps Tools: free, private, fast online tools for India — exam photo resizer, image to KB and more.', path: 'about' });
+  }
+}
+
+@Component({
+  selector: 'app-not-found',
+  imports: [RouterLink],
+  template: `
+    <div class="mx-auto max-w-md py-12 text-center">
+      <p class="text-5xl font-bold text-brand">404</p>
+      <h1 class="mt-2 text-lg font-bold">This page doesn’t exist</h1>
+      <p class="mt-1 text-sm text-muted">It may have moved. Try one of our tools instead.</p>
+      <div class="mt-4 flex justify-center gap-2">
+        <a routerLink="/" class="btn-primary">All tools</a>
+        <a routerLink="/resize-image-to-kb" class="btn-ghost">Resize to KB</a>
+      </div>
+    </div>
+  `,
+})
+export class NotFound {
+  constructor() {
+    inject(SeoService).set({ title: 'Page not found', description: 'This page does not exist.', path: '404', noindex: true });
+  }
+}
