@@ -1,6 +1,6 @@
 # SpreadApps Tools — roadmap (single pending list)
 
-Live target: https://tools.spreadapps.in (now at https://spreadapps-tools.netlify.app) · Netlify site `spreadapps-tools` (id 20179a97-8cb0-4626-b30e-c8836e495f6e) · repo `Jay8500/spreadapps-tools` (to be created).
+Live target: https://tools.spreadapps.in (now at https://spreadapps-tools.netlify.app) · Netlify site `spreadapps-tools` (id 20179a97-8cb0-4626-b30e-c8836e495f6e) · repo `Jay8500/online-tools`.
 Stack: Angular 22 (standalone, signals, zoneless) · Tailwind v4 · static prerender (`outputMode: static`) · PWA (ngsw) · Netlify (+ 1 function).
 No database, no login — files are processed in the browser.
 
@@ -18,7 +18,7 @@ No database, no login — files are processed in the browser.
 - [x] Browser tests at 320/390/768/1280 (50 checks, see "Testing")
 
 ## Needs you (owner)
-- [ ] Create empty GitHub repo `Jay8500/spreadapps-tools` → I push and link Netlify CI/CD
+- [x] GitHub repo `Jay8500/online-tools` linked to Netlify (auto deploy on push to main)
 - [ ] AdSense: apply with tools.spreadapps.in → put publisher ID in `src/app/core/site.config.ts` (`adsenseClient`, `adSlots`)
 - [ ] **ads.txt** must live at **spreadapps.in/ads.txt** (root domain, the portfolio site) — needs your OK before touching spreadapps.in
 - [ ] AdSense → Privacy & messaging: create the Google-certified CMP message (EEA/UK) → then set `useGoogleCmp: true`

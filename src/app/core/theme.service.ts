@@ -17,7 +17,7 @@ export class ThemeService {
     const dark = !this.dark();
     this.dark.set(dark);
     this.doc.documentElement.classList.toggle('dark', dark);
-    this.doc.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark ? '#0b1020' : '#4f46e5');
+    this.doc.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark ? '#0a1414' : '#0d9488');
     try {
       localStorage.setItem('theme', dark ? 'dark' : 'light');
     } catch {

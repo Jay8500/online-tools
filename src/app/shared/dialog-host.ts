@@ -1,4 +1,5 @@
 import { Component, ElementRef, HostListener, computed, effect, inject, signal, viewChild } from '@angular/core';
+import { Brand } from './brand';
 import { Icon } from './icon';
 import { DialogService, DialogTone } from '../core/dialog.service';
 
@@ -12,7 +13,7 @@ const TONES: Record<DialogTone, { icon: string; badge: string; button: string }>
 /** Branded confirm / prompt dialog — replaces window.confirm / prompt. */
 @Component({
   selector: 'app-dialog-host',
-  imports: [Icon],
+  imports: [Icon, Brand],
   template: `
     @if (dialog.current(); as d) {
       @let t = tone();
@@ -21,8 +22,7 @@ const TONES: Record<DialogTone, { icon: string; badge: string; button: string }>
         <div class="animate-fade-up pointer-events-auto w-full max-w-md overflow-hidden rounded-t-3xl border border-line bg-surface shadow-2xl sm:rounded-3xl"
              role="alertdialog" aria-modal="true" aria-labelledby="dlg-title">
           <div class="flex items-center gap-2 border-b border-line bg-surface-2 px-5 py-2.5">
-            <img src="favicon.svg" alt="" width="20" height="20" class="size-5 rounded-md" />
-            <span class="text-sm font-bold">SpreadApps Tools</span>
+            <app-brand [size]="22" textClass="text-sm" />
           </div>
           <form class="p-5 pb-safe" (submit)="$event.preventDefault(); ok()" novalidate>
             <div class="flex items-start gap-3.5">

@@ -6,7 +6,7 @@ const STYLE: Record<ToastKind, { icon: string; box: string; badge: string }> = {
   success: { icon: 'circle-check', box: 'border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-100', badge: 'bg-emerald-500' },
   error: { icon: 'circle-x', box: 'border-rose-200 bg-rose-50 text-rose-900 dark:border-rose-800 dark:bg-rose-950 dark:text-rose-100', badge: 'bg-rose-500' },
   warning: { icon: 'triangle-alert', box: 'border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-100', badge: 'bg-amber-500' },
-  info: { icon: 'info', box: 'border-indigo-200 bg-indigo-50 text-indigo-900 dark:border-indigo-800 dark:bg-indigo-950 dark:text-indigo-100', badge: 'bg-indigo-500' },
+  info: { icon: 'info', box: 'border-teal-200 bg-teal-50 text-teal-900 dark:border-teal-800 dark:bg-teal-950 dark:text-teal-100', badge: 'bg-teal-600' },
 };
 
 @Component({
@@ -24,7 +24,7 @@ const STYLE: Record<ToastKind, { icon: string; box: string; badge: string }> = {
           </span>
           <span class="min-w-0 flex-1">
             <span class="mb-0.5 flex items-center gap-1.5 text-[10px] font-semibold tracking-wide uppercase opacity-60">
-              <img src="favicon.svg" alt="" width="12" height="12" class="size-3 rounded-sm" /> SpreadApps Tools
+              <img src="favicon.svg" alt="" width="14" height="14" class="size-3.5" /> SpreadApps
             </span>
             <span class="block">{{ t.text }}</span>
           </span>

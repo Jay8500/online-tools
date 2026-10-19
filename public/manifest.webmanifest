@@ -6,8 +6,8 @@
   "display": "standalone",
   "scope": "/",
   "start_url": "/?source=pwa",
-  "theme_color": "#4f46e5",
-  "background_color": "#f6f7fb",
+  "theme_color": "#0d9488",
+  "background_color": "#ffffff",
   "categories": ["utilities", "productivity", "education"],
   "shortcuts": [
     { "name": "Resize image to KB", "url": "/resize-image-to-kb" },
