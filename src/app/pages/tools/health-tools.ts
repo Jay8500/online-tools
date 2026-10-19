@@ -1,4 +1,5 @@
 import { Component, computed, model, signal, viewChildren } from '@angular/core';
+import { daysAgoIso, localIso } from '../../core/dates';
 import { ACTIVITY, BMI_BANDS, bmi, bmiBand, bmr, devine, dueDate, fmtDate, ftInToCm, healthyWeight, whoBmiLabel } from '../../core/health';
 import { NumField } from '../../shared/num-field';
 
@@ -214,8 +215,8 @@ export class IdealWeightTool {
   `,
 })
 export class DueDateTool {
-  protected readonly today = new Date().toISOString().slice(0, 10);
-  protected readonly lmp = signal(new Date(Date.now() - 70 * 86400000).toISOString().slice(0, 10));
+  protected readonly today = localIso();
+  protected readonly lmp = signal(daysAgoIso(70));
   protected readonly cycle = signal(28);
   protected readonly lmpError = computed(() => {
     const v = this.lmp();

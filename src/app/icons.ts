@@ -1,4 +1,5 @@
 import {
+  Footprints,
   CalendarDays,
   TrafficCone,
   Clapperboard,
@@ -67,6 +68,7 @@ import {
 
 /** Every icon used in templates (`<svg lucideIcon="name">`). Only these are bundled. */
 export const ICONS: Record<string, IconNode> = {
+  footprints: Footprints,
   'calendar-days': CalendarDays,
   'traffic-cone': TrafficCone,
   clapperboard: Clapperboard,

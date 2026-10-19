@@ -30,7 +30,8 @@ export type ToolKind =
   | 'holidays'
   | 'traffic'
   | 'police'
-  | 'bunks';
+  | 'bunks'
+  | 'steps';
 
 export type ToolGroupName = 'PDF tools' | 'Business tools' | 'Health calculators' | 'Language tools' | 'Converters' | 'Daily tools';
 
@@ -54,6 +55,7 @@ export const TOOL_LINKS: ToolLinkLite[] = [
   { id: 'bmi', path: 'bmi-calculator', name: 'BMI calculator', group: 'Health calculators', icon: 'heart-pulse', blurb: 'Indian (Asian) BMI ranges' },
   { id: 'calorie', path: 'calorie-calculator', name: 'Calorie calculator', group: 'Health calculators', icon: 'flame', blurb: 'BMR & daily calories' },
   { id: 'ideal-weight', path: 'ideal-weight-calculator', name: 'Ideal weight', group: 'Health calculators', icon: 'scale', blurb: 'Healthy range for your height' },
+  { id: 'steps', path: 'step-counter', name: 'Step counter & calories', group: 'Health calculators', icon: 'footprints', blurb: 'Count steps, km & calories burned' },
   { id: 'due-date', path: 'pregnancy-due-date-calculator', name: 'Pregnancy due date', group: 'Health calculators', icon: 'baby', blurb: 'Due date & week by week' },
   { id: 'gold', path: 'gold-price-calculator', name: 'Gold & silver price', group: 'Daily tools', icon: 'scale', blurb: 'Jewellery price with making & GST' },
   { id: 'fuel', path: 'petrol-diesel-price', name: 'Petrol & diesel price', group: 'Daily tools', icon: 'gauge', blurb: 'Hyderabad, AP & metros with ▲▼' },

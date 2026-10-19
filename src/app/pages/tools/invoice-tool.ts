@@ -1,4 +1,5 @@
 import { isPlatformBrowser } from '@angular/common';
+import { localIso } from '../../core/dates';
 import { Component, PLATFORM_ID, afterNextRender, computed, effect, inject, signal } from '@angular/core';
 import { DialogService } from '../../core/dialog.service';
 import { GST_STATES, InvoiceItem, amountInWords, gstinError, invoiceTotals, stateName } from '../../core/invoice';
@@ -26,7 +27,7 @@ interface Invoice {
 
 const DRAFT = 'gst-invoice-draft';
 const RATES = [0, 5, 18, 40, 3, 0.25];
-const today = () => new Date().toISOString().slice(0, 10);
+const today = () => localIso();
 
 function blank(): Invoice {
   return {

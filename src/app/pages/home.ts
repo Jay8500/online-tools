@@ -47,6 +47,7 @@ const HINTS = [
   { icon: 'ruler', text: 'acre to gunta' },
   { icon: 'qr-code', text: 'UPI QR' },
   { icon: 'heart-pulse', text: 'BMI' },
+  { icon: 'footprints', text: 'step counter' },
   { icon: 'languages', text: 'Telugu typing' },
   { icon: 'image-up', text: '20 KB photo' },
 ];
@@ -56,6 +57,7 @@ const KEYWORDS: Record<string, string> = {
   weather: 'weather temperature rain forecast climate',
   'holiday-calendar': 'holiday holidays calendar festival leave list government public 2026 2027 diwali dasara sankranti',
   'traffic-challan-fines': 'traffic challan fine penalty helmet drunk signal rules licence police',
+  'step-counter': 'step steps counter pedometer walking walk calories burn km distance fitness',
   'police-station-near-me': 'police station near me nearest emergency 100 112 complaint',
   'petrol-bunk-near-me': 'petrol bunk pump fuel station near me nearest diesel cng indian oil hp bharat',
   'cinemas-near-me': 'cinema movie theatre theater film show ticket pvr inox near me',
@@ -164,8 +166,8 @@ const HOME_EXAMS = 5;
         <div class="grid grid-cols-1 gap-2 min-[400px]:grid-cols-2 md:grid-cols-4">
           @for (t of g.tools; track t.name) {
             @if (t.path) {
-              <div class="card group relative flex items-center gap-3 p-3 transition hover:border-brand/50 isolate overflow-hidden">
-                @if (t.path === 'weather' && skyIcon()) { <app-sky [icon]="skyIcon()" class="-z-10 opacity-35 dark:opacity-30" /> }
+              <div class="card group relative flex items-center gap-3 p-3 transition hover:border-brand/50 isolate overflow-hidden" [class.sky-card]="t.path === 'weather' && !!skyIcon()">
+                @if (t.path === 'weather' && skyIcon()) { <app-sky [icon]="skyIcon()" class="-z-10" /> }
                 <a [routerLink]="'/' + t.path" class="absolute inset-0 rounded-2xl" [attr.aria-label]="t.name"></a>
                 <span class="grid size-9 shrink-0 place-items-center rounded-xl bg-brand/10 text-brand"><svg [lucideIcon]="t.icon" [size]="18" /></span>
                 <span class="min-w-0"><span class="block text-sm font-semibold group-hover:text-brand">{{ t.name }}</span><span class="block text-xs text-muted">{{ t.blurb }}</span>

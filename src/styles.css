@@ -265,3 +265,15 @@
 .festival-card[data-theme='petals'] { background: linear-gradient(135deg, #f7f4ee, #ffffff); color: #2d2a26; border-color: #e5dccb; }
 .festival-glow { position: absolute; inset: -40%; background: radial-gradient(circle at 80% 20%, rgb(255 255 255 / 0.55), transparent 45%); animation: sky-glow 5s ease-in-out infinite; pointer-events: none; }
 .festival-card[data-theme='diwali'] .festival-glow, .festival-card[data-theme='eid'] .festival-glow, .festival-card[data-theme='christmas'] .festival-glow { background: radial-gradient(circle at 80% 20%, rgb(255 215 0 / 0.35), transparent 45%); }
+
+/* Weather tool card painted with the live sky (home / Daily tools): white text like the weather page */
+.sky-card { color: #fff; border-color: rgb(255 255 255 / 0.25); text-shadow: 0 1px 3px rgb(0 0 0 / 0.35); }
+.sky-card .text-muted, .sky-card .text-ink { color: rgb(255 255 255 / 0.9) !important; }
+.sky-card .group-hover\:text-brand, .sky-card:hover .group-hover\:text-brand { color: #fff !important; }
+.sky-card a { color: inherit; }
+.sky-card > span:first-of-type.bg-brand\/10 { background: rgb(255 255 255 / 0.22); color: #fff; }
+.sky-card app-live-badge .bg-red-500\/10 { background: rgb(255 255 255 / 0.9); text-shadow: none; }
+/* Small card: calmer sky so white text stays readable */
+.sky-card .sky-cloud { opacity: 0.35 !important; }
+.sky-card .sky-sun { width: 110px; height: 110px; top: -55px; right: -45px; }
+.sky-card app-sky::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgb(0 0 0 / 0.28), rgb(0 0 0 / 0.08) 70%, transparent); }

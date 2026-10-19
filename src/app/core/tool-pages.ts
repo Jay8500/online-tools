@@ -230,6 +230,20 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
     ],
     disclaimer: 'traffic',
   },
+  steps: {
+    h1: 'Step Counter — Steps, Distance & Calories Burned',
+    title: 'Step Counter Online — Count Steps, Walking Distance (km) & Calories Burned',
+    description: 'Free step counter for your phone: counts steps with the motion sensor while you walk, and shows distance in km, calories burned and walking time from your height and weight. Or enter steps from your health app. Private — stays on your phone.',
+    intro: 'Count your steps while you walk, and see how far you went and how many calories you burned.',
+    steps: ['Enter your weight and height (saved on your phone).', 'Tap “Start counting” and walk with the phone in your hand or pocket.', 'See steps, km, calories and walking time grow toward your daily goal.', 'Already have steps from Google Fit or Samsung Health? Enter them to get km and calories.'],
+    faqs: [
+      { q: 'How many calories do 10,000 steps burn?', a: 'For a 65 kg adult of average height, 10,000 steps is about 6.8 km and roughly 350 kcal. It is more if you weigh more or walk uphill.' },
+      { q: 'Does it count when the screen is off?', a: 'No. Websites can only read the motion sensor while the page is open, so the screen stays on while counting. For all-day counting use your phone’s built-in health app and enter the total here.' },
+      { q: 'How is the distance worked out?', a: 'Steps × stride length. Stride is about 41% of your height (e.g. 68 cm for a 165 cm person).' },
+      { q: 'Is my data stored online?', a: 'No. Your steps, weight and height are saved only in this browser on your phone.' },
+    ],
+    disclaimer: 'health',
+  },
   police: {
     h1: 'Police Station Near Me — Hyderabad, Telangana & AP',
     title: 'Police Station Near Me — Nearest Police Stations in Hyderabad, Telangana & Andhra Pradesh',

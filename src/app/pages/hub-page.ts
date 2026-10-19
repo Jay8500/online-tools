@@ -43,8 +43,8 @@ import { SOURCES } from '../core/sources';
       <ul class="mt-4 grid grid-cols-1 gap-2 min-[420px]:grid-cols-2 md:grid-cols-3">
         @for (t of h.items; track t.path) {
           <li>
-            <div class="card group relative flex h-full items-center gap-3 p-3 transition hover:border-brand/50 isolate overflow-hidden">
-                @if (t.path === 'weather' && skyIcon()) { <app-sky [icon]="skyIcon()" class="-z-10 opacity-35 dark:opacity-30" /> }
+            <div class="card group relative flex h-full items-center gap-3 p-3 transition hover:border-brand/50 isolate overflow-hidden" [class.sky-card]="t.path === 'weather' && !!skyIcon()">
+                @if (t.path === 'weather' && skyIcon()) { <app-sky [icon]="skyIcon()" class="-z-10" /> }
               <a [routerLink]="'/' + t.path" class="absolute inset-0 rounded-2xl" [attr.aria-label]="t.name"></a>
               <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-brand/10 text-brand"><svg [lucideIcon]="t.icon" [size]="20" /></span>
               <span class="min-w-0">

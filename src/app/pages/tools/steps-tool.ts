@@ -1,0 +1,278 @@
+import { isPlatformBrowser } from '@angular/common';
+import { Component, DestroyRef, PLATFORM_ID, afterNextRender, computed, inject, signal } from '@angular/core';
+import { Icon } from '../../shared/icon';
+
+const KEY = 'steps-v1';
+interface Saved {
+  weight: number;
+  height: number;
+  sex: 'm' | 'f';
+  goal: number;
+  days: Record<string, number>;
+}
+const DEFAULTS: Saved = { weight: 65, height: 165, sex: 'm', goal: 10000, days: {} };
+
+function today() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+/**
+ * Step counter using the phone's motion sensor (DeviceMotion) while this page is open,
+ * plus distance and calories from height/weight. Everything stays on the device (localStorage).
+ * Browsers can't count in the background — the page keeps the screen awake while counting.
+ */
+@Component({
+  selector: 'app-steps-tool',
+  imports: [Icon],
+  template: `
+    <div class="grid gap-4 md:grid-cols-[auto_1fr] md:items-center">
+      <!-- Progress ring -->
+      <div class="relative mx-auto size-52">
+        <svg viewBox="0 0 120 120" class="size-full -rotate-90">
+          <circle cx="60" cy="60" r="52" fill="none" stroke="var(--line)" stroke-width="10" />
+          <circle cx="60" cy="60" r="52" fill="none" stroke="var(--brand)" stroke-width="10" stroke-linecap="round"
+                  [attr.stroke-dasharray]="ring" [attr.stroke-dashoffset]="ring * (1 - pct())" class="transition-[stroke-dashoffset] duration-500" />
+        </svg>
+        <div class="absolute inset-0 grid place-items-center text-center">
+          <div>
+            <span class="text-3xl" [class.walker]="running()" aria-hidden="true">🚶</span>
+            <p class="text-3xl font-extrabold tabular-nums" aria-live="polite">{{ fmt(steps()) }}</p>
+            <p class="text-xs text-muted">of {{ fmt(goal()) }} steps</p>
+            @if (pct() >= 1) { <p class="text-xs font-bold text-green-600">🎉 Goal reached!</p> }
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <dl class="grid grid-cols-3 gap-2 text-center">
+          <div class="rounded-xl bg-surface-2 p-2"><dt class="text-[11px] text-muted">Distance</dt><dd class="text-lg font-bold tabular-nums">{{ km().toFixed(2) }} <span class="text-xs">km</span></dd></div>
+          <div class="rounded-xl bg-surface-2 p-2"><dt class="text-[11px] text-muted">Calories</dt><dd class="text-lg font-bold tabular-nums">{{ kcal() }} <span class="text-xs">kcal</span></dd></div>
+          <div class="rounded-xl bg-surface-2 p-2"><dt class="text-[11px] text-muted">Walking time</dt><dd class="text-lg font-bold tabular-nums">{{ mins() }} <span class="text-xs">min</span></dd></div>
+        </dl>
+        <div class="mt-3 flex flex-wrap gap-2">
+          @if (!running()) {
+            <button type="button" class="btn-primary" (click)="start()"><span aria-hidden="true">▶</span> {{ steps() ? 'Continue counting' : 'Start counting' }}</button>
+          } @else {
+            <button type="button" class="btn-primary bg-amber-600 hover:bg-amber-700" (click)="stop()"><span aria-hidden="true">⏸</span> Pause</button>
+          }
+          <button type="button" class="btn-ghost" (click)="reset()" [disabled]="!steps()"><svg lucideIcon="rotate-ccw" [size]="16" /> Reset today</button>
+        </div>
+        @if (note()) { <p class="mt-2 rounded-xl bg-amber-500/10 px-3 py-2 text-xs" role="status">{{ note() }}</p> }
+        @if (running()) { <p class="mt-2 text-xs text-muted">Keep this page open and the phone in your hand or pocket. The screen stays on while counting.</p> }
+      </div>
+    </div>
+
+    <details class="mt-4 rounded-2xl border border-line p-3" [open]="!hasMotion()">
+      <summary class="cursor-pointer text-sm font-semibold">Already walked? Enter steps from your phone’s health app</summary>
+      <div class="mt-2 flex gap-2">
+        <label class="sr-only" for="s-manual">Steps</label>
+        <input id="s-manual" class="input" type="number" inputmode="numeric" min="0" max="100000" placeholder="e.g. 6500" [value]="manual()" (input)="manual.set(num($event))" />
+        <button type="button" class="btn-primary shrink-0" (click)="setManual()" [disabled]="!validManual()">Use</button>
+      </div>
+      @if (manual() && !validManual()) { <p class="mt-1 text-xs text-rose-600" role="alert">Enter steps between 1 and 1,00,000.</p> }
+    </details>
+
+    <div class="mt-4 grid gap-3 sm:grid-cols-4">
+      <div><label class="label" for="s-w">Weight (kg)</label><input id="s-w" class="input" type="number" inputmode="decimal" min="20" max="250" [value]="weight()" (input)="setNum('weight', $event, 20, 250)" /></div>
+      <div><label class="label" for="s-h">Height (cm)</label><input id="s-h" class="input" type="number" inputmode="numeric" min="90" max="230" [value]="height()" (input)="setNum('height', $event, 90, 230)" /></div>
+      <div>
+        <span class="label">Gender</span>
+        <div class="flex gap-1.5" role="group" aria-label="Gender">
+          <button type="button" class="chip min-h-10 flex-1" [attr.aria-pressed]="sex() === 'm'" (click)="setSex('m')">Male</button>
+          <button type="button" class="chip min-h-10 flex-1" [attr.aria-pressed]="sex() === 'f'" (click)="setSex('f')">Female</button>
+        </div>
+      </div>
+      <div><label class="label" for="s-g">Daily goal</label><input id="s-g" class="input" type="number" inputmode="numeric" min="1000" max="50000" step="500" [value]="goal()" (input)="setNum('goal', $event, 1000, 50000)" /></div>
+    </div>
+    <p class="mt-1 text-xs text-muted">Stride ≈ {{ (stride() * 100).toFixed(0) }} cm (from height). Saved only on this device.</p>
+
+    @if (week().length) {
+      <h3 class="mt-5 mb-2 text-sm font-bold">Last 7 days</h3>
+      <div class="flex h-28 items-end gap-2" role="img" [attr.aria-label]="'Steps in the last 7 days'">
+        @for (d of week(); track d.date) {
+          <div class="flex flex-1 flex-col items-center gap-1">
+            <span class="text-[10px] tabular-nums text-muted">{{ d.steps ? short(d.steps) : '' }}</span>
+            <div class="w-full rounded-t-md" [class]="d.steps >= goal() ? 'bg-green-500' : 'bg-brand/70'" [style.height.%]="d.h"></div>
+            <span class="text-[10px] text-muted">{{ d.label }}</span>
+          </div>
+        }
+      </div>
+    }
+  `,
+  styles: `
+    .walker { display: inline-block; animation: walk 0.6s ease-in-out infinite alternate; }
+    @keyframes walk { from { transform: translateX(-3px) rotate(-4deg); } to { transform: translateX(3px) rotate(4deg); } }
+    @media (prefers-reduced-motion: reduce) { .walker { animation: none; } }
+  `,
+})
+export class StepsTool {
+  private readonly browser = isPlatformBrowser(inject(PLATFORM_ID));
+  protected readonly ring = 2 * Math.PI * 52;
+  protected readonly weight = signal(DEFAULTS.weight);
+  protected readonly height = signal(DEFAULTS.height);
+  protected readonly sex = signal<'m' | 'f'>(DEFAULTS.sex);
+  protected readonly goal = signal(DEFAULTS.goal);
+  private readonly days = signal<Record<string, number>>({});
+  protected readonly steps = computed(() => this.days()[today()] ?? 0);
+  protected readonly running = signal(false);
+  protected readonly note = signal<string | null>(null);
+  protected readonly hasMotion = signal(true);
+  protected readonly manual = signal<number | null>(null);
+
+  /** Stride from height (common rule: 41.5% men, 41.3% women). */
+  protected readonly stride = computed(() => (this.height() * (this.sex() === 'm' ? 0.415 : 0.413)) / 100);
+  protected readonly km = computed(() => (this.steps() * this.stride()) / 1000);
+  /** Walking ≈ 0.57 kcal per pound per mile → 0.78 kcal per kg per km (estimate). */
+  protected readonly kcal = computed(() => Math.round(this.km() * this.weight() * 0.78));
+  /** ~100 steps a minute at a normal pace. */
+  protected readonly mins = computed(() => Math.round(this.steps() / 100));
+  protected readonly pct = computed(() => Math.min(1, this.steps() / this.goal()));
+  protected readonly validManual = computed(() => {
+    const m = this.manual();
+    return m != null && Number.isInteger(m) && m > 0 && m <= 100000;
+  });
+  protected readonly week = computed(() => {
+    const out: { date: string; label: string; steps: number; h: number }[] = [];
+    const d = this.days();
+    const now = new Date();
+    for (let i = 6; i >= 0; i--) {
+      const x = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+      const iso = `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, '0')}-${String(x.getDate()).padStart(2, '0')}`;
+      out.push({ date: iso, label: x.toLocaleDateString('en-IN', { weekday: 'short' }).slice(0, 2), steps: d[iso] ?? 0, h: 0 });
+    }
+    const max = Math.max(this.goal(), ...out.map((o) => o.steps));
+    out.forEach((o) => (o.h = Math.max(o.steps ? 4 : 1, (o.steps / max) * 100)));
+    return out.some((o) => o.steps) ? out : [];
+  });
+
+  // Step detection state
+  private avg = 9.8;
+  private lastStep = 0;
+  private above = false;
+  private gotMotion = false;
+  private wake: { release(): Promise<void> } | null = null;
+  private readonly onMotion = (e: DeviceMotionEvent) => this.motion(e);
+
+  constructor() {
+    afterNextRender(() => {
+      try {
+        const s = { ...DEFAULTS, ...(JSON.parse(localStorage.getItem(KEY) || '{}') as Partial<Saved>) };
+        this.weight.set(s.weight);
+        this.height.set(s.height);
+        this.sex.set(s.sex);
+        this.goal.set(s.goal);
+        this.days.set(s.days ?? {});
+      } catch {
+        /* defaults */
+      }
+      this.hasMotion.set(typeof DeviceMotionEvent !== 'undefined');
+    });
+    inject(DestroyRef).onDestroy(() => this.stop());
+  }
+
+  protected async start() {
+    if (!this.browser) return;
+    this.note.set(null);
+    if (typeof DeviceMotionEvent === 'undefined') {
+      this.hasMotion.set(false);
+      return this.note.set('This device has no motion sensor. Enter steps from your phone’s health app below.');
+    }
+    // iPhone asks permission for motion, only after a tap
+    const req = (DeviceMotionEvent as unknown as { requestPermission?: () => Promise<string> }).requestPermission;
+    if (req) {
+      try {
+        if ((await req()) !== 'granted') return this.note.set('Motion permission was denied. Allow “Motion & Orientation” in Settings → Safari, then try again.');
+      } catch {
+        return this.note.set('Couldn’t get motion permission. Enter steps below instead.');
+      }
+    }
+    this.gotMotion = false;
+    window.addEventListener('devicemotion', this.onMotion);
+    this.running.set(true);
+    try {
+      this.wake = await (navigator as unknown as { wakeLock?: { request(t: 'screen'): Promise<{ release(): Promise<void> }> } }).wakeLock?.request('screen') ?? null;
+    } catch {
+      this.wake = null;
+    }
+    setTimeout(() => {
+      if (this.running() && !this.gotMotion) {
+        this.stop();
+        this.hasMotion.set(false);
+        this.note.set('No movement sensor found (laptops and some browsers don’t have one). Use this on your phone, or enter steps below.');
+      }
+    }, 3000);
+  }
+
+  protected stop() {
+    if (typeof window !== 'undefined') window.removeEventListener('devicemotion', this.onMotion);
+    if (this.running()) this.save();
+    this.running.set(false);
+    void this.wake?.release().catch(() => undefined);
+    this.wake = null;
+  }
+
+  /** Peak detection on acceleration magnitude: a step is a rise above the running average, at most ~3 per second. */
+  private motion(e: DeviceMotionEvent) {
+    const a = e.accelerationIncludingGravity;
+    if (!a || a.x == null || a.y == null || a.z == null) return;
+    this.gotMotion = true;
+    const m = Math.sqrt(a.x * a.x + a.y * a.y + a.z * a.z);
+    this.avg = this.avg * 0.9 + m * 0.1;
+    const now = performance.now();
+    if (!this.above && m > this.avg + 1.3 && now - this.lastStep > 300) {
+      this.above = true;
+      this.lastStep = now;
+      this.add(1);
+    } else if (this.above && m < this.avg) {
+      this.above = false;
+    }
+  }
+
+  private add(n: number) {
+    this.days.update((d) => ({ ...d, [today()]: (d[today()] ?? 0) + n }));
+    if (this.steps() % 20 === 0) this.save();
+  }
+
+  protected setManual() {
+    if (!this.validManual()) return;
+    this.days.update((d) => ({ ...d, [today()]: this.manual()! }));
+    this.save();
+  }
+
+  protected reset() {
+    this.days.update((d) => ({ ...d, [today()]: 0 }));
+    this.save();
+  }
+
+  protected setNum(k: 'weight' | 'height' | 'goal', e: Event, min: number, max: number) {
+    const v = Number((e.target as HTMLInputElement).value);
+    if (!Number.isFinite(v) || v < min || v > max) return;
+    this[k].set(v);
+    this.save();
+  }
+  protected setSex(s: 'm' | 'f') {
+    this.sex.set(s);
+    this.save();
+  }
+
+  private save() {
+    try {
+      const days = Object.fromEntries(Object.entries(this.days()).sort().slice(-60));
+      localStorage.setItem(KEY, JSON.stringify({ weight: this.weight(), height: this.height(), sex: this.sex(), goal: this.goal(), days }));
+    } catch {
+      /* private mode: still works for this visit */
+    }
+  }
+
+  protected num(e: Event) {
+    const v = (e.target as HTMLInputElement).value;
+    return v === '' ? null : Number(v);
+  }
+  protected fmt(n: number) {
+    return n.toLocaleString('en-IN');
+  }
+  protected short(n: number) {
+    return n >= 1000 ? (n / 1000).toFixed(1) + 'k' : String(n);
+  }
+}
