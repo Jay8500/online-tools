@@ -252,3 +252,16 @@
 @media (prefers-reduced-motion: reduce) {
   .sky-sun, .sky-star, .sky-cloud, .sky-drop, .sky-flash, .sky-mist { animation: none; }
 }
+
+/* ---------- Festival greeting card (home) ---------- */
+.festival-card { border-color: rgb(251 191 36 / 0.45); background: linear-gradient(135deg, #fff7e0, #ffe4ec 60%, #fff); color: #3b2300; }
+.festival-card[data-theme='national'] { background: linear-gradient(180deg, #ffe0bf 0%, #ffffff 50%, #d7f3d9 100%); color: #12305c; border-color: #ffcf99; }
+.festival-card[data-theme='diwali'] { background: radial-gradient(circle at 20% 30%, #5c3b00 0%, #2a1500 60%, #160a00 100%); color: #fff3cf; border-color: #b8860b; }
+.festival-card[data-theme='holi'] { background: linear-gradient(120deg, #ffd1e8, #d4ffe0 35%, #fff6c2 65%, #d6e4ff); color: #3a0f3a; }
+.festival-card[data-theme='christmas'] { background: linear-gradient(135deg, #0f3d26, #1b5e3a 60%, #8b1d1d); color: #fff; border-color: #2e7d32; }
+.festival-card[data-theme='eid'] { background: linear-gradient(135deg, #0b3d2e, #12614a 60%, #1d7a5c); color: #fff8dc; border-color: #c9a227; }
+.festival-card[data-theme='flowers'] { background: linear-gradient(135deg, #fff3c4, #ffd6e7 55%, #f1e1ff); color: #4a1f3d; }
+.festival-card[data-theme='kites'] { background: linear-gradient(180deg, #bfe3ff, #e9f6ff 70%, #fff7d6); color: #0d2b4d; }
+.festival-card[data-theme='petals'] { background: linear-gradient(135deg, #f7f4ee, #ffffff); color: #2d2a26; border-color: #e5dccb; }
+.festival-glow { position: absolute; inset: -40%; background: radial-gradient(circle at 80% 20%, rgb(255 255 255 / 0.55), transparent 45%); animation: sky-glow 5s ease-in-out infinite; pointer-events: none; }
+.festival-card[data-theme='diwali'] .festival-glow, .festival-card[data-theme='eid'] .festival-glow, .festival-card[data-theme='christmas'] .festival-glow { background: radial-gradient(circle at 80% 20%, rgb(255 215 0 / 0.35), transparent 45%); }

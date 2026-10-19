@@ -1,5 +1,5 @@
 import { Location, ViewportScroller } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, afterNextRender, computed, inject, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
 import { Icon } from './shared/icon';
@@ -127,6 +127,22 @@ export class App {
       this.canGoBack.set(this.navs > 1);
     });
     this.consent.init();
+    // Festival day: a short shower of confetti/sparkles on the first page of the visit (code loads only then)
+    afterNextRender(() => {
+      setTimeout(async () => {
+        const c = await import('./core/celebrate');
+        const today = c.todayIso();
+        const f = c.festivalOn(today);
+        if (!f) return;
+        try {
+          if (sessionStorage.getItem('celebrated') === today) return;
+          sessionStorage.setItem('celebrated', today);
+        } catch {
+          /* still show once */
+        }
+        c.shower(f.theme);
+      }, 900);
+    });
   }
 
   /** Back to the previous page in the app; if the visitor landed here directly, go to the home page. */

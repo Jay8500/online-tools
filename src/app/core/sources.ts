@@ -32,6 +32,8 @@ export const SOURCES: Record<string, Source[]> = {
     { name: 'Motor Vehicles Act (India Code)', url: 'https://www.indiacode.nic.in/handle/123456789/1798' },
     { name: 'Parivahan e-Challan', url: 'https://echallan.parivahan.gov.in/' },
   ],
+  'police-station-near-me': [{ name: 'OpenStreetMap', url: 'https://www.openstreetmap.org/copyright' }],
+  'petrol-bunk-near-me': [{ name: 'OpenStreetMap', url: 'https://www.openstreetmap.org/copyright' }],
   'cinemas-near-me': [{ name: 'OpenStreetMap', url: 'https://www.openstreetmap.org/copyright' }],
   'travel-planner': [
     { name: 'OpenStreetMap', url: 'https://www.openstreetmap.org/copyright' },

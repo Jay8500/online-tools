@@ -13,6 +13,7 @@ import { AdSlot } from '../shared/ad-slot';
 import { LiveBadge, WEATHER_ICON } from '../shared/live-badge';
 import { Sky } from '../shared/sky';
 import { Benefits } from '../shared/benefits';
+import { FestivalCard } from '../shared/festival-card';
 import { SOURCES } from '../core/sources';
 
 const HOME_PER_GROUP = 4;
@@ -39,6 +40,8 @@ const HINTS = [
   { icon: 'clapperboard', text: 'cinemas near me' },
   { icon: 'calendar-days', text: 'holidays 2026' },
   { icon: 'traffic-cone', text: 'helmet fine' },
+  { icon: 'shield-check', text: 'police station near me' },
+  { icon: 'gauge', text: 'petrol bunk near me' },
   { icon: 'file-stack', text: 'merge PDF' },
   { icon: 'receipt', text: 'income tax' },
   { icon: 'ruler', text: 'acre to gunta' },
@@ -53,6 +56,8 @@ const KEYWORDS: Record<string, string> = {
   weather: 'weather temperature rain forecast climate',
   'holiday-calendar': 'holiday holidays calendar festival leave list government public 2026 2027 diwali dasara sankranti',
   'traffic-challan-fines': 'traffic challan fine penalty helmet drunk signal rules licence police',
+  'police-station-near-me': 'police station near me nearest emergency 100 112 complaint',
+  'petrol-bunk-near-me': 'petrol bunk pump fuel station near me nearest diesel cng indian oil hp bharat',
   'cinemas-near-me': 'cinema movie theatre theater film show ticket pvr inox near me',
   'travel-planner': 'travel route distance bus train flight trip journey stops',
   'land-area-converter': 'land acre to gunta cent ankanam gajam square yards plot',
@@ -76,8 +81,9 @@ const HOME_EXAMS = 5;
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink, FormsModule, Icon, AdSlot, LiveBadge, Sky, Benefits],
+  imports: [RouterLink, FormsModule, Icon, AdSlot, LiveBadge, Sky, Benefits, FestivalCard],
   template: `
+    <app-festival-card />
     <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
       <div>
         <h1 class="text-lg font-bold sm:text-2xl">Free online tools for India</h1>

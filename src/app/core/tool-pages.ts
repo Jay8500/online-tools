@@ -1,7 +1,7 @@
 import { Faq } from './seo.service';
 import { TOOL_LINKS, ToolKind, ToolLinkLite } from './tool-links';
 
-export type Disclaimer = 'files' | 'health' | 'invoice' | 'upi' | 'language' | 'land' | 'units' | 'gold' | 'weather' | 'travel' | 'metro' | 'fuel' | 'grocery' | 'cinema' | 'holidays' | 'traffic';
+export type Disclaimer = 'files' | 'health' | 'invoice' | 'upi' | 'language' | 'land' | 'units' | 'gold' | 'weather' | 'travel' | 'metro' | 'fuel' | 'grocery' | 'cinema' | 'holidays' | 'traffic' | 'nearby';
 
 export interface ToolPageInfo extends ToolLinkLite {
   h1: string;
@@ -230,6 +230,33 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
     ],
     disclaimer: 'traffic',
   },
+  police: {
+    h1: 'Police Station Near Me — Hyderabad, Telangana & AP',
+    title: 'Police Station Near Me — Nearest Police Stations in Hyderabad, Telangana & Andhra Pradesh',
+    description: 'Find the nearest police station from your location or area in Hyderabad, Telangana and Andhra Pradesh, with distance, directions and one-tap emergency calls to 112 and 100.',
+    intro: 'Find the police stations closest to you, with distance and directions — plus one-tap emergency numbers.',
+    steps: ['In an emergency, tap 112 first.', 'Tap the location button or type your area.', 'See the nearest police stations with distance.', 'Tap Directions to go there.'],
+    faqs: [
+      { q: 'Which number should I call in an emergency?', a: '112 is India’s single emergency number for police, fire and ambulance. 100 reaches the police directly and 1091 is the women’s helpline. All are free.' },
+      { q: 'Can I file a complaint online?', a: 'Yes. Telangana and Andhra Pradesh police accept many complaints online and through their citizen apps; for serious matters visit the station or call 112.' },
+      { q: 'Is my location sent anywhere?', a: 'No. When you tap the location button, distances are worked out on your phone. A typed area that isn’t in our list is looked up once on a map service to find its position; we don’t store it.' },
+      { q: 'A police station is missing. Why?', a: 'The list comes from OpenStreetMap, which anyone can improve. Some stations are not mapped yet — add it there and it will appear in our next update.' },
+    ],
+    disclaimer: 'nearby',
+  },
+  bunks: {
+    h1: 'Petrol Bunk Near Me — Nearest Petrol Pumps',
+    title: 'Petrol Bunk Near Me — Nearest Petrol Pumps in Hyderabad, Telangana & AP (Indian Oil, HP, BPCL)',
+    description: 'Find the nearest petrol bunk from your location in Hyderabad, Telangana and Andhra Pradesh: 3,300+ pumps with distance, brand (Indian Oil, HP, Bharat Petroleum, Jio-bp, Nayara) and directions.',
+    intro: 'Find the petrol bunks closest to you, filter by brand, and get directions in one tap.',
+    steps: ['Tap the location button or type your area.', 'Pick a brand if you like (Indian Oil, HP, BPCL…).', 'See the nearest pumps with distance and drive time.', 'Tap Directions to go there.'],
+    faqs: [
+      { q: 'Is my location sent anywhere?', a: 'No. When you tap the location button, distances are worked out on your phone. A typed area that isn’t in our list is looked up once on a map service to find its position; we don’t store it.' },
+      { q: 'Is the drive time exact?', a: 'It is a rough city estimate from the distance. Tap Directions for the real route and traffic.' },
+      { q: 'Where can I see today’s petrol price?', a: 'On our Petrol & diesel price page, updated every morning at 7 am.' },
+    ],
+    disclaimer: 'nearby',
+  },
   cinema: {
     h1: 'Cinemas Near Me — Theatres by Distance',
     title: 'Cinemas Near Me in Hyderabad, Vijayawada, Vizag — Movie Theatres by Distance',
@@ -406,6 +433,7 @@ export const DISCLAIMERS: Record<Disclaimer, string> = {
   grocery: 'Market prices are wholesale/Rythu Bazar rates published by the Government of India; shop prices are usually higher. Milk and egg prices are checked by hand — dates shown.',
   holidays: 'Holiday dates are from the official government orders. Moon-based festivals can shift by a day — follow the government announcement. Banks and schools may follow different lists.',
   traffic: 'Fines shown are those in the Motor Vehicles Act, 1988 (as amended in 2019); the amount actually charged may be lower where a state compounds the offence. This is general information, not legal advice — the e-challan portal and traffic police are final.',
+  nearby: 'Places come from OpenStreetMap and may be missing, closed or moved. Distances are straight-line. In an emergency call 112.',
   cinema: 'Cinema list from OpenStreetMap and may miss new or recently closed theatres. Distances are straight-line. Shows, prices and bookings are on the cinema’s or booking app’s site, not ours.',
   travel: 'Times are estimates. Check IRCTC/NTES, TGSRTC/APSRTC or the airline for real timetables, and follow traffic and safety advisories.',
   weather: 'Forecasts can change. For cyclone, heavy-rain and heatwave warnings follow IMD (mausam.imd.gov.in) and local authorities.',

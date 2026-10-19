@@ -56,7 +56,7 @@ const UPDATED = '19 October 2026';
       <h2>2c. Travel planner</h2>
       <p>The start and destination you type are sent through our server to OpenRouteService (OpenStreetMap data) to work out the route. We don’t store them.</p>
 
-      <h2>2d. Cinemas near me</h2>
+      <h2>2d. Cinemas, police stations & petrol bunks near me</h2>
       <p>If you tap the location button, your position is used only on your device to sort cinemas by distance — it is never sent. An area you type that isn’t in our built-in list is sent through our server to OpenRouteService once to find it on the map. We don’t store it.</p>
 
       <h2>3. Usage counter</h2>

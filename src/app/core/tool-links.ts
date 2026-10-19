@@ -28,7 +28,9 @@ export type ToolKind =
   | 'grocery'
   | 'cinema'
   | 'holidays'
-  | 'traffic';
+  | 'traffic'
+  | 'police'
+  | 'bunks';
 
 export type ToolGroupName = 'PDF tools' | 'Business tools' | 'Health calculators' | 'Language tools' | 'Converters' | 'Daily tools';
 
@@ -60,6 +62,8 @@ export const TOOL_LINKS: ToolLinkLite[] = [
   { id: 'grocery', path: 'vegetable-prices-today', name: 'Vegetable & grocery prices', group: 'Daily tools', icon: 'receipt', blurb: 'Rythu Bazar & mandi rates, milk, eggs' },
   { id: 'metro', path: 'hyderabad-metro-fare', name: 'Hyderabad Metro fare', group: 'Daily tools', icon: 'map-pin', blurb: 'Fare, stations & route, all 3 lines' },
   { id: 'traffic', path: 'traffic-challan-fines', name: 'Traffic fines & rules', group: 'Daily tools', icon: 'traffic-cone', blurb: 'Challan amounts for TS & AP, rules in short' },
+  { id: 'police', path: 'police-station-near-me', name: 'Police station near me', group: 'Daily tools', icon: 'shield-check', blurb: 'Nearest stations + 112 / 100 call' },
+  { id: 'bunks', path: 'petrol-bunk-near-me', name: 'Petrol bunk near me', group: 'Daily tools', icon: 'gauge', blurb: 'Nearest pumps by brand & distance' },
   { id: 'cinema', path: 'cinemas-near-me', name: 'Cinemas near me', group: 'Daily tools', icon: 'clapperboard', blurb: 'Theatres by distance, shows & tickets' },
   { id: 'travel', path: 'travel-planner', name: 'Travel planner', group: 'Daily tools', icon: 'map-pin', blurb: 'Route, stops & time by road, rail, air' },
   { id: 'land', path: 'land-area-converter', name: 'Land area & price', group: 'Converters', icon: 'ruler', blurb: 'Acre, gunta, cent, ankanam, gajam' },
