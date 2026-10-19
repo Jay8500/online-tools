@@ -21,6 +21,9 @@ import { LandTool, UnitTool } from './tools/convert-tools';
 import { GoldTool } from './tools/gold-tool';
 import { WeatherTool } from './tools/weather-tool';
 import { TravelTool } from './tools/travel-tool';
+import { MetroTool } from './tools/metro-tool';
+import { FuelTool } from './tools/fuel-tool';
+import { GroceryTool } from './tools/grocery-tool';
 
 /** Pages for PDF, business, health and language tools (route data `tool` = id from core/tool-links.ts). */
 @Component({
@@ -48,6 +51,9 @@ import { TravelTool } from './tools/travel-tool';
     GoldTool,
     WeatherTool,
     TravelTool,
+    MetroTool,
+    FuelTool,
+    GroceryTool,
   ],
   template: `
     @let t = info();
@@ -78,6 +84,9 @@ import { TravelTool } from './tools/travel-tool';
             @case ('pdf-compress') { @defer (on immediate) { <app-pdf-compress /> } @placeholder { <div class="h-48"></div> } }
             @case ('image-to-pdf') { @defer (on immediate) { <app-image-to-pdf /> } @placeholder { <div class="h-48"></div> } }
             @case ('gold') { @defer (on immediate) { <app-gold-tool /> } @placeholder { <div class="h-[36rem]"></div> } }
+            @case ('metro') { @defer (on immediate) { <app-metro-tool /> } @placeholder { <div class="h-96"></div> } }
+            @case ('fuel') { @defer (on immediate) { <app-fuel-tool /> } @placeholder { <div class="h-96"></div> } }
+            @case ('grocery') { @defer (on immediate) { <app-grocery-tool /> } @placeholder { <div class="h-[32rem]"></div> } }
             @case ('travel') { @defer (on immediate) { <app-travel-tool /> } @placeholder { <div class="h-96"></div> } }
             @case ('weather') { @defer (on immediate) { <app-weather-tool /> } @placeholder { <div class="h-96"></div> } }
             @case ('land') { @defer (on immediate) { <app-land-tool /> } @placeholder { <div class="h-96"></div> } }

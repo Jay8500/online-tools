@@ -22,7 +22,10 @@ export type ToolKind =
   | 'count'
   | 'gold'
   | 'weather'
-  | 'travel';
+  | 'travel'
+  | 'metro'
+  | 'fuel'
+  | 'grocery';
 
 export type ToolGroupName = 'PDF tools' | 'Business tools' | 'Health calculators' | 'Language tools' | 'Converters' | 'Daily tools';
 
@@ -48,8 +51,11 @@ export const TOOL_LINKS: ToolLinkLite[] = [
   { id: 'ideal-weight', path: 'ideal-weight-calculator', name: 'Ideal weight', group: 'Health calculators', icon: 'scale', blurb: 'Healthy range for your height' },
   { id: 'due-date', path: 'pregnancy-due-date-calculator', name: 'Pregnancy due date', group: 'Health calculators', icon: 'baby', blurb: 'Due date & week by week' },
   { id: 'gold', path: 'gold-price-calculator', name: 'Gold & silver price', group: 'Daily tools', icon: 'scale', blurb: 'Jewellery price with making & GST' },
-  { id: 'travel', path: 'travel-planner', name: 'Travel planner', group: 'Daily tools', icon: 'map-pin', blurb: 'Route, stops & time by road, rail, air' },
+  { id: 'fuel', path: 'petrol-diesel-price', name: 'Petrol & diesel price', group: 'Daily tools', icon: 'gauge', blurb: 'Hyderabad, AP & metros with ▲▼' },
   { id: 'weather', path: 'weather', name: 'Weather', group: 'Daily tools', icon: 'thermometer', blurb: 'Today + 5-day forecast, any city' },
+  { id: 'grocery', path: 'vegetable-prices-today', name: 'Vegetable & grocery prices', group: 'Daily tools', icon: 'receipt', blurb: 'Rythu Bazar & mandi rates, milk, eggs' },
+  { id: 'metro', path: 'hyderabad-metro-fare', name: 'Hyderabad Metro fare', group: 'Daily tools', icon: 'map-pin', blurb: 'Fare, stations & route, all 3 lines' },
+  { id: 'travel', path: 'travel-planner', name: 'Travel planner', group: 'Daily tools', icon: 'map-pin', blurb: 'Route, stops & time by road, rail, air' },
   { id: 'land', path: 'land-area-converter', name: 'Land area & price', group: 'Converters', icon: 'ruler', blurb: 'Acre, gunta, cent, ankanam, gajam' },
   { id: 'length', path: 'length-converter', name: 'Length converter', group: 'Converters', icon: 'ruler', blurb: 'km, miles, feet, inches' },
   { id: 'weight', path: 'weight-converter', name: 'Weight converter', group: 'Converters', icon: 'scale', blurb: 'kg, pounds, tola, quintal' },

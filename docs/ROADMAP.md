@@ -60,6 +60,12 @@ No database, no login — files are processed in the browser.
 - [x] Weather page + Netlify function /api/weather (OpenWeatherMap, CDN cache 20 min per city) — [ ] OWNER: create free OpenWeatherMap key and set Netlify env OPENWEATHER_API_KEY
 - [ ] Later: live gold/silver rate from a metals API key (shown as approximate)
 - [x] Travel planner (/travel-planner): estimates for car/bike/bus/train/flight/walk/cycle + IRCTC/NTES/TGSRTC/APSRTC/Google links; road route + towns timeline via netlify/functions/route.mts — [ ] OWNER: free OpenRouteService key → Netlify env ORS_API_KEY
+- [x] Hyderabad Metro fare (/hyderabad-metro-fare): 57 stations from OSM, track km, shortest route incl. 2 changes, ₹11–₹69 chart (24 May 2025)
+- [x] Petrol & diesel (/petrol-diesel-price): 11 cities, ▲▼ + blinking alert for 7 days after a change — update with node scripts/update-fuel.mjs "City" petrol diesel [date]
+- [x] Vegetable & grocery prices (/vegetable-prices-today): govt mandi/Rythu Bazar data via netlify/functions/mandi.mts — [ ] OWNER: data.gov.in key → Netlify env DATA_GOV_IN_API_KEY; milk/egg reference table in core/grocery-data.ts (update by hand)
+- [x] Live gold/silver estimate (/api/metals: gold-api.com + ExchangeRate-API + 15% duty) with LIVE badges on cards; data-source credits on cards/pages
+- [x] Home search: rotating hints with icons, multi-word search
+- [ ] Later: nutrition facts (protein, minerals) for vegetables/groceries from USDA/IFCT; curd prices
 - [ ] On hold: movie finder / cast & crew (TMDB is non-commercial only; needs commercial licence or paid API)
 - [x] Declined: song lyrics (copyrighted; would break AdSense policy)
 - [x] Home = quick menu (top 4 per group / 5 exams, "See all N"); group pages carry guides (exam size table, tax slabs, Indian BMI chart, land unit table, GST invoice checklist, PDF task table, gold purity, Telugu letters)

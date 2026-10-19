@@ -189,8 +189,8 @@ export class Home {
   }
 
   /** Cards that show a live value on the right (gold rate, weather). */
-  protected live(path: string | null): 'gold' | 'weather' | null {
-    return path === 'gold-price-calculator' ? 'gold' : path === 'weather' ? 'weather' : null;
+  protected live(path: string | null): 'gold' | 'weather' | 'fuel' | null {
+    return path === 'gold-price-calculator' ? 'gold' : path === 'weather' ? 'weather' : path === 'petrol-diesel-price' ? 'fuel' : null;
   }
 
   protected hub(title: string) {

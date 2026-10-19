@@ -1,7 +1,7 @@
 import { Faq } from './seo.service';
 import { TOOL_LINKS, ToolKind, ToolLinkLite } from './tool-links';
 
-export type Disclaimer = 'files' | 'health' | 'invoice' | 'upi' | 'language' | 'land' | 'units' | 'gold' | 'weather' | 'travel';
+export type Disclaimer = 'files' | 'health' | 'invoice' | 'upi' | 'language' | 'land' | 'units' | 'gold' | 'weather' | 'travel' | 'metro' | 'fuel' | 'grocery';
 
 export interface ToolPageInfo extends ToolLinkLite {
   h1: string;
@@ -164,6 +164,44 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
     ],
     disclaimer: 'gold',
   },
+  metro: {
+    h1: 'Hyderabad Metro Fare Calculator',
+    title: 'Hyderabad Metro Fare Calculator 2026 — Station to Station Fare, Route & Time',
+    description: 'Hyderabad Metro fare between any two of 57 stations on the Red, Blue and Green lines: token and smart card fare, distance, stations, interchange and journey time.',
+    intro: 'Pick two stations to see the ticket fare, smart card fare, where to change trains and how long it takes.',
+    steps: ['Choose your starting station.', 'Choose your destination.', 'See the fare, distance, number of stations and journey time.', 'If you change lines, the route shows where (Ameerpet, MG Bus Station or Parade Grounds).'],
+    faqs: [
+      { q: 'What is the minimum and maximum Hyderabad Metro fare?', a: 'After the 10% reduction from 24 May 2025, fares run from ₹11 (up to 2 km) to ₹69 (over 24 km) for tokens and QR tickets. Smart cards are about 10% cheaper.' },
+      { q: 'Where can I change between lines?', a: 'Red ↔ Blue at Ameerpet, Red ↔ Green at Mahatma Gandhi Bus Station (MGBS), and Blue ↔ Green at Parade Grounds.' },
+      { q: 'Is the fare based on distance or stations?', a: 'On distance travelled. This calculator measures the track distance between stations; near a band boundary the station may charge the next band — the ticket counter is final.' },
+    ],
+    disclaimer: 'metro',
+  },
+  fuel: {
+    h1: 'Petrol & Diesel Price Today',
+    title: 'Petrol Diesel Price Today in Hyderabad, Vijayawada, Vizag & Metro Cities',
+    description: 'Today’s petrol and diesel price in Hyderabad, Warangal, Vijayawada, Visakhapatnam, Guntur, Tirupati and metro cities, with ▲▼ change alerts and the date of the last change.',
+    intro: 'Today’s fuel prices with up/down alerts when oil companies change them.',
+    steps: ['Pick your city.', 'See petrol and diesel per litre and whether it went up or down recently.', 'Compare other cities in the table.'],
+    faqs: [
+      { q: 'When do petrol prices change?', a: 'Oil companies can revise prices daily at 6 am, but in practice they change rarely. Small differences between cities come from state VAT and freight.' },
+      { q: 'Why is petrol costlier in Andhra Pradesh than in Delhi?', a: 'Each state adds its own VAT on fuel, so the same fuel costs different amounts in different states.' },
+    ],
+    disclaimer: 'fuel',
+  },
+  grocery: {
+    h1: 'Vegetable & Grocery Prices Today',
+    title: 'Vegetable Prices Today Hyderabad — Rythu Bazar & Mandi Rates, Milk, Eggs',
+    description: 'Today’s vegetable, fruit and grain prices per kg from Hyderabad Rythu Bazars and mandis in Telangana and Andhra Pradesh (government data), plus milk and NECC egg rates.',
+    intro: 'Today’s market prices for vegetables, fruits and grains near you — from government data — plus milk and egg rates.',
+    steps: ['Pick your state and district (Hyderabad is selected).', 'Search an item like tomato or onion.', 'Compare prices across Rythu Bazars and markets.', 'Shop prices are usually a little higher than these.'],
+    faqs: [
+      { q: 'Where do these prices come from?', a: 'From the Government of India’s daily market price data (Agmarknet, data.gov.in), which includes Rythu Bazars and APMC mandis. Prices are per quintal there; we show them per kg.' },
+      { q: 'What is the “modal” price?', a: 'The most common price traded that day at that market. The range shows the lowest and highest prices.' },
+      { q: 'Why are shop prices higher?', a: 'Shops add transport, wastage and margin. Rythu Bazar prices are closest to what you pay.' },
+    ],
+    disclaimer: 'grocery',
+  },
   travel: {
     h1: 'Travel Planner — Route, Stops & Travel Time',
     title: 'Travel Planner India — Distance, Route, Stops & Time by Car, Bus, Train, Flight',
@@ -316,6 +354,9 @@ export const DISCLAIMERS: Record<Disclaimer, string> = {
   upi: 'Always test the QR by paying ₹1 with your own UPI app before printing. We never handle your money.',
   land: 'Conversions use standard definitions (1 acre = 40 guntas = 100 cents). Always confirm the area in your sale deed, pahani/1-B or registration documents. Prices exclude stamp duty and registration.',
   gold: 'Live rate is an estimate from international prices + import duty — not an official IBJA/MCX rate. Rates differ between jewellers; wastage and making charges vary by design. Confirm the final bill at the shop.',
+  metro: 'Fares follow the published HMRL chart (after the 24 May 2025 cut); distances are measured from OpenStreetMap and may differ slightly near a fare band. Check at the station.',
+  fuel: 'Prices from the oil companies’ daily revision as published on 19 Oct 2026; your pump may differ by a few paise. Tap a source to check today’s rate.',
+  grocery: 'Market prices are wholesale/Rythu Bazar rates published by the Government of India; shop prices are usually higher. Milk and egg prices are checked by hand — dates shown.',
   travel: 'Times are estimates. Check IRCTC/NTES, TGSRTC/APSRTC or the airline for real timetables, and follow traffic and safety advisories.',
   weather: 'Forecasts can change. For cyclone, heavy-rain and heatwave warnings follow IMD (mausam.imd.gov.in) and local authorities.',
   units: 'Conversions use standard international definitions and run on your device.',

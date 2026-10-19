@@ -1,5 +1,6 @@
 import { isPlatformBrowser } from '@angular/common';
 import { Component, DestroyRef, PLATFORM_ID, afterNextRender, inject, input, signal } from '@angular/core';
+import { FUEL } from '../core/fuel-data';
 
 /** One shared request per page for every badge of the same kind. */
 let metalsP: Promise<{ gold24PerG: number; silverPerKg: number } | null> | null = null;
@@ -38,7 +39,7 @@ const INR = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 });
             <span class="absolute inline-flex size-full animate-ping rounded-full bg-red-500 opacity-75"></span>
             <span class="relative inline-flex size-1.5 rounded-full bg-red-600"></span>
           </span>
-          LIVE
+          {{ pill() }}
         </span>
         <span class="text-sm font-bold whitespace-nowrap text-ink tabular-nums">{{ text() }}</span>
         @if (sub()) { <span class="text-[10px] whitespace-nowrap text-muted">{{ sub() }}</span> }
@@ -47,7 +48,9 @@ const INR = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 });
   `,
 })
 export class LiveBadge {
-  readonly kind = input.required<'gold' | 'weather'>();
+  readonly kind = input.required<'gold' | 'weather' | 'fuel'>();
+  /** Small pill text (default LIVE) and colour */
+  protected readonly pill = signal('LIVE');
   protected readonly text = signal('');
   protected readonly sub = signal('');
 
@@ -65,6 +68,15 @@ export class LiveBadge {
   }
 
   private async load() {
+    if (this.kind() === 'fuel') {
+      const h = FUEL.find((c) => c.city === 'Hyderabad')!;
+      const diff = +(h.petrol - h.prevPetrol).toFixed(2);
+      const recent = !!h.changedOn && Date.now() - new Date(h.changedOn).getTime() < 7 * 86400000;
+      this.text.set(`₹${h.petrol.toFixed(2)}`);
+      this.sub.set('Petrol · Hyderabad');
+      this.pill.set(recent && diff ? `${diff > 0 ? '▲' : '▼'} ₹${Math.abs(diff)}` : 'TODAY');
+      return;
+    }
     if (this.kind() === 'gold') {
       const m = await metals();
       if (m) {
