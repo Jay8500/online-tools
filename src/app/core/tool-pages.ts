@@ -1,7 +1,7 @@
 import { Faq } from './seo.service';
 import { TOOL_LINKS, ToolKind, ToolLinkLite } from './tool-links';
 
-export type Disclaimer = 'files' | 'health' | 'invoice' | 'upi' | 'language' | 'land' | 'units';
+export type Disclaimer = 'files' | 'health' | 'invoice' | 'upi' | 'language' | 'land' | 'units' | 'gold' | 'weather';
 
 export interface ToolPageInfo extends ToolLinkLite {
   h1: string;
@@ -145,6 +145,38 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
     ],
     disclaimer: 'health',
   },
+  gold: {
+    h1: 'Gold & Silver Price Calculator',
+    title: 'Gold Price Calculator — Jewellery Price with Making Charges & GST',
+    description: 'Calculate the price of gold or silver jewellery from today’s rate: weight in grams, tola or sovereign (pavan), 24K/22K/18K, wastage, making charges and 3% GST.',
+    intro: 'Know what a gold or silver ornament should cost before you go to the shop — using today’s rate from your jeweller.',
+    steps: [
+      'Choose Gold or Silver.',
+      'Type today’s rate from your jeweller and choose what it is for (e.g. 22K per 10 grams).',
+      'Enter the weight (grams, tola or sovereign/pavan) and the purity of the ornament.',
+      'Add wastage (VA) and making charges as quoted — the total includes 3% GST.',
+    ],
+    faqs: [
+      { q: 'Why do I enter the rate myself?', a: 'Gold rates differ between cities and jewellers and change during the day. Using the rate your shop shows makes the estimate match your bill.' },
+      { q: 'How is GST charged on jewellery?', a: 'GST of 3% applies to the value of the jewellery including making charges.' },
+      { q: 'What is a sovereign or pavan?', a: 'A sovereign (pavan) is 8 grams of gold — a common unit in Tamil Nadu, Kerala and Andhra Pradesh. A tola is 11.66 grams.' },
+      { q: 'What is wastage (VA)?', a: 'Value addition or wastage is an extra percentage of gold some jewellers charge for the metal lost while making the ornament — common in South India. Ask your jeweller for their figure.' },
+    ],
+    disclaimer: 'gold',
+  },
+  weather: {
+    h1: 'Weather Today & 5-Day Forecast',
+    title: 'Weather Today — Hyderabad, Vijayawada, Vizag & Any Indian City',
+    description: 'Current temperature, feels-like, humidity, wind, sunrise and sunset plus the next 24 hours and 5-day forecast for Hyderabad, Andhra Pradesh, Telangana and any Indian city.',
+    intro: 'Today’s weather and the next 5 days for any Indian city — or use your location.',
+    steps: ['Tap a city or type yours.', 'Or tap the location button to use where you are (your browser asks first).', 'See current weather, the next 24 hours and the 5-day forecast.'],
+    faqs: [
+      { q: 'Where does the weather data come from?', a: 'From OpenWeather, which combines weather models with station and satellite data. It updates every few minutes; we refresh each city every 20 minutes.' },
+      { q: 'Is my location stored?', a: 'No. If you use your location, only a rounded position (about 1 km) is sent to get the weather; we don’t store it.' },
+      { q: 'Where can I see official warnings?', a: 'For cyclones, heavy rain and heatwaves, follow India Meteorological Department (IMD) alerts at mausam.imd.gov.in.' },
+    ],
+    disclaimer: 'weather',
+  },
   land: {
     h1: 'Land Area Converter & Price Calculator (Telangana & AP)',
     title: 'Land Area Converter — Acre, Gunta, Cent, Ankanam, Sq Yards (Telangana, AP)',
@@ -265,6 +297,8 @@ export const DISCLAIMERS: Record<Disclaimer, string> = {
   invoice: 'This tool helps you format an invoice; it is not tax advice. Check GST rates, HSN codes and e-invoicing rules with your CA.',
   upi: 'Always test the QR by paying ₹1 with your own UPI app before printing. We never handle your money.',
   land: 'Conversions use standard definitions (1 acre = 40 guntas = 100 cents). Always confirm the area in your sale deed, pahani/1-B or registration documents. Prices exclude stamp duty and registration.',
+  gold: 'Estimates only. Rates change during the day and differ between jewellers; wastage and making charges vary by design. Confirm the final bill at the shop.',
+  weather: 'Forecasts can change. For cyclone, heavy-rain and heatwave warnings follow IMD (mausam.imd.gov.in) and local authorities.',
   units: 'Conversions use standard international definitions and run on your device.',
   language: 'Typing happens on your device. Spellings follow a phonetic scheme — check important text before sending.',
 };

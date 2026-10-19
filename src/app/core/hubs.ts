@@ -120,6 +120,17 @@ export const HUBS: Hub[] = [
     faqs: [{ q: 'Are these medical advice?', a: 'No. They are estimates to help you understand your numbers. Please talk to a doctor before changing your diet, exercise or treatment.' }],
   },
   {
+    id: 'daily',
+    path: 'daily-tools',
+    name: 'Daily tools',
+    h1: 'Daily Tools',
+    title: 'Daily Tools — Gold Price Calculator, Weather Today',
+    description: 'Everyday tools for India: gold & silver jewellery price calculator with making charges and GST, and today’s weather with a 5-day forecast.',
+    intro: 'Handy everyday tools — work out a jewellery bill or check the weather for your city.',
+    items: fromGroup('Daily tools'),
+    faqs: [{ q: 'Are these free?', a: 'Yes, every tool on SpreadApps Tools is free to use.' }],
+  },
+  {
     id: 'converters',
     path: 'unit-converters',
     name: 'Converters',

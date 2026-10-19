@@ -17,6 +17,8 @@ import { ImageToPdf, PdfCompress, PdfMerge, PdfSplit, PdfToImage } from './tools
 import { TeluguTool } from './tools/telugu-tool';
 import { UpiQrTool } from './tools/upi-qr-tool';
 import { LandTool, UnitTool } from './tools/convert-tools';
+import { GoldTool } from './tools/gold-tool';
+import { WeatherTool } from './tools/weather-tool';
 
 /** Pages for PDF, business, health and language tools (route data `tool` = id from core/tool-links.ts). */
 @Component({
@@ -41,6 +43,8 @@ import { LandTool, UnitTool } from './tools/convert-tools';
     PdfToImage,
     LandTool,
     UnitTool,
+    GoldTool,
+    WeatherTool,
   ],
   template: `
     @let t = info();
@@ -70,6 +74,8 @@ import { LandTool, UnitTool } from './tools/convert-tools';
             @case ('pdf-split') { @defer (on immediate) { <app-pdf-split /> } @placeholder { <div class="h-48"></div> } }
             @case ('pdf-compress') { @defer (on immediate) { <app-pdf-compress /> } @placeholder { <div class="h-48"></div> } }
             @case ('image-to-pdf') { @defer (on immediate) { <app-image-to-pdf /> } @placeholder { <div class="h-48"></div> } }
+            @case ('gold') { @defer (on immediate) { <app-gold-tool /> } @placeholder { <div class="h-[36rem]"></div> } }
+            @case ('weather') { @defer (on immediate) { <app-weather-tool /> } @placeholder { <div class="h-96"></div> } }
             @case ('land') { @defer (on immediate) { <app-land-tool /> } @placeholder { <div class="h-96"></div> } }
             @case ('length') { @defer (on immediate) { <app-unit-tool category="length" /> } @placeholder { <div class="h-96"></div> } }
             @case ('weight') { @defer (on immediate) { <app-unit-tool category="weight" /> } @placeholder { <div class="h-96"></div> } }

@@ -19,9 +19,11 @@ export type ToolKind =
   | 'temperature'
   | 'speed'
   | 'data'
-  | 'count';
+  | 'count'
+  | 'gold'
+  | 'weather';
 
-export type ToolGroupName = 'PDF tools' | 'Business tools' | 'Health calculators' | 'Language tools' | 'Converters';
+export type ToolGroupName = 'PDF tools' | 'Business tools' | 'Health calculators' | 'Language tools' | 'Converters' | 'Daily tools';
 
 export interface ToolLinkLite {
   id: ToolKind;
@@ -44,6 +46,8 @@ export const TOOL_LINKS: ToolLinkLite[] = [
   { id: 'calorie', path: 'calorie-calculator', name: 'Calorie calculator', group: 'Health calculators', icon: 'flame', blurb: 'BMR & daily calories' },
   { id: 'ideal-weight', path: 'ideal-weight-calculator', name: 'Ideal weight', group: 'Health calculators', icon: 'scale', blurb: 'Healthy range for your height' },
   { id: 'due-date', path: 'pregnancy-due-date-calculator', name: 'Pregnancy due date', group: 'Health calculators', icon: 'baby', blurb: 'Due date & week by week' },
+  { id: 'gold', path: 'gold-price-calculator', name: 'Gold & silver price', group: 'Daily tools', icon: 'scale', blurb: 'Jewellery price with making & GST' },
+  { id: 'weather', path: 'weather', name: 'Weather', group: 'Daily tools', icon: 'thermometer', blurb: 'Today + 5-day forecast, any city' },
   { id: 'land', path: 'land-area-converter', name: 'Land area & price', group: 'Converters', icon: 'ruler', blurb: 'Acre, gunta, cent, ankanam, gajam' },
   { id: 'length', path: 'length-converter', name: 'Length converter', group: 'Converters', icon: 'ruler', blurb: 'km, miles, feet, inches' },
   { id: 'weight', path: 'weight-converter', name: 'Weight converter', group: 'Converters', icon: 'scale', blurb: 'kg, pounds, tola, quintal' },

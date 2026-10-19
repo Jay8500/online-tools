@@ -62,7 +62,7 @@ export const TOOL_GROUPS: ToolGroup[] = [
       blurb: CALC_BLURB[c.id] ?? '',
     })),
   },
-  ...(['Converters', 'PDF tools', 'Business tools', 'Health calculators', 'Language tools'] as ToolGroupName[]).map((title) => ({
+  ...(['Daily tools', 'Converters', 'PDF tools', 'Business tools', 'Health calculators', 'Language tools'] as ToolGroupName[]).map((title) => ({
     title,
     tools: TOOL_LINKS.filter((t) => t.group === title).map((t) => ({ name: t.name, path: t.path, icon: t.icon, blurb: t.blurb })),
   })),

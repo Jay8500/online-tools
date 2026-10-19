@@ -47,6 +47,12 @@ const UPDATED = '19 October 2026';
       </ul>
       <p>You can change your choice any time: <button class="font-medium text-brand underline" (click)="consent.openSettings()">Cookie settings</button>.</p>
 
+      <h2>2b. Weather</h2>
+      <p>
+        When you check the weather, the city you choose — or, if you allow it, your location rounded to about 1 km — is sent
+        through our server to OpenWeather to get the forecast. We don’t store it. Your last city is remembered only in your browser.
+      </p>
+
       <h2>3. Usage counter</h2>
       <p>
         Some pages show how many times a tool was used. When you download a result, your browser sends only the tool’s name.

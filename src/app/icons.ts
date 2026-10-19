@@ -1,4 +1,5 @@
 import {
+  MapPin,
   CupSoda,
   Gauge,
   HardDrive,
@@ -61,6 +62,7 @@ import {
 
 /** Every icon used in templates (`<svg lucideIcon="name">`). Only these are bundled. */
 export const ICONS: Record<string, IconNode> = {
+  'map-pin': MapPin,
   'cup-soda': CupSoda,
   'gauge': Gauge,
   'hard-drive': HardDrive,
