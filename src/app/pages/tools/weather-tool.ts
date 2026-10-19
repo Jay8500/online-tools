@@ -1,6 +1,7 @@
 import { isPlatformBrowser } from '@angular/common';
 import { Component, PLATFORM_ID, afterNextRender, inject, signal } from '@angular/core';
 import { Icon } from '../../shared/icon';
+import { Sky } from '../../shared/sky';
 
 interface Day {
   date: string;
@@ -35,7 +36,7 @@ function emoji(icon: string): string {
 
 @Component({
   selector: 'app-weather-tool',
-  imports: [Icon],
+  imports: [Icon, Sky],
   template: `
     <form class="flex gap-2" (submit)="$event.preventDefault(); search()" role="search">
       <label class="sr-only" for="w-city">City</label>
@@ -58,22 +59,26 @@ function emoji(icon: string): string {
           <p class="mt-1 text-muted">Please check back soon. Meanwhile, try our other free tools.</p>
         </div>
       } @else if (w(); as d) {
-        <div class="rounded-2xl border border-line bg-surface-2 p-4">
+        <!-- Live sky behind today's weather: changes with sun, clouds, rain, storm, mist, night -->
+        <div class="relative isolate overflow-hidden rounded-2xl border border-white/20 p-4 text-white shadow-lg [text-shadow:0_1px_3px_rgb(0_0_0/0.35)]">
+          <app-sky [icon]="d.now.icon" />
+          <div class="relative z-10">
           <div class="flex items-start justify-between gap-3">
             <div>
               <h2 class="text-lg font-bold">{{ d.place }}</h2>
-              <p class="text-xs text-muted">Updated {{ time(d.updated, d.tz) }} (local time)</p>
+              <p class="text-xs text-white/85">Updated {{ time(d.updated, d.tz) }} (local time)</p>
             </div>
-            <span class="text-5xl leading-none" aria-hidden="true">{{ em(d.now.icon) }}</span>
+            <span class="animate-float text-5xl leading-none" aria-hidden="true">{{ em(d.now.icon) }}</span>
           </div>
           <p class="mt-2 text-5xl font-bold tabular-nums">{{ round(d.now.temp) }}°<span class="text-2xl">C</span></p>
           <p class="capitalize">{{ d.now.text }} · feels like {{ round(d.now.feels) }}°C</p>
           <dl class="mt-3 grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
-            <div class="rounded-xl bg-surface p-2"><dt class="text-xs text-muted">Humidity</dt><dd class="font-semibold">{{ d.now.humidity }}%</dd></div>
-            <div class="rounded-xl bg-surface p-2"><dt class="text-xs text-muted">Wind</dt><dd class="font-semibold">{{ kmh(d.now.wind) }} km/h</dd></div>
-            <div class="rounded-xl bg-surface p-2"><dt class="text-xs text-muted">Sunrise</dt><dd class="font-semibold">{{ time(d.now.sunrise, d.tz) }}</dd></div>
-            <div class="rounded-xl bg-surface p-2"><dt class="text-xs text-muted">Sunset</dt><dd class="font-semibold">{{ time(d.now.sunset, d.tz) }}</dd></div>
+            <div class="rounded-xl bg-white/20 p-2 backdrop-blur-sm"><dt class="text-xs text-white/85">Humidity</dt><dd class="font-semibold">{{ d.now.humidity }}%</dd></div>
+            <div class="rounded-xl bg-white/20 p-2 backdrop-blur-sm"><dt class="text-xs text-white/85">Wind</dt><dd class="font-semibold">{{ kmh(d.now.wind) }} km/h</dd></div>
+            <div class="rounded-xl bg-white/20 p-2 backdrop-blur-sm"><dt class="text-xs text-white/85">Sunrise</dt><dd class="font-semibold">{{ time(d.now.sunrise, d.tz) }}</dd></div>
+            <div class="rounded-xl bg-white/20 p-2 backdrop-blur-sm"><dt class="text-xs text-white/85">Sunset</dt><dd class="font-semibold">{{ time(d.now.sunset, d.tz) }}</dd></div>
           </dl>
+          </div>
         </div>
         <h3 class="mt-4 mb-2 text-sm font-bold">Next 24 hours</h3>
         <div class="flex gap-2 overflow-x-auto pb-1">

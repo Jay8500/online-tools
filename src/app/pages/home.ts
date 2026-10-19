@@ -10,11 +10,25 @@ import { SITE } from '../core/site.config';
 import { HUB_PATHS } from '../core/hub-paths';
 import { TOOL_GROUPS, groupAnchor } from '../core/tools';
 import { AdSlot } from '../shared/ad-slot';
-import { LiveBadge } from '../shared/live-badge';
+import { LiveBadge, WEATHER_ICON } from '../shared/live-badge';
+import { Sky } from '../shared/sky';
 import { Benefits } from '../shared/benefits';
 import { SOURCES } from '../core/sources';
 
 const HOME_PER_GROUP = 4;
+const EXAM_KEY = 'Exam photos';
+/** Filter chips under the search box (keys = group titles). */
+const CHIPS: { key: string; label: string; icon: string }[] = [
+  { key: EXAM_KEY, label: 'Exam photos', icon: 'scan-face' },
+  { key: 'Image tools', label: 'Image', icon: 'image-up' },
+  { key: 'Money calculators', label: 'Money', icon: 'calculator' },
+  { key: 'Daily tools', label: 'Daily', icon: 'calendar-days' },
+  { key: 'PDF tools', label: 'PDF', icon: 'file-stack' },
+  { key: 'Converters', label: 'Converters', icon: 'ruler' },
+  { key: 'Business tools', label: 'Business', icon: 'receipt' },
+  { key: 'Health calculators', label: 'Health', icon: 'heart-pulse' },
+  { key: 'Language tools', label: 'Telugu', icon: 'languages' },
+];
 /** Rotating search hints — each one finds a tool when typed. */
 const HINTS = [
   { icon: 'scale', text: 'gold rate' },
@@ -62,7 +76,7 @@ const HOME_EXAMS = 5;
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink, FormsModule, Icon, AdSlot, LiveBadge, Benefits],
+  imports: [RouterLink, FormsModule, Icon, AdSlot, LiveBadge, Sky, Benefits],
   template: `
     <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
       <div>
@@ -87,6 +101,27 @@ const HOME_EXAMS = 5;
       </label>
     </div>
 
+    <!-- Quick filter: pick one or more groups (none picked = the normal quick menu) -->
+    <div class="-mx-3 mt-3 flex gap-1.5 overflow-x-auto px-3 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0" role="group" aria-label="Filter tools by type">
+      <button type="button" class="chip min-h-8 shrink-0 text-xs" [attr.aria-pressed]="!picked().length" (click)="picked.set([])">All</button>
+      @for (c of chips; track c.key) {
+        <button type="button" class="chip min-h-8 shrink-0 text-xs" [attr.aria-pressed]="picked().includes(c.key)" (click)="toggle(c.key)"><svg [lucideIcon]="c.icon" [size]="14" /> {{ c.label }}</button>
+      }
+    </div>
+
+    @if (nothing()) {
+      <div class="card mt-4 flex flex-col items-center gap-2 p-6 text-center animate-fade-up">
+        <svg lucideIcon="search" [size]="28" class="text-muted" />
+        <p class="font-semibold">No tools found for “{{ q().trim() }}”{{ picked().length ? ' in the chosen types' : '' }}</p>
+        <p class="text-sm text-muted">Try a simpler word like “photo”, “EMI”, “PDF” or “gold”@if (picked().length) {, or <button type="button" class="text-brand underline" (click)="picked.set([])">search all types</button>}.</p>
+        <div class="mt-1 flex flex-wrap justify-center gap-2">
+          <button type="button" class="btn-ghost min-h-9 text-sm" (click)="q.set('')">Clear search</button>
+          <a routerLink="/contact" class="btn-ghost min-h-9 text-sm">Ask for this tool</a>
+        </div>
+      </div>
+    }
+
+    @if (showExams()) {
     <section id="exam-photo" class="mt-4 scroll-mt-16" aria-labelledby="h-exam">
       <div class="mb-2 flex items-baseline justify-between gap-2">
         <h2 id="h-exam" class="flex items-center gap-2 text-sm font-bold tracking-wide text-muted uppercase">
@@ -112,6 +147,7 @@ const HOME_EXAMS = 5;
         }
       </div>
     </section>
+    }
 
     @for (g of groups(); track g.title) {
       <section class="mt-6 scroll-mt-16" [attr.aria-label]="g.title" [id]="anchor(g.title)">
@@ -122,7 +158,8 @@ const HOME_EXAMS = 5;
         <div class="grid grid-cols-1 gap-2 min-[400px]:grid-cols-2 md:grid-cols-4">
           @for (t of g.tools; track t.name) {
             @if (t.path) {
-              <div class="card group relative flex items-center gap-3 p-3 transition hover:border-brand/50">
+              <div class="card group relative flex items-center gap-3 p-3 transition hover:border-brand/50 isolate overflow-hidden">
+                @if (t.path === 'weather' && skyIcon()) { <app-sky [icon]="skyIcon()" class="-z-10 opacity-35 dark:opacity-30" /> }
                 <a [routerLink]="'/' + t.path" class="absolute inset-0 rounded-2xl" [attr.aria-label]="t.name"></a>
                 <span class="grid size-9 shrink-0 place-items-center rounded-xl bg-brand/10 text-brand"><svg [lucideIcon]="t.icon" [size]="18" /></span>
                 <span class="min-w-0"><span class="block text-sm font-semibold group-hover:text-brand">{{ t.name }}</span><span class="block text-xs text-muted">{{ t.blurb }}</span>
@@ -162,16 +199,31 @@ export class Home {
   /** Home is a quick menu: top picks per group; the group pages ("See all") have everything + guides. Search shows all matches. */
   protected readonly searching = computed(() => this.q().trim().length > 0);
   protected readonly examTotal = EXAMS.length;
+  protected readonly chips = CHIPS;
+  /** Sky behind the weather card once its badge has loaded */
+  protected readonly skyIcon = WEATHER_ICON;
+  /** Groups the visitor picked; empty = everything (the normal quick menu). */
+  protected readonly picked = signal<string[]>([]);
   protected readonly exams = computed(() => {
     const q = this.q().trim().toLowerCase();
-    if (!q) return EXAMS.slice(0, HOME_EXAMS);
+    if (!q) return this.picked().length ? EXAMS : EXAMS.slice(0, HOME_EXAMS);
     return EXAMS.filter((e) => matches(q, `${e.name} ${e.full} photo signature thumb declaration resize size kb exam`));
   });
+  /** While searching, a group with no match is hidden instead of showing an empty heading. */
+  protected readonly showExams = computed(() => (!this.picked().length || this.picked().includes(EXAM_KEY)) && (!this.searching() || this.exams().length > 0));
   protected readonly groups = computed(() => {
     const q = this.q().trim().toLowerCase();
-    if (!q) return TOOL_GROUPS.map((g) => ({ ...g, total: g.tools.length, tools: g.tools.slice(0, HOME_PER_GROUP) }));
-    return TOOL_GROUPS.map((g) => ({ ...g, total: g.tools.length, tools: g.tools.filter((t) => matches(q, `${t.name} ${t.blurb} ${t.path ?? ''} ${KEYWORDS[t.path ?? ''] ?? ''}`)) })).filter((g) => g.tools.length);
+    const p = this.picked();
+    const inPick = TOOL_GROUPS.filter((g) => !p.length || p.includes(g.title));
+    // A picked group shows all its tools; the default menu shows the top few per group
+    if (!q) return inPick.map((g) => ({ ...g, total: g.tools.length, tools: p.length ? g.tools : g.tools.slice(0, HOME_PER_GROUP) }));
+    return inPick.map((g) => ({ ...g, total: g.tools.length, tools: g.tools.filter((t) => matches(q, `${t.name} ${t.blurb} ${t.path ?? ''} ${KEYWORDS[t.path ?? ''] ?? ''}`)) })).filter((g) => g.tools.length);
   });
+  protected readonly nothing = computed(() => this.searching() && !this.showExams() && !this.groups().length);
+
+  protected toggle(key: string) {
+    this.picked.update((p) => (p.includes(key) ? p.filter((k) => k !== key) : [...p, key]));
+  }
 
   constructor() {
     const browser = isPlatformBrowser(inject(PLATFORM_ID));

@@ -1,4 +1,5 @@
 import { isPlatformBrowser } from '@angular/common';
+import { signal as sig } from '@angular/core';
 import { Component, DestroyRef, PLATFORM_ID, afterNextRender, inject, input, signal } from '@angular/core';
 import { FUEL } from '../core/fuel-data';
 import type { Region } from '../core/holidays';
@@ -6,7 +7,9 @@ import { dailyRates } from '../core/rates-client';
 
 /** One shared request per page for every badge of the same kind. */
 let metalsP: Promise<{ gold24PerG: number; silverPerKg: number } | null> | null = null;
-let weatherP: Promise<{ place: string; temp: number } | null> | null = null;
+let weatherP: Promise<{ place: string; temp: number; icon: string } | null> | null = null;
+/** Current weather icon code (e.g. "02d") once a weather badge has loaded — paints the card's sky. */
+export const WEATHER_ICON = sig<string | null>(null);
 
 function metals() {
   metalsP ??= fetch('/api/metals')
@@ -19,7 +22,7 @@ function metals() {
 function weather(city: string) {
   weatherP ??= fetch(`/api/weather?city=${encodeURIComponent(city)}`)
     .then((r) => (r.ok ? r.json() : null))
-    .then((j) => (j && !j.error ? { place: j.place as string, temp: Math.round(j.now.temp as number) } : null))
+    .then((j) => (j && !j.error ? { place: j.place as string, temp: Math.round(j.now.temp as number), icon: j.now.icon as string } : null))
     .catch(() => null);
   return weatherP;
 }
@@ -116,6 +119,7 @@ export class LiveBadge {
       if (w) {
         this.text.set(`${w.temp}°C`);
         this.sub.set(w.place);
+        WEATHER_ICON.set(w.icon);
       }
     }
   }
