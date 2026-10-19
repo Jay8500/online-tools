@@ -10,7 +10,7 @@ import { SITE } from '../core/site.config';
 @Component({
   selector: 'app-ad-slot',
   template: `
-    @if (client) {
+    @if (client && slotId) {
       <div class="my-4 overflow-hidden text-center" [style.min-height.px]="minHeight()">
         <span class="mb-1 block text-[10px] tracking-wider text-muted/70 uppercase">Advertisement</span>
         <ins class="adsbygoogle block" [attr.data-ad-client]="client" [attr.data-ad-slot]="slotId" data-ad-format="auto"
@@ -35,7 +35,7 @@ export class AdSlot {
   constructor() {
     const browser = isPlatformBrowser(inject(PLATFORM_ID));
     afterNextRender(() => {
-      if (!browser || !this.client) return;
+      if (!browser || !this.client || !this.slotId) return;
       try {
         (window.adsbygoogle = window.adsbygoogle || []).push({});
       } catch {

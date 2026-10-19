@@ -19,7 +19,7 @@ No database, no login — files are processed in the browser.
 
 ## Needs you (owner)
 - [x] GitHub repo `Jay8500/online-tools` linked to Netlify (auto deploy on push to main)
-- [ ] AdSense: apply with tools.spreadapps.in → put publisher ID in `src/app/core/site.config.ts` (`adsenseClient`, `adSlots`)
+- [x] AdSense account created (ca-pub-1803903263399664, site spreadapps.in) — publisher ID + meta tag added. Pending: payment profile, ad-unit slot IDs (`adSlots`), review
 - [ ] **ads.txt** must live at **spreadapps.in/ads.txt** (root domain, the portfolio site) — needs your OK before touching spreadapps.in
 - [ ] AdSense → Privacy & messaging: create the Google-certified CMP message (EEA/UK) → then set `useGoogleCmp: true`
 - [ ] GA4: create property → put `G-…` in `site.config.ts` (`ga4Id`)

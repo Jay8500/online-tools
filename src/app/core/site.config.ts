@@ -9,7 +9,7 @@ export const SITE = {
   /** GA4 measurement ID, e.g. 'G-ABC123XYZ' (loaded only after analytics consent). */
   ga4Id: '',
   /** AdSense publisher ID, e.g. 'ca-pub-1234567890123456'. */
-  adsenseClient: '',
+  adsenseClient: 'ca-pub-1803903263399664',
   /** Ad unit slot IDs from AdSense → Ads → By ad unit. */
   adSlots: { top: '', inContent: '', sidebar: '' } as Record<string, string>,
   /**
