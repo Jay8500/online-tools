@@ -10,7 +10,11 @@ const ORS = 'https://api.openrouteservice.org';
 const PLACE_RE = /^[\p{L}0-9 .,'()-]{2,80}$/u;
 const PROFILE: Record<string, string> = { car: 'driving-car', bike: 'driving-car', bus: 'driving-car', walk: 'foot-walking', cycle: 'cycling-regular' };
 /** ORS gives car-like times; buses and bikes in India are slower on average. */
-const SLOWER: Record<string, number> = { bus: 1.25, bike: 1.1 };
+/**
+ * ORS assumes European road speeds. Scaled to typical Indian journey times
+ * (e.g. Hyderabad→Vijayawada ≈ 5 h by car, ≈ 6 h by bus). Walking/cycling speeds are fine as they are.
+ */
+const SLOWER: Record<string, number> = { car: 1.4, bike: 1.5, bus: 1.7 };
 
 export default async (req: Request) => {
   const key = Netlify.env.get('ORS_API_KEY')?.trim();
@@ -26,6 +30,9 @@ export default async (req: Request) => {
     const [a, b] = await Promise.all([geocode(from, key), geocode(to, key)]);
     if (!a) return json({ error: `Couldn’t find “${from}”. Try adding the district, e.g. “Gachibowli, Hyderabad”.` }, 404, 'public, max-age=300');
     if (!b) return json({ error: `Couldn’t find “${to}”. Try adding the district.` }, 404, 'public, max-age=300');
+    if (hav(a.coord, b.coord) < 0.2) {
+      return json({ error: 'Both places point to the same spot on the map. Add more detail, e.g. “Tirumala temple, Tirupati”.' }, 400, 'public, max-age=300');
+    }
 
     const r = await fetch(`${ORS}/v2/directions/${PROFILE[mode]}/geojson`, {
       method: 'POST',
@@ -51,7 +58,9 @@ export default async (req: Request) => {
     const cum = [0];
     for (let i = 1; i < coords.length; i++) cum.push(cum[i - 1] + hav(coords[i - 1], coords[i]));
     const scale = km / (cum[cum.length - 1] || 1);
-    const samples = [0.17, 0.33, 0.5, 0.67, 0.83].map((p) => Math.floor(p * (coords.length - 1)));
+    // Long trips get more checkpoints (one roughly every 60–100 km, max 7)
+    const n = Math.min(7, Math.max(3, Math.round(km / 80)));
+    const samples = Array.from({ length: n }, (_, k) => Math.floor(((k + 1) / (n + 1)) * (coords.length - 1)));
     const towns = await Promise.all(samples.map((i) => reverse(coords[i], key)));
     const seen = new Set([a.name.split(',')[0], b.name.split(',')[0], title(from), title(to)]);
     const stops = samples
@@ -101,7 +110,7 @@ async function geocode(text: string, key: string): Promise<{ coord: [number, num
 
 async function reverse([lon, lat]: [number, number], key: string): Promise<string> {
   try {
-    const r = await fetch(`${ORS}/geocode/reverse?api_key=${key}&point.lon=${lon}&point.lat=${lat}&size=1&layers=locality,localadmin`);
+    const r = await fetch(`${ORS}/geocode/reverse?api_key=${key}&point.lon=${lon}&point.lat=${lat}&size=1&layers=locality,localadmin&boundary.circle.radius=25`);
     if (!r.ok) return '';
     const j = (await r.json()) as { features: { properties: { locality?: string; localadmin?: string; county?: string; name?: string } }[] };
     const p = j.features?.[0]?.properties;
