@@ -3,9 +3,9 @@
  * so the site works before AdSense / GA4 accounts exist.
  */
 export const SITE = {
-  name: 'SpreadApps Tools',
+  name: 'Spread Apps Tools',
   url: 'https://tools.spreadapps.in',
-  owner: 'SpreadApps',
+  owner: 'Spread Apps',
   /** Person behind the brand (no company registered yet). */
   operator: 'Lakkoju Jaya Krishna',
   location: 'Hyderabad, Telangana, India',

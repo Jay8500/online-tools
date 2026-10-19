@@ -36,7 +36,7 @@ import type { Festival } from '../core/celebrate';
             <div class="min-w-0">
               <p class="text-xs font-bold tracking-wide uppercase opacity-80">{{ f.mood === 'tribute' ? 'Today' : 'Today’s festival' }} · {{ dateText(f.date) }}</p>
               <h2 class="text-xl font-extrabold sm:text-2xl">{{ f.wish }}</h2>
-              <p class="text-sm opacity-90">{{ f.mood === 'tribute' ? f.name + ' — a public holiday.' : 'From all of us at SpreadApps — have a safe and happy ' + f.name + '!' }}</p>
+              <p class="text-sm opacity-90">{{ f.mood === 'tribute' ? f.name + ' — a public holiday.' : 'From all of us at Spread Apps — have a safe and happy ' + f.name + '!' }}</p>
               <div class="mt-2 flex flex-wrap gap-2">
                 <button type="button" class="btn-primary min-h-9 text-sm" (click)="celebrate()">{{ f.mood === 'tribute' ? '🌸 Pay tribute' : '🎉 Celebrate' }}</button>
                 <a routerLink="/holiday-calendar" class="btn-ghost min-h-9 bg-surface/70 text-sm">All holidays →</a>

@@ -23,8 +23,8 @@ const UPDATED = '19 October 2026';
 
       <h2>Who we are</h2>
       <p>
-        SpreadApps Tools (tools.spreadapps.in) is run by <strong>{{ site.operator }}</strong>, an independent developer based in
-        {{ site.location }}, under the brand name SpreadApps. Email: <a [href]="'mailto:' + site.email">{{ site.email }}</a>.
+        Spread Apps Tools (tools.spreadapps.in) is run by <strong>{{ site.operator }}</strong>, an independent developer based in
+        {{ site.location }}, under the brand name Spread Apps. Email: <a [href]="'mailto:' + site.email">{{ site.email }}</a>.
       </p>
 
       <h2>1. Files and data you use in the tools</h2>
@@ -94,7 +94,7 @@ export class Privacy {
   protected readonly consent = inject(ConsentService);
   protected readonly updated = UPDATED;
   constructor() {
-    inject(SeoService).set({ title: 'Privacy Policy', description: 'How SpreadApps Tools handles your data: files never leave your device; analytics only with consent; AdSense cookies explained.', path: 'privacy' });
+    inject(SeoService).set({ title: 'Privacy Policy', description: 'How Spread Apps Tools handles your data: files never leave your device; analytics only with consent; AdSense cookies explained.', path: 'privacy' });
   }
 }
 
@@ -106,11 +106,11 @@ export class Privacy {
       <h1 class="text-xl font-bold text-ink sm:text-2xl">Terms of use</h1>
       <p class="text-xs">Last updated: {{ updated }}</p>
       <p>
-        These terms are an agreement between you and {{ site.operator }} ({{ site.location }}), who runs SpreadApps Tools under
-        the brand name SpreadApps.
+        These terms are an agreement between you and {{ site.operator }} ({{ site.location }}), who runs Spread Apps Tools under
+        the brand name Spread Apps.
       </p>
       <h2>Using the tools</h2>
-      <p>SpreadApps Tools is free to use for personal and business purposes. Please don’t misuse the site, try to break it, or copy it in bulk.</p>
+      <p>Spread Apps Tools is free to use for personal and business purposes. Please don’t misuse the site, try to break it, or copy it in bulk.</p>
       <h2>No guarantee</h2>
       <p>
         We work hard to keep size rules and calculations correct, but exam bodies change their rules often.
@@ -127,11 +127,11 @@ export class Privacy {
       <h2>Names and trademarks</h2>
       <p>
         Company, app and product names shown (for example Jio, Airtel, Netflix, Amazon Prime, JioHotstar, PVR or Indian Oil) belong to their owners
-        and are used only to identify them. SpreadApps is independent and not linked to, sponsored or endorsed by any of them.
+        and are used only to identify them. Spread Apps is independent and not linked to, sponsored or endorsed by any of them.
         Map data © OpenStreetMap contributors; other data sources are credited on each tool.
       </p>
       <h2>Liability</h2>
-      <p>The tools are provided “as is”. To the extent the law allows, SpreadApps is not liable for any loss from using them, including a rejected application.</p>
+      <p>The tools are provided “as is”. To the extent the law allows, Spread Apps is not liable for any loss from using them, including a rejected application.</p>
       <h2>Ads and links</h2>
       <p>We show ads from Google AdSense. We are not responsible for advertisers’ products or for other websites we link to.</p>
       <h2>Law</h2>
@@ -143,7 +143,7 @@ export class Terms {
   protected readonly site = SITE;
   protected readonly updated = UPDATED;
   constructor() {
-    inject(SeoService).set({ title: 'Terms of Use', description: 'Terms of use for SpreadApps Tools — free online tools for India.', path: 'terms' });
+    inject(SeoService).set({ title: 'Terms of Use', description: 'Terms of use for Spread Apps Tools — free online tools for India.', path: 'terms' });
   }
 }
 
@@ -152,9 +152,9 @@ export class Terms {
   imports: [RouterLink],
   template: `
     <article class="prose-tool mx-auto max-w-3xl">
-      <h1 class="text-xl font-bold text-ink sm:text-2xl">About SpreadApps Tools</h1>
+      <h1 class="text-xl font-bold text-ink sm:text-2xl">About Spread Apps Tools</h1>
       <p>
-        SpreadApps Tools is a free collection of everyday tools for India, made by <a href="https://spreadapps.in">SpreadApps</a>,
+        Spread Apps Tools is a free collection of everyday tools for India, made by <a href="https://spreadapps.in">Spread Apps</a>,
         the brand of {{ site.operator }}, an independent developer from {{ site.location }}. We started with the problem every student knows: an exam form that keeps rejecting your photo
         because it is 52 KB instead of 50 KB.
       </p>
@@ -173,7 +173,7 @@ export class Terms {
 export class About {
   protected readonly site = SITE;
   constructor() {
-    inject(SeoService).set({ title: 'About Us', description: 'SpreadApps Tools: free, private, fast online tools for India — exam photo resizer, image to KB and more.', path: 'about' });
+    inject(SeoService).set({ title: 'About Us', description: 'Spread Apps Tools: free, private, fast online tools for India — exam photo resizer, image to KB and more.', path: 'about' });
   }
 }
 

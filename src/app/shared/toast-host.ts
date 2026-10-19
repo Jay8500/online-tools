@@ -24,7 +24,7 @@ const STYLE: Record<ToastKind, { icon: string; box: string; badge: string }> = {
           </span>
           <span class="min-w-0 flex-1">
             <span class="mb-0.5 flex items-center gap-1.5 text-[10px] font-semibold tracking-wide uppercase opacity-60">
-              <img src="favicon.svg" alt="" width="14" height="14" class="size-3.5" /> SpreadApps
+              <img src="favicon.svg" alt="" width="14" height="14" class="size-3.5" /> Spread Apps
             </span>
             <span class="block">{{ t.text }}</span>
           </span>

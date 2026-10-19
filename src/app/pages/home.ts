@@ -198,7 +198,7 @@ const HOME_EXAMS = 5;
     <app-ad-slot slot="top" />
 
     <section class="prose-tool mt-6 max-w-3xl">
-      <h2>Why SpreadApps Tools?</h2>
+      <h2>Why Spread Apps Tools?</h2>
       <p>
         Government and bank exam forms reject photos for the smallest reasons — wrong size in KB, wrong pixels, a grey background.
         These tools fix that in seconds on any phone. Everything runs inside your browser: your photos, signatures and documents

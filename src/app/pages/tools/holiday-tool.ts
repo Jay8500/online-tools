@@ -209,7 +209,7 @@ export class HolidayTool {
       const e = iso(new Date(new Date(x.date + 'T00:00:00').getTime() + DAY)).replace(/-/g, '');
       return ['BEGIN:VEVENT', `UID:${d}-${x.name.replace(/\W+/g, '')}-${this.region()}@tools.spreadapps.in`, `DTSTAMP:${stamp}`, `DTSTART;VALUE=DATE:${d}`, `DTEND;VALUE=DATE:${e}`, `SUMMARY:${esc(x.name)} (holiday)`, 'TRANSP:TRANSPARENT', 'END:VEVENT'].join('\r\n');
     });
-    const body = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//SpreadApps Tools//Holidays//EN', `X-WR-CALNAME:${esc(this.regionName())} holidays ${this.year()}`, ...ev, 'END:VCALENDAR'].join('\r\n');
+    const body = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Spread Apps Tools//Holidays//EN', `X-WR-CALNAME:${esc(this.regionName())} holidays ${this.year()}`, ...ev, 'END:VCALENDAR'].join('\r\n');
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([body], { type: 'text/calendar' }));
     a.download = `${this.region()}-holidays-${this.year()}.ics`;

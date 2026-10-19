@@ -25,7 +25,7 @@ import { InstallFooter } from './shared/install-footer';
     <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[200] focus:rounded-lg focus:bg-brand focus:px-3 focus:py-2 focus:text-brand-ink">Skip to tool</a>
     <header class="sticky top-0 z-40 border-b border-line bg-surface/90 backdrop-blur">
       <div class="mx-auto flex h-12 max-w-6xl items-center gap-2 px-3 sm:px-4">
-        <a routerLink="/" aria-label="SpreadApps Tools home"><app-brand [size]="30" /></a>
+        <a routerLink="/" aria-label="Spread Apps Tools home"><app-brand [size]="30" /></a>
         <nav class="ml-auto flex items-center gap-1 text-sm font-medium" aria-label="Main">
           <a routerLink="/exam-photo-signature-resize" class="hidden rounded-lg px-2.5 py-1.5 text-muted hover:bg-surface-2 hover:text-ink sm:block">Exam photos</a>
           <a routerLink="/resize-image-to-kb" class="hidden rounded-lg px-2.5 py-1.5 text-muted hover:bg-surface-2 hover:text-ink sm:block">Resize to KB</a>
@@ -51,7 +51,7 @@ import { InstallFooter } from './shared/install-footer';
     <footer class="border-t border-line bg-surface">
       <div class="mx-auto grid max-w-6xl gap-6 px-4 py-8 text-sm sm:grid-cols-2 lg:grid-cols-5">
         <div>
-          <a href="https://spreadapps.in" aria-label="SpreadApps website"><app-brand [size]="26" /></a>
+          <a href="https://spreadapps.in" aria-label="Spread Apps website"><app-brand [size]="26" /></a>
           <p class="mt-2 flex items-start gap-1.5 text-muted">
             <svg lucideIcon="shield-check" [size]="16" class="mt-0.5 shrink-0 text-accent" />
             Free tools that run in your browser. Your photos and files never leave your device.
@@ -96,7 +96,7 @@ import { InstallFooter } from './shared/install-footer';
       </div>
       <div class="border-t border-line px-4 py-3"><app-benefits [center]="true" /></div>
       <p class="border-t border-line px-4 py-3 text-center text-xs text-muted">
-        © {{ year }} <a href="https://spreadapps.in" class="font-semibold hover:text-brand">SpreadApps™</a> · Lakkoju Jaya Krishna · All rights reserved · Made in India
+        © {{ year }} <a href="https://spreadapps.in" class="font-semibold hover:text-brand">Spread Apps™</a> · Lakkoju Jaya Krishna · All rights reserved · Made in India
       </p>
     </footer>
 

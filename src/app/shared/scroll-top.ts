@@ -2,7 +2,7 @@ import { DOCUMENT } from '@angular/common';
 import { Component, DestroyRef, afterNextRender, inject, signal } from '@angular/core';
 
 /**
- * "Back to top" bubble with the SpreadApps logo — appears after scrolling down a screen or so,
+ * "Back to top" bubble with the Spread Apps logo — appears after scrolling down a screen or so,
  * bobs gently, and glides to the top. Bottom-right, small, above the safe area so it never covers a tool's buttons.
  */
 @Component({

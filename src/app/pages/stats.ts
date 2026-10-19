@@ -116,7 +116,7 @@ const KEY_STORE = 'stats-key';
           </p>
           <button class="btn-ghost min-h-9" (click)="toggleExcluded()">{{ excluded() ? 'Count this device again' : 'Stop counting this device' }}</button>
         </div>
-        <p class="mt-3 text-xs text-muted">More detail (countries, devices, search terms) is in Google Analytics → SpreadApps Tools.</p>
+        <p class="mt-3 text-xs text-muted">More detail (countries, devices, search terms) is in Google Analytics → Spread Apps Tools.</p>
       }
     </div>
   `,

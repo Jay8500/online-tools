@@ -15,7 +15,7 @@ const ITEMS = [
   selector: 'app-benefits',
   imports: [Icon],
   template: `
-    <ul class="flex flex-wrap gap-1.5" [class.justify-center]="center()" aria-label="Why use SpreadApps Tools">
+    <ul class="flex flex-wrap gap-1.5" [class.justify-center]="center()" aria-label="Why use Spread Apps Tools">
       @for (b of items; track b.word) {
         <li class="inline-flex items-center gap-1 rounded-full border border-line bg-surface px-2.5 py-1 text-xs font-semibold text-ink" [title]="b.title">
           <svg [lucideIcon]="b.icon" [size]="13" class="text-brand" />{{ b.word }}

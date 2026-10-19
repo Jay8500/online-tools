@@ -21,7 +21,7 @@ const KEY = 'install-hint';
         <div class="flex gap-3 pr-6">
           <img src="favicon.svg" alt="" width="40" height="40" class="mt-0.5 size-10 shrink-0 rounded-xl bg-brand/10 p-1.5" />
           <div class="min-w-0">
-            <p id="ih-title" class="font-bold">Install SpreadApps Tools 📲</p>
+            <p id="ih-title" class="font-bold">Install Spread Apps Tools 📲</p>
             <p class="text-xs text-muted">Opens like an app from your home screen, works offline, no Play Store needed.</p>
             <app-install-steps [kind]="kind()!" (install)="install()" />
           </div>

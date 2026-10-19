@@ -76,7 +76,7 @@ export class Contact {
   protected readonly err = computed(() => (this.submitted() ? this.rawErr() : {}));
 
   constructor() {
-    inject(SeoService).set({ title: 'Contact Us', description: 'Contact SpreadApps Tools — report a wrong exam size, a bug, or suggest a new tool.', path: 'contact' });
+    inject(SeoService).set({ title: 'Contact Us', description: 'Contact Spread Apps Tools — report a wrong exam size, a bug, or suggest a new tool.', path: 'contact' });
   }
 
   async submit(ev: Event) {
