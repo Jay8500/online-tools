@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Icon } from '../shared/icon';
 import { DOC_SHORT, DocKind, EXAMS, Exam, examPath } from '../core/exams';
+import { CounterService } from '../core/counter.service';
 import { SeoService } from '../core/seo.service';
 import { SITE } from '../core/site.config';
 import { TOOL_GROUPS } from '../core/tools';
@@ -94,6 +95,7 @@ export class Home {
   });
 
   constructor() {
+    inject(CounterService).view('home');
     inject(SeoService).set({
       title: `${SITE.name} — Exam Photo Resizer, Image to KB & Free Indian Tools`,
       description:

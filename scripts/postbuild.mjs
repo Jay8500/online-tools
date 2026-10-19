@@ -15,7 +15,7 @@ const pages = [];
   }
 })(out, '');
 
-const skip = new Set(['404']);
+const skip = new Set(['404', 'stats']);
 const urls = pages
   .filter((p) => !skip.has(p))
   .sort((a, b) => a.length - b.length || a.localeCompare(b))
@@ -30,5 +30,5 @@ if (existsSync(join(out, '404/index.html'))) copyFileSync(join(out, '404/index.h
 
 // Netlify 301-redirects /page → /page/ when only page/index.html exists. A sibling page.html is served at /page
 // directly (200), matching our canonical URLs (no trailing slash).
-for (const p of pages) if (p && !skip.has(p)) copyFileSync(join(out, p, 'index.html'), join(out, `${p}.html`));
+for (const p of pages) if (p && p !== '404') copyFileSync(join(out, p, 'index.html'), join(out, `${p}.html`));
 console.log(`postbuild: sitemap.xml with ${urls.length} URLs, 404.html ${existsSync(join(out, '404.html')) ? 'written' : 'MISSING'}`);

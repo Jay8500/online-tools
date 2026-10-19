@@ -142,6 +142,7 @@ export class KbTool {
     effect(() => {
       const id = this.spec().id;
       this.uses.set(null);
+      this.counter.view(id);
       this.counter.get(id).then((n) => n !== null && n >= SITE.counterMinToShow && this.uses.set(n));
     });
   }

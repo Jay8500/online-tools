@@ -13,7 +13,7 @@ No database, no login — files are processed in the browser.
 - [x] SEO: unique title/description/H1, how-to, rules table, FAQ, JSON-LD (WebApplication, HowTo, FAQPage, Breadcrumb), canonical, OG image, sitemap.xml, robots.txt
 - [x] Privacy, Terms, About, Contact (Netlify Forms + honeypot), 404
 - [x] Consent banner + Consent Mode v2 defaults; GA4/AdSense loaders (switched off until IDs are set)
-- [x] "Used N times" counter: Netlify Function + Blobs (`netlify/functions/count.mts`)
+- [x] Counter: Netlify Function + Blobs — page views + uses (once per visitor/page/day), public "used N times" (≥25), private /stats page (key in Netlify env STATS_KEY; owner link in local .netlify/stats-link.txt)
 - [x] PWA: installable, offline shell, "Update now" bar; dark/light theme
 - [x] Browser tests at 320/390/768/1280 (50 checks, see "Testing")
 

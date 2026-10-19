@@ -15,6 +15,7 @@ export const routes: Routes = [
   { path: 'privacy', loadComponent: () => legal().then((m) => m.Privacy) },
   { path: 'terms', loadComponent: () => legal().then((m) => m.Terms) },
   { path: 'contact', loadComponent: () => import('./pages/contact').then((m) => m.Contact) },
+  { path: 'stats', loadComponent: () => import('./pages/stats').then((m) => m.Stats) },
   { path: '404', loadComponent: () => legal().then((m) => m.NotFound) },
   { path: '**', loadComponent: () => legal().then((m) => m.NotFound) },
 ];

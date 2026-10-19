@@ -155,6 +155,7 @@ export class ExamTool {
     effect(() => {
       const id = this.toolSpec().id;
       this.uses.set(null);
+      this.counter.view(id);
       this.counter.get(id).then((n) => n !== null && n >= SITE.counterMinToShow && this.uses.set(n));
     });
   }

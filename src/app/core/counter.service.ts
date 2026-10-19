@@ -22,11 +22,21 @@ export class CounterService {
     }
   }
 
-  /** Count one successful use per tool per page visit. */
+  /** Count one successful use (download/share) per tool per page visit. */
   hit(tool: string) {
-    if (!this.on || this.counted.has(tool)) return;
-    this.counted.add(tool);
-    fetch('/api/count', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ tool }), keepalive: true }).catch(
+    this.send(tool, 'use');
+  }
+
+  /** Count a page view (the server keeps one per visitor per page per day). */
+  view(tool: string) {
+    this.send(tool, 'view');
+  }
+
+  private send(tool: string, kind: 'use' | 'view') {
+    const key = `${kind}:${tool}`;
+    if (!this.on || this.counted.has(key)) return;
+    this.counted.add(key);
+    fetch('/api/count', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ tool, kind }), keepalive: true }).catch(
       () => undefined,
     );
   }
