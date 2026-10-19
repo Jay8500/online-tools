@@ -9,6 +9,7 @@ import { TOOL_LINKS } from './core/tool-links';
 import { EXAMS, examPath } from './core/exams';
 import { ThemeService } from './core/theme.service';
 import { Brand } from './shared/brand';
+import { Benefits } from './shared/benefits';
 import { ConsentBanner } from './shared/consent-banner';
 import { DialogHost } from './shared/dialog-host';
 import { ToastHost } from './shared/toast-host';
@@ -16,7 +17,7 @@ import { UpdateBanner } from './shared/update-banner';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, Icon, Brand, ToastHost, DialogHost, UpdateBanner, ConsentBanner],
+  imports: [RouterOutlet, RouterLink, Icon, Brand, Benefits, ToastHost, DialogHost, UpdateBanner, ConsentBanner],
   template: `
     <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[200] focus:rounded-lg focus:bg-brand focus:px-3 focus:py-2 focus:text-brand-ink">Skip to tool</a>
     <header class="sticky top-0 z-40 border-b border-line bg-surface/90 backdrop-blur">
@@ -89,6 +90,7 @@ import { UpdateBanner } from './shared/update-banner';
           </ul>
         </nav>
       </div>
+      <div class="border-t border-line px-4 py-3"><app-benefits [center]="true" /></div>
       <p class="border-t border-line px-4 py-3 text-center text-xs text-muted">
         © {{ year }} <a href="https://spreadapps.in" class="font-semibold hover:text-brand">SpreadApps</a> · A SpreadApps product · Made in India
       </p>

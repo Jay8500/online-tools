@@ -11,6 +11,7 @@ import { HUB_PATHS } from '../core/hub-paths';
 import { TOOL_GROUPS, groupAnchor } from '../core/tools';
 import { AdSlot } from '../shared/ad-slot';
 import { LiveBadge } from '../shared/live-badge';
+import { Benefits } from '../shared/benefits';
 import { SOURCES } from '../core/sources';
 
 const HOME_PER_GROUP = 4;
@@ -55,12 +56,13 @@ const HOME_EXAMS = 5;
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink, FormsModule, Icon, AdSlot, LiveBadge],
+  imports: [RouterLink, FormsModule, Icon, AdSlot, LiveBadge, Benefits],
   template: `
     <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
       <div>
         <h1 class="text-lg font-bold sm:text-2xl">Free online tools for India</h1>
         <p class="text-sm text-muted">Exam photo resizer, image to KB, EMI, SIP, income tax & more — fast, free, private.</p>
+        <div class="mt-2"><app-benefits /></div>
       </div>
       <label class="relative block sm:w-72">
         <span class="sr-only">Search tools</span>
