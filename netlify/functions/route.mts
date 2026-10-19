@@ -1,4 +1,5 @@
 import type { Config } from '@netlify/functions';
+import { CITIES } from '../../src/app/core/places';
 
 /**
  * Road / walking / cycling route with towns along the way (OpenRouteService free plan, OpenStreetMap data).
@@ -62,10 +63,25 @@ export default async (req: Request) => {
     const n = Math.min(7, Math.max(3, Math.round(km / 80)));
     const samples = Array.from({ length: n }, (_, k) => Math.floor(((k + 1) / (n + 1)) * (coords.length - 1)));
     const towns = await Promise.all(samples.map((i) => reverse(coords[i], key)));
+    const at = (i: number) => ({ km: Math.round(cum[i] * scale), min: Math.round(((cum[i] * scale) / km) * (sec / 60)) });
+    // Known towns within 12 km of the road (our own list), plus whatever the map service names at checkpoints
+    const near: { name: string; i: number }[] = [];
+    for (const c of CITIES) {
+      if (hav(a.coord, [c.lon, c.lat]) < 15 || hav(b.coord, [c.lon, c.lat]) < 15) continue; // start / end town itself
+      let best = Infinity;
+      let bi = 0;
+      for (let i = 0; i < coords.length; i += Math.max(1, Math.floor(coords.length / 1500))) {
+        const d = hav(coords[i], [c.lon, c.lat]);
+        if (d < best) [best, bi] = [d, i];
+      }
+      if (best < 12) near.push({ name: c.name, i: bi });
+    }
     const seen = new Set([a.name.split(',')[0], b.name.split(',')[0], title(from), title(to)]);
-    const stops = samples
-      .map((i, k) => ({ name: towns[k], km: Math.round(cum[i] * scale), min: Math.round(((cum[i] * scale) / km) * (sec / 60)) }))
-      .filter((s) => s.name && !seen.has(s.name) && seen.add(s.name));
+    const stops = [...near, ...samples.map((i, k) => ({ name: towns[k], i }))]
+      .sort((x, y) => x.i - y.i)
+      .filter((s) => s.name && !seen.has(s.name) && seen.add(s.name))
+      .map((s) => ({ name: s.name, ...at(s.i) }))
+      .slice(0, 14);
 
     // Thin the line to ≤ 300 points for the sketch
     const step = Math.max(1, Math.ceil(coords.length / 300));

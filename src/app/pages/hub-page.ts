@@ -8,11 +8,12 @@ import { SITE } from '../core/site.config';
 import { AdSlot } from '../shared/ad-slot';
 import { FaqList } from '../shared/faq-list';
 import { Icon } from '../shared/icon';
+import { LiveBadge } from '../shared/live-badge';
 
 /** Category page, e.g. /health-calculators — intro + every tool in the group + other groups. */
 @Component({
   selector: 'app-hub-page',
-  imports: [RouterLink, Icon, AdSlot, FaqList],
+  imports: [RouterLink, Icon, AdSlot, FaqList, LiveBadge],
   template: `
     @let h = hub();
     <nav aria-label="Breadcrumb" class="mb-1 flex items-center gap-1 text-xs text-muted">
@@ -46,6 +47,7 @@ import { Icon } from '../shared/icon';
                 <h2 class="text-sm font-semibold group-hover:text-brand">{{ t.name }}</h2>
                 <span class="block text-xs text-muted">{{ t.blurb }}</span>
               </span>
+              @if (live(t.path); as k) { <app-live-badge [kind]="k" /> }
             </a>
           </li>
         }
@@ -128,6 +130,11 @@ export class HubPage {
         ],
       });
     });
+  }
+
+  /** Cards that show a live value on the right (gold rate, weather). */
+  protected live(path: string | null): 'gold' | 'weather' | null {
+    return path === 'gold-price-calculator' ? 'gold' : path === 'weather' ? 'weather' : null;
   }
 
   protected path(e: Exam, k: DocKind) {

@@ -9,13 +9,14 @@ import { SITE } from '../core/site.config';
 import { HUB_PATHS } from '../core/hub-paths';
 import { TOOL_GROUPS, groupAnchor } from '../core/tools';
 import { AdSlot } from '../shared/ad-slot';
+import { LiveBadge } from '../shared/live-badge';
 
 const HOME_PER_GROUP = 4;
 const HOME_EXAMS = 5;
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink, FormsModule, Icon, AdSlot],
+  imports: [RouterLink, FormsModule, Icon, AdSlot, LiveBadge],
   template: `
     <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
       <div>
@@ -67,6 +68,7 @@ const HOME_EXAMS = 5;
               <a [routerLink]="'/' + t.path" class="card group flex items-center gap-3 p-3 transition hover:border-brand/50">
                 <span class="grid size-9 shrink-0 place-items-center rounded-xl bg-brand/10 text-brand"><svg [lucideIcon]="t.icon" [size]="18" /></span>
                 <span class="min-w-0"><span class="block text-sm font-semibold group-hover:text-brand">{{ t.name }}</span><span class="block text-xs text-muted">{{ t.blurb }}</span></span>
+                @if (live(t.path); as k) { <app-live-badge [kind]="k" /> }
               </a>
             } @else {
               <div class="card flex items-center gap-3 p-3 opacity-70">
@@ -116,6 +118,11 @@ export class Home {
       path: '',
       jsonLd: [{ '@type': 'WebSite', name: SITE.name, url: SITE.url, inLanguage: 'en-IN' }],
     });
+  }
+
+  /** Cards that show a live value on the right (gold rate, weather). */
+  protected live(path: string | null): 'gold' | 'weather' | null {
+    return path === 'gold-price-calculator' ? 'gold' : path === 'weather' ? 'weather' : null;
   }
 
   protected hub(title: string) {
