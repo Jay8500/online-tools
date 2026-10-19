@@ -10,6 +10,9 @@ import { HUB_PATHS } from '../core/hub-paths';
 import { TOOL_GROUPS, groupAnchor } from '../core/tools';
 import { AdSlot } from '../shared/ad-slot';
 
+const HOME_PER_GROUP = 4;
+const HOME_EXAMS = 5;
+
 @Component({
   selector: 'app-home',
   imports: [RouterLink, FormsModule, Icon, AdSlot],
@@ -31,7 +34,7 @@ import { AdSlot } from '../shared/ad-slot';
         <h2 id="h-exam" class="flex items-center gap-2 text-sm font-bold tracking-wide text-muted uppercase">
           <svg lucideIcon="scan-face" [size]="16" /> Exam photo & signature resizer
         </h2>
-        <a routerLink="/exam-photo-signature-resize" class="shrink-0 text-xs font-semibold text-brand hover:underline">See all →</a>
+        <a routerLink="/exam-photo-signature-resize" class="shrink-0 text-xs font-semibold text-brand hover:underline">See all {{ examTotal }} exams + size table →</a>
       </div>
       <div class="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-5">
         @for (e of exams(); track e.slug) {
@@ -56,7 +59,7 @@ import { AdSlot } from '../shared/ad-slot';
       <section class="mt-6 scroll-mt-16" [attr.aria-label]="g.title" [id]="anchor(g.title)">
         <div class="mb-2 flex items-baseline justify-between gap-2">
           <h2 class="text-sm font-bold tracking-wide text-muted uppercase">{{ g.title }}</h2>
-          @if (hub(g.title); as hp) { <a [routerLink]="'/' + hp" class="text-xs font-semibold text-brand hover:underline">See all →</a> }
+          @if (hub(g.title); as hp) { <a [routerLink]="'/' + hp" class="shrink-0 text-xs font-semibold text-brand hover:underline">{{ g.total > g.tools.length ? 'See all ' + g.total + ' →' : 'Guide →' }}</a> }
         </div>
         <div class="grid grid-cols-1 gap-2 min-[400px]:grid-cols-2 md:grid-cols-4">
           @for (t of g.tools; track t.name) {
@@ -90,15 +93,18 @@ import { AdSlot } from '../shared/ad-slot';
 })
 export class Home {
   protected readonly q = signal('');
+  /** Home is a quick menu: top picks per group; the group pages ("See all") have everything + guides. Search shows all matches. */
+  protected readonly searching = computed(() => this.q().trim().length > 0);
+  protected readonly examTotal = EXAMS.length;
   protected readonly exams = computed(() => {
     const q = this.q().trim().toLowerCase();
-    if (!q) return EXAMS;
+    if (!q) return EXAMS.slice(0, HOME_EXAMS);
     return EXAMS.filter((e) => `${e.name} ${e.full} photo signature thumb resize`.toLowerCase().includes(q));
   });
   protected readonly groups = computed(() => {
     const q = this.q().trim().toLowerCase();
-    if (!q) return TOOL_GROUPS;
-    return TOOL_GROUPS.map((g) => ({ ...g, tools: g.tools.filter((t) => `${t.name} ${t.blurb}`.toLowerCase().includes(q)) })).filter((g) => g.tools.length);
+    if (!q) return TOOL_GROUPS.map((g) => ({ ...g, total: g.tools.length, tools: g.tools.slice(0, HOME_PER_GROUP) }));
+    return TOOL_GROUPS.map((g) => ({ ...g, total: g.tools.length, tools: g.tools.filter((t) => `${t.name} ${t.blurb}`.toLowerCase().includes(q)) })).filter((g) => g.tools.length);
   });
 
   constructor() {

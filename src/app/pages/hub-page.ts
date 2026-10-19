@@ -1,6 +1,7 @@
 import { Component, computed, effect, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DOC_SHORT, DocKind, EXAMS, Exam, examPath } from '../core/exams';
+import { HUB_GUIDES } from '../core/hub-guides';
 import { HUBS, Hub } from '../core/hubs';
 import { SeoService } from '../core/seo.service';
 import { SITE } from '../core/site.config';
@@ -51,6 +52,31 @@ import { Icon } from '../shared/icon';
       </ul>
     }
 
+    @for (g of guide(); track g.h) {
+      <section class="mt-6 max-w-4xl">
+        <h2 class="text-base font-bold">{{ g.h }}</h2>
+        @if (g.p) { <p class="mt-1 text-sm text-muted">{{ g.p }}</p> }
+        @if (g.table; as t) {
+          <div class="mt-2 overflow-x-auto rounded-xl border border-line">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-surface-2 text-xs text-muted"><tr>@for (c of t.head; track c) { <th class="px-3 py-2 font-semibold whitespace-nowrap">{{ c }}</th> }</tr></thead>
+              <tbody class="divide-y divide-line bg-surface">
+                @for (r of t.rows; track $index) {
+                  <tr>@for (c of r; track $index; let first = $first) { <td class="px-3 py-2" [class.font-semibold]="first" [class.whitespace-nowrap]="!first">{{ c }}</td> }</tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+        @if (g.list?.length) {
+          <ul class="mt-2 space-y-1 text-sm text-muted">
+            @for (li of g.list; track li) { <li class="flex gap-2"><span class="text-brand">•</span><span>{{ li }}</span></li> }
+          </ul>
+        }
+      </section>
+      @if ($first) { <app-ad-slot slot="inContent" /> }
+    }
+
     <app-ad-slot slot="top" />
 
     <section class="mt-2" aria-labelledby="other-groups">
@@ -71,6 +97,7 @@ export class HubPage {
   readonly hubPath = input.required<string>();
   protected readonly exams = EXAMS;
   protected readonly hub = computed<Hub>(() => HUBS.find((h) => h.path === this.hubPath())!);
+  protected readonly guide = computed(() => HUB_GUIDES[this.hub().id] ?? []);
   protected readonly others = computed(() => HUBS.filter((h) => h.id !== this.hub().id));
 
   constructor() {
