@@ -1,6 +1,6 @@
 # SpreadApps Tools — roadmap (single pending list)
 
-Live target: https://tools.spreadapps.in · Netlify site `spreadapps-tools` · repo `Jay8500/spreadapps-tools` (to be created).
+Live target: https://tools.spreadapps.in (now at https://spreadapps-tools.netlify.app) · Netlify site `spreadapps-tools` (id 20179a97-8cb0-4626-b30e-c8836e495f6e) · repo `Jay8500/spreadapps-tools` (to be created).
 Stack: Angular 22 (standalone, signals, zoneless) · Tailwind v4 · static prerender (`outputMode: static`) · PWA (ngsw) · Netlify (+ 1 function).
 No database, no login — files are processed in the browser.
 
@@ -51,4 +51,5 @@ no horizontal scroll at 320/390/768/1280 on 6 pages, "Choose photo" above the fo
 rotate + keyboard + corner-drag crop, AI white background (corner pixel 255,255,255), unreachable-size error, inline validation,
 wrong file type toast, IBPS signature 140×60 padded to 12 KB, UPSC name/date strip 400×500, generic 20 KB (3000×2200 noise → 1229×901 18 KB),
 dark mode, 404 status, contact form validation, zero console/page errors.
-Not testable locally: the counter function and Netlify Forms (need a Netlify deploy), Android/iOS camera capture, share sheet.
+Live checks on spreadapps-tools.netlify.app: pages 200 without redirect, 404 status, counter GET/POST + once-per-visitor-per-day + Origin/tool-id rejection, contact form detected by Netlify, security headers.
+Not tested yet: a real contact-form submission, Android/iOS camera capture and share sheet on real phones.

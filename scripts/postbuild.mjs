@@ -27,4 +27,8 @@ const urls = pages
 writeFileSync(join(out, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`);
 
 if (existsSync(join(out, '404/index.html'))) copyFileSync(join(out, '404/index.html'), join(out, '404.html'));
+
+// Netlify 301-redirects /page → /page/ when only page/index.html exists. A sibling page.html is served at /page
+// directly (200), matching our canonical URLs (no trailing slash).
+for (const p of pages) if (p && !skip.has(p)) copyFileSync(join(out, p, 'index.html'), join(out, `${p}.html`));
 console.log(`postbuild: sitemap.xml with ${urls.length} URLs, 404.html ${existsSync(join(out, '404.html')) ? 'written' : 'MISSING'}`);

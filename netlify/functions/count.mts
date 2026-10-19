@@ -34,7 +34,7 @@ export default async (req: Request, context: Context) => {
   const day = new Date().toISOString().slice(0, 10);
   const ip = context.ip || req.headers.get('x-nf-client-connection-ip') || 'unknown';
   const hash = await sha256(`${ip}|${tool}|${day}`);
-  const seen = getStore({ name: 'seen' });
+  const seen = getStore({ name: 'seen', consistency: 'strong' });
   if (await seen.get(`${day}/${hash}`)) return json({ ok: true, counted: false });
   await seen.set(`${day}/${hash}`, '1');
   // Now and then, delete hashes from earlier days (privacy policy promises 1 day).
