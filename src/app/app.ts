@@ -15,10 +15,11 @@ import { DialogHost } from './shared/dialog-host';
 import { ToastHost } from './shared/toast-host';
 import { UpdateBanner } from './shared/update-banner';
 import { ScrollTop } from './shared/scroll-top';
+import { InstallHint } from './shared/install-hint';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, Icon, Brand, Benefits, ToastHost, DialogHost, UpdateBanner, ConsentBanner, ScrollTop],
+  imports: [RouterOutlet, RouterLink, Icon, Brand, Benefits, ToastHost, DialogHost, UpdateBanner, ConsentBanner, ScrollTop, InstallHint],
   template: `
     <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[200] focus:rounded-lg focus:bg-brand focus:px-3 focus:py-2 focus:text-brand-ink">Skip to tool</a>
     <header class="sticky top-0 z-40 border-b border-line bg-surface/90 backdrop-blur">
@@ -99,7 +100,10 @@ import { ScrollTop } from './shared/scroll-top';
 
     <app-consent-banner />
     <app-update-banner />
-    <app-scroll-top />
+    @defer (on idle) {
+      <app-scroll-top />
+      <app-install-hint />
+    }
     <app-toast-host />
     <app-dialog-host />
   `,
@@ -129,6 +133,12 @@ export class App {
       this.canGoBack.set(this.navs > 1);
     });
     this.consent.init();
+    // Keep the browser's install offer for our own install tip (loads a moment later)
+    if (typeof window !== 'undefined')
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        (window as { __installEvent?: Event }).__installEvent = e;
+      });
     // Festival day: a short shower of confetti/sparkles on the first page of the visit (code loads only then)
     afterNextRender(() => {
       setTimeout(async () => {

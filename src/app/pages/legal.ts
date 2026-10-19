@@ -121,7 +121,15 @@ export class Privacy {
         <li>Calculators give estimates, not financial or tax advice.</li>
         <li>Health tools are not medical advice — talk to a doctor.</li>
         <li>Files are processed on your device; keep your own copy of originals.</li>
+        <li>Prices, rates, plans, fines and holiday dates are copied from official or public sources on the date shown and can change — confirm with the source before you pay or decide.</li>
+        <li>Traffic rules and fines are general information, not legal advice.</li>
       </ul>
+      <h2>Names and trademarks</h2>
+      <p>
+        Company, app and product names shown (for example Jio, Airtel, Netflix, Amazon Prime, JioHotstar, PVR or Indian Oil) belong to their owners
+        and are used only to identify them. SpreadApps is independent and not linked to, sponsored or endorsed by any of them.
+        Map data © OpenStreetMap contributors; other data sources are credited on each tool.
+      </p>
       <h2>Liability</h2>
       <p>The tools are provided “as is”. To the extent the law allows, SpreadApps is not liable for any loss from using them, including a rejected application.</p>
       <h2>Ads and links</h2>
