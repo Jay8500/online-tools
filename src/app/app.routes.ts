@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { CALC_LINKS } from './core/calc-links';
 import { TOOL_LINKS } from './core/tool-links';
+import { HUB_ROUTES } from './core/hub-paths';
 import { EXAMS, KB_PRESETS, examPath, kbPath } from './core/exams';
 
 const examTool = () => import('./pages/exam-tool').then((m) => m.ExamTool);
@@ -16,6 +17,7 @@ export const routes: Routes = [
   { path: 'resize-image-to-kb', loadComponent: kbTool, data: { kb: 50, generic: true } },
   ...KB_PRESETS.map((kb) => ({ path: kbPath(kb), loadComponent: kbTool, data: { kb } })),
   ...CALC_LINKS.map((c) => ({ path: c.path, loadComponent: calcPage, data: { calc: c.id } })),
+  ...HUB_ROUTES.map((path) => ({ path, loadComponent: () => import('./pages/hub-page').then((m) => m.HubPage), data: { hubPath: path } })),
   ...TOOL_LINKS.map((t) => ({ path: t.path, loadComponent: toolPage, data: { tool: t.id } })),
   { path: 'about', loadComponent: () => legal().then((m) => m.About) },
   { path: 'privacy', loadComponent: () => legal().then((m) => m.Privacy) },

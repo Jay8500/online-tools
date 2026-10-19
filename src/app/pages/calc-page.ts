@@ -23,7 +23,7 @@ import { GstCalc, HraCalc, SalaryCalc, TaxCalc } from './calc/tax-calcs';
       <div class="min-w-0">
         <nav aria-label="Breadcrumb" class="mb-1 flex items-center gap-1 text-xs text-muted">
           <a routerLink="/" class="hover:text-brand hover:underline">Home</a><svg lucideIcon="chevron-right" [size]="12" />
-          <a routerLink="/" fragment="calculators" class="hover:text-brand hover:underline">Calculators</a><svg lucideIcon="chevron-right" [size]="12" />
+          <a routerLink="/money-calculators" class="hover:text-brand hover:underline">Calculators</a><svg lucideIcon="chevron-right" [size]="12" />
           <span aria-current="page" class="font-medium text-ink">{{ c.name }}</span>
         </nav>
         <h1 class="text-lg leading-snug font-bold sm:text-2xl">{{ c.h1 }}</h1>

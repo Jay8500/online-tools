@@ -20,7 +20,7 @@ import { ImageTool, ToolSpec } from '../shared/image-tool';
       <div class="min-w-0">
         <nav aria-label="Breadcrumb" class="mb-1 flex items-center gap-1 text-xs text-muted">
           <a routerLink="/" class="hover:text-brand hover:underline">Home</a><svg lucideIcon="chevron-right" [size]="12" />
-          <a routerLink="/" fragment="exam-photo" class="hover:text-brand hover:underline">Exam photos</a><svg lucideIcon="chevron-right" [size]="12" />
+          <a routerLink="/exam-photo-signature-resize" class="hover:text-brand hover:underline">Exam photos</a><svg lucideIcon="chevron-right" [size]="12" />
           <span aria-current="page" class="font-medium text-ink">{{ e.name }} {{ docShort() }}</span>
         </nav>
         <h1 class="text-lg leading-snug font-bold sm:text-2xl">{{ e.name }} {{ docLabel() }} Resize — {{ d.width }}×{{ d.height }} px, {{ d.minKb }}–{{ d.maxKb }} KB</h1>

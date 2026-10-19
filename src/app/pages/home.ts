@@ -6,6 +6,7 @@ import { DOC_SHORT, DocKind, EXAMS, Exam, examPath } from '../core/exams';
 import { CounterService } from '../core/counter.service';
 import { SeoService } from '../core/seo.service';
 import { SITE } from '../core/site.config';
+import { HUB_PATHS } from '../core/hub-paths';
 import { TOOL_GROUPS, groupAnchor } from '../core/tools';
 import { AdSlot } from '../shared/ad-slot';
 
@@ -26,9 +27,12 @@ import { AdSlot } from '../shared/ad-slot';
     </div>
 
     <section id="exam-photo" class="mt-4 scroll-mt-16" aria-labelledby="h-exam">
-      <h2 id="h-exam" class="mb-2 flex items-center gap-2 text-sm font-bold tracking-wide text-muted uppercase">
-        <svg lucideIcon="scan-face" [size]="16" /> Exam photo & signature resizer
-      </h2>
+      <div class="mb-2 flex items-baseline justify-between gap-2">
+        <h2 id="h-exam" class="flex items-center gap-2 text-sm font-bold tracking-wide text-muted uppercase">
+          <svg lucideIcon="scan-face" [size]="16" /> Exam photo & signature resizer
+        </h2>
+        <a routerLink="/exam-photo-signature-resize" class="shrink-0 text-xs font-semibold text-brand hover:underline">See all →</a>
+      </div>
       <div class="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-5">
         @for (e of exams(); track e.slug) {
           <div class="card flex min-w-0 flex-col gap-2 p-2.5 sm:p-3">
@@ -50,7 +54,10 @@ import { AdSlot } from '../shared/ad-slot';
 
     @for (g of groups(); track g.title) {
       <section class="mt-6 scroll-mt-16" [attr.aria-label]="g.title" [id]="anchor(g.title)">
-        <h2 class="mb-2 text-sm font-bold tracking-wide text-muted uppercase">{{ g.title }}</h2>
+        <div class="mb-2 flex items-baseline justify-between gap-2">
+          <h2 class="text-sm font-bold tracking-wide text-muted uppercase">{{ g.title }}</h2>
+          @if (hub(g.title); as hp) { <a [routerLink]="'/' + hp" class="text-xs font-semibold text-brand hover:underline">See all →</a> }
+        </div>
         <div class="grid grid-cols-1 gap-2 min-[400px]:grid-cols-2 md:grid-cols-4">
           @for (t of g.tools; track t.name) {
             @if (t.path) {
@@ -103,6 +110,10 @@ export class Home {
       path: '',
       jsonLd: [{ '@type': 'WebSite', name: SITE.name, url: SITE.url, inLanguage: 'en-IN' }],
     });
+  }
+
+  protected hub(title: string) {
+    return HUB_PATHS[title] ?? null;
   }
 
   protected anchor(title: string) {

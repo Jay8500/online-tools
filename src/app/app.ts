@@ -23,9 +23,9 @@ import { UpdateBanner } from './shared/update-banner';
       <div class="mx-auto flex h-12 max-w-6xl items-center gap-2 px-3 sm:px-4">
         <a routerLink="/" aria-label="SpreadApps Tools home"><app-brand [size]="30" /></a>
         <nav class="ml-auto flex items-center gap-1 text-sm font-medium" aria-label="Main">
-          <a routerLink="/" fragment="exam-photo" class="hidden rounded-lg px-2.5 py-1.5 text-muted hover:bg-surface-2 hover:text-ink sm:block">Exam photos</a>
+          <a routerLink="/exam-photo-signature-resize" class="hidden rounded-lg px-2.5 py-1.5 text-muted hover:bg-surface-2 hover:text-ink sm:block">Exam photos</a>
           <a routerLink="/resize-image-to-kb" class="hidden rounded-lg px-2.5 py-1.5 text-muted hover:bg-surface-2 hover:text-ink sm:block">Resize to KB</a>
-          <a routerLink="/" fragment="calculators" class="hidden rounded-lg px-2.5 py-1.5 text-muted hover:bg-surface-2 hover:text-ink sm:block">Calculators</a>
+          <a routerLink="/money-calculators" class="hidden rounded-lg px-2.5 py-1.5 text-muted hover:bg-surface-2 hover:text-ink sm:block">Calculators</a>
           <button class="btn-icon size-9 border-transparent bg-transparent" (click)="theme.toggle()"
                   [attr.aria-label]="theme.dark() ? 'Switch to light theme' : 'Switch to dark theme'">
             <svg [lucideIcon]="theme.dark() ? 'sun' : 'moon'" [size]="18" />
@@ -54,7 +54,7 @@ import { UpdateBanner } from './shared/update-banner';
           </p>
         </div>
         <nav aria-label="Exam photo tools">
-          <p class="mb-2 font-semibold">Exam photo & signature</p>
+          <a routerLink="/exam-photo-signature-resize" class="mb-2 block font-semibold hover:text-brand">Exam photo & signature</a>
           <ul class="grid grid-cols-2 gap-x-3 gap-y-1.5 text-muted">
             @for (e of exams; track e.slug) {
               <li><a [routerLink]="'/' + photoPath(e)" class="hover:text-brand">{{ e.name }} photo</a></li>
@@ -62,7 +62,7 @@ import { UpdateBanner } from './shared/update-banner';
           </ul>
         </nav>
         <nav aria-label="Money calculators">
-          <p class="mb-2 font-semibold">Money calculators</p>
+          <a routerLink="/money-calculators" class="mb-2 block font-semibold hover:text-brand">Money calculators</a>
           <ul class="grid grid-cols-2 gap-x-3 gap-y-1.5 text-muted">
             @for (c of calcs; track c.id) {
               <li><a [routerLink]="'/' + c.path" class="hover:text-brand">{{ c.name }}</a></li>
@@ -71,6 +71,7 @@ import { UpdateBanner } from './shared/update-banner';
         </nav>
         <nav aria-label="More free tools">
           <p class="mb-2 font-semibold">PDF, business & more</p>
+          <p class="mb-2 flex flex-wrap gap-x-3 gap-y-1 text-xs"><a routerLink="/pdf-tools" class="text-brand hover:underline">PDF tools</a><a routerLink="/business-tools" class="text-brand hover:underline">Business</a><a routerLink="/health-calculators" class="text-brand hover:underline">Health</a><a routerLink="/language-tools" class="text-brand hover:underline">Language</a></p>
           <ul class="grid grid-cols-2 gap-x-3 gap-y-1.5 text-muted">
             @for (t of tools; track t.id) {
               <li><a [routerLink]="'/' + t.path" class="hover:text-brand">{{ t.name }}</a></li>
