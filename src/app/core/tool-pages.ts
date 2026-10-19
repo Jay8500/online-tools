@@ -146,10 +146,10 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
     disclaimer: 'health',
   },
   gold: {
-    h1: 'Gold & Silver Price Calculator',
-    title: 'Gold Price Calculator — Jewellery Price with Making Charges & GST',
-    description: 'Calculate the price of gold or silver jewellery from today’s rate: weight in grams, tola or sovereign (pavan), 24K/22K/18K, wastage, making charges and 3% GST.',
-    intro: 'Know what a gold or silver ornament should cost before you go to the shop — using today’s rate from your jeweller.',
+    h1: 'Gold & Silver Price Today + Calculator',
+    title: 'Gold Rate Today Live (India) & Jewellery Price Calculator — 24K, 22K, Silver',
+    description: 'Live India gold and silver rate estimate (24K, 22K per 10 g, silver per kg) updated every minute, plus a jewellery price calculator with wastage, making charges and 3% GST.',
+    intro: 'Live gold and silver price estimate for India, and a calculator for what an ornament should cost.',
     steps: [
       'Choose Gold or Silver.',
       'Type today’s rate from your jeweller and choose what it is for (e.g. 22K per 10 grams).',
@@ -157,7 +157,7 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
       'Add wastage (VA) and making charges as quoted — the total includes 3% GST.',
     ],
     faqs: [
-      { q: 'Why do I enter the rate myself?', a: 'Gold rates differ between cities and jewellers and change during the day. Using the rate your shop shows makes the estimate match your bill.' },
+      { q: 'How is the live rate worked out?', a: 'From the international gold and silver price (updated every minute) converted to rupees, plus India’s 15% import duty (10% customs + 5% cess, from May 2026). GST of 3% is added on purchase. Jewellers and cities differ by a few hundred rupees, so use your shop’s rate for the final bill.' },
       { q: 'How is GST charged on jewellery?', a: 'GST of 3% applies to the value of the jewellery including making charges.' },
       { q: 'What is a sovereign or pavan?', a: 'A sovereign (pavan) is 8 grams of gold — a common unit in Tamil Nadu, Kerala and Andhra Pradesh. A tola is 11.66 grams.' },
       { q: 'What is wastage (VA)?', a: 'Value addition or wastage is an extra percentage of gold some jewellers charge for the metal lost while making the ornament — common in South India. Ask your jeweller for their figure.' },
@@ -315,7 +315,7 @@ export const DISCLAIMERS: Record<Disclaimer, string> = {
   invoice: 'This tool helps you format an invoice; it is not tax advice. Check GST rates, HSN codes and e-invoicing rules with your CA.',
   upi: 'Always test the QR by paying ₹1 with your own UPI app before printing. We never handle your money.',
   land: 'Conversions use standard definitions (1 acre = 40 guntas = 100 cents). Always confirm the area in your sale deed, pahani/1-B or registration documents. Prices exclude stamp duty and registration.',
-  gold: 'Estimates only. Rates change during the day and differ between jewellers; wastage and making charges vary by design. Confirm the final bill at the shop.',
+  gold: 'Live rate is an estimate from international prices + import duty — not an official IBJA/MCX rate. Rates differ between jewellers; wastage and making charges vary by design. Confirm the final bill at the shop.',
   travel: 'Times are estimates. Check IRCTC/NTES, TGSRTC/APSRTC or the airline for real timetables, and follow traffic and safety advisories.',
   weather: 'Forecasts can change. For cyclone, heavy-rain and heatwave warnings follow IMD (mausam.imd.gov.in) and local authorities.',
   units: 'Conversions use standard international definitions and run on your device.',

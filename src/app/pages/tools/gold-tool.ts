@@ -1,5 +1,6 @@
 import { Component, computed, linkedSignal, signal } from '@angular/core';
 import { rupees } from '../../core/finance';
+import { LiveMetals, MetalPrices } from '../../shared/live-metals';
 import { NumField } from '../../shared/num-field';
 
 const SEG = 'flex rounded-xl border border-line bg-surface-2 p-1 text-sm font-semibold';
@@ -34,8 +35,9 @@ const WEIGHT_UNITS = [
  */
 @Component({
   selector: 'app-gold-tool',
-  imports: [NumField],
+  imports: [NumField, LiveMetals],
   template: `
+    <div class="mb-4"><app-live-metals (use)="useLive($event)" /></div>
     <div class="${SEG}" role="group" aria-label="Metal">
       <button type="button" class="${SEG_BTN}" [class.bg-surface]="metal() === 'gold'" [class.shadow-sm]="metal() === 'gold'" [attr.aria-pressed]="metal() === 'gold'" (click)="metal.set('gold')">Gold</button>
       <button type="button" class="${SEG_BTN}" [class.bg-surface]="metal() === 'silver'" [class.shadow-sm]="metal() === 'silver'" [attr.aria-pressed]="metal() === 'silver'" (click)="metal.set('silver')">Silver</button>
@@ -44,7 +46,7 @@ const WEIGHT_UNITS = [
       <div class="space-y-3">
         <div class="grid grid-cols-[1fr_auto] items-end gap-2">
           <app-num-field [label]="'Today’s rate (' + rateBasisLabel() + ')'" prefix="₹" [(value)]="rate" [min]="1" [max]="100000000" [step]="10" [slider]="false"
-                         hint="Example value — type today’s rate from your jeweller." />
+                         hint="Tap “Use this rate” above, or type your jeweller’s rate." />
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
@@ -118,7 +120,7 @@ export class GoldTool {
         ],
   );
   // Sensible starting values; the visitor overwrites the rate with today's.
-  protected readonly rate = linkedSignal(() => (this.metal() === 'gold' ? 110000 : 140000));
+  protected readonly rate = linkedSignal<number>(() => (this.metal() === 'gold' ? 110000 : 140000));
   protected readonly ratePer = linkedSignal<string>(() => (this.metal() === 'gold' ? '10g' : 'kg'));
   protected readonly ratePurity = linkedSignal<string>(() => (this.metal() === 'gold' ? '22' : '999'));
   protected readonly itemPurity = linkedSignal<string>(() => (this.metal() === 'gold' ? '22' : '925'));
@@ -144,6 +146,19 @@ export class GoldTool {
     const gst = ((metal + wastage + making) * 3) / 100;
     return { grams, pureRatePerG, metal, wastage, making, gst, total: metal + wastage + making + gst };
   });
+
+  /** Fill the calculator with the live estimate (24K per 10 g, or 999 silver per kg). */
+  protected useLive(p: MetalPrices) {
+    if (this.metal() === 'gold') {
+      this.ratePer.set('10g');
+      this.ratePurity.set('24');
+      this.rate.set(p.gold24PerG * 10);
+    } else {
+      this.ratePer.set('kg');
+      this.ratePurity.set('999');
+      this.rate.set(p.silverPerKg);
+    }
+  }
 
   protected val(e: Event) {
     return (e.target as HTMLSelectElement).value;

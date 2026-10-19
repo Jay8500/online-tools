@@ -14,7 +14,7 @@ const SLOWER: Record<string, number> = { bus: 1.25, bike: 1.1 };
 
 export default async (req: Request) => {
   const key = Netlify.env.get('ORS_API_KEY');
-  if (!key) return json({ error: 'not-configured' }, 503, 'no-store');
+  if (!key) return json({ error: 'not-configured', reason: 'no-key' }, 503, 'no-store');
   const u = new URL(req.url);
   const from = (u.searchParams.get('from') ?? '').trim();
   const to = (u.searchParams.get('to') ?? '').trim();
@@ -32,7 +32,7 @@ export default async (req: Request) => {
       headers: { Authorization: key, 'content-type': 'application/json' },
       body: JSON.stringify({ coordinates: [a.coord, b.coord], instructions: true, language: 'en', units: 'km' }),
     });
-    if (r.status === 401 || r.status === 403) return json({ error: 'not-configured' }, 503, 'no-store');
+    if (r.status === 401 || r.status === 403) return json({ error: 'not-configured', reason: 'key-rejected' }, 503, 'no-store');
     if (r.status === 429) return json({ error: 'Too many route requests right now. Please try again in a minute.' }, 429, 'no-store');
     if (!r.ok) {
       const t = await r.text();

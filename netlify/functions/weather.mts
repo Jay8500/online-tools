@@ -11,7 +11,7 @@ const CITY_RE = /^[\p{L} .'-]{2,60}$/u;
 
 export default async (req: Request) => {
   const key = Netlify.env.get('OPENWEATHER_API_KEY');
-  if (!key) return json({ error: 'not-configured' }, 503, 'no-store');
+  if (!key) return json({ error: 'not-configured', reason: 'no-key' }, 503, 'no-store');
 
   const url = new URL(req.url);
   const city = (url.searchParams.get('city') ?? '').trim();
@@ -32,7 +32,8 @@ export default async (req: Request) => {
   try {
     const [cur, fc] = await Promise.all([fetch(`${OWM}/data/2.5/weather?${q}`), fetch(`${OWM}/data/2.5/forecast?${q}`)]);
     if (cur.status === 404) return json({ error: 'City not found. Check the spelling, e.g. Visakhapatnam.' }, 404, 'public, max-age=300');
-    if (cur.status === 401) return json({ error: 'not-configured' }, 503, 'no-store');
+    // Key present but OpenWeather refuses it (new keys take up to 2 h to activate)
+    if (cur.status === 401) return json({ error: 'not-configured', reason: 'key-rejected' }, 503, 'no-store');
     if (!cur.ok || !fc.ok) return json({ error: 'Weather service is busy. Please try again in a minute.' }, 502, 'no-store');
     const c = (await cur.json()) as OwmCurrent;
     const f = (await fc.json()) as { list: OwmItem[]; city: { timezone: number } };
