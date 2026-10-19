@@ -10,7 +10,8 @@ const OWM = 'https://api.openweathermap.org';
 const CITY_RE = /^[\p{L} .'-]{2,60}$/u;
 
 export default async (req: Request) => {
-  const key = Netlify.env.get('OPENWEATHER_API_KEY');
+  // trim(): pasted keys often carry a stray space or newline
+  const key = Netlify.env.get('OPENWEATHER_API_KEY')?.trim();
   if (!key) return json({ error: 'not-configured', reason: 'no-key' }, 503, 'no-store');
 
   const url = new URL(req.url);

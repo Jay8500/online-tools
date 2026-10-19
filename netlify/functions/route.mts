@@ -13,7 +13,7 @@ const PROFILE: Record<string, string> = { car: 'driving-car', bike: 'driving-car
 const SLOWER: Record<string, number> = { bus: 1.25, bike: 1.1 };
 
 export default async (req: Request) => {
-  const key = Netlify.env.get('ORS_API_KEY');
+  const key = Netlify.env.get('ORS_API_KEY')?.trim();
   if (!key) return json({ error: 'not-configured', reason: 'no-key' }, 503, 'no-store');
   const u = new URL(req.url);
   const from = (u.searchParams.get('from') ?? '').trim();
@@ -53,7 +53,7 @@ export default async (req: Request) => {
     const scale = km / (cum[cum.length - 1] || 1);
     const samples = [0.17, 0.33, 0.5, 0.67, 0.83].map((p) => Math.floor(p * (coords.length - 1)));
     const towns = await Promise.all(samples.map((i) => reverse(coords[i], key)));
-    const seen = new Set([a.name.split(',')[0], b.name.split(',')[0]]);
+    const seen = new Set([a.name.split(',')[0], b.name.split(',')[0], title(from), title(to)]);
     const stops = samples
       .map((i, k) => ({ name: towns[k], km: Math.round(cum[i] * scale), min: Math.round(((cum[i] * scale) / km) * (sec / 60)) }))
       .filter((s) => s.name && !seen.has(s.name) && seen.add(s.name));
@@ -65,8 +65,8 @@ export default async (req: Request) => {
 
     return json(
       {
-        from: a.name,
-        to: b.name,
+        from: title(from),
+        to: title(to),
         mode,
         km: +km.toFixed(1),
         minutes: Math.round(sec / 60),
@@ -101,7 +101,7 @@ async function geocode(text: string, key: string): Promise<{ coord: [number, num
 
 async function reverse([lon, lat]: [number, number], key: string): Promise<string> {
   try {
-    const r = await fetch(`${ORS}/geocode/reverse?api_key=${key}&point.lon=${lon}&point.lat=${lat}&size=1&layers=locality,localadmin,county`);
+    const r = await fetch(`${ORS}/geocode/reverse?api_key=${key}&point.lon=${lon}&point.lat=${lat}&size=1&layers=locality,localadmin`);
     if (!r.ok) return '';
     const j = (await r.json()) as { features: { properties: { locality?: string; localadmin?: string; county?: string; name?: string } }[] };
     const p = j.features?.[0]?.properties;
@@ -109,6 +109,11 @@ async function reverse([lon, lat]: [number, number], key: string): Promise<strin
   } catch {
     return '';
   }
+}
+
+/** 'hyderabad' → 'Hyderabad' (keeps what the visitor typed, tidied). */
+function title(s: string) {
+  return s.trim().replace(/s+/g, ' ').replace(/(^|[s(,-])(p{Ll})/gu, (m, a, c) => a + c.toUpperCase());
 }
 
 function hav(a: [number, number], b: [number, number]) {
