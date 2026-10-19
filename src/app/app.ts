@@ -96,7 +96,7 @@ import { InstallFooter } from './shared/install-footer';
       </div>
       <div class="border-t border-line px-4 py-3"><app-benefits [center]="true" /></div>
       <p class="border-t border-line px-4 py-3 text-center text-xs text-muted">
-        © {{ year }} <a href="https://spreadapps.in" class="font-semibold hover:text-brand">SpreadApps</a> · A SpreadApps product · Made in India
+        © {{ year }} <a href="https://spreadapps.in" class="font-semibold hover:text-brand">SpreadApps™</a> · Lakkoju Jaya Krishna · All rights reserved · Made in India
       </p>
     </footer>
 
@@ -141,7 +141,7 @@ export class App {
         e.preventDefault();
         (window as { __installEvent?: Event }).__installEvent = e;
       });
-    // Festival day: a short shower of confetti/sparkles on the first page of the visit (code loads only then)
+    // Festival day: a short shower of confetti/sparkles once a day per device (code loads only then)
     afterNextRender(() => {
       setTimeout(async () => {
         const c = await import('./core/celebrate');
@@ -149,8 +149,9 @@ export class App {
         const f = c.festivalOn(today);
         if (!f) return;
         try {
-          if (sessionStorage.getItem('celebrated') === today) return;
-          sessionStorage.setItem('celebrated', today);
+          // Once a day per device, not on every visit
+          if (localStorage.getItem('celebrated') === today || sessionStorage.getItem('celebrated') === today) return;
+          localStorage.setItem('celebrated', today);
         } catch {
           /* still show once */
         }

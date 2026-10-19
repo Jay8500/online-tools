@@ -8,7 +8,7 @@ const KEY = 'install-hint';
 
 /**
  * One-time "install as an app" tip for first-time visitors, with the right steps for their device.
- * Closing it (✕) hides it for good; the footer keeps a permanent install box.
+ * Shown once per device (even if ignored it hides after 20 s); the footer keeps a permanent install box.
  * Never shown when already installed, before the cookie choice, or in browsers that can't install.
  */
 @Component({
@@ -53,8 +53,16 @@ export class InstallHint {
       if (this.seen() || isInstalled() || !installKind()) return;
       // Let people use the page first
       setTimeout(() => {
-        this.kind.set(installEvent() ? 'prompt' : installKind());
-        this.ready.set(true);
+        // Wait (without counting) while the cookie banner is open, then show once — ever
+        const show = () => {
+          if (this.consent.showBanner) return void setTimeout(show, 3000);
+          this.kind.set(installEvent() ? 'prompt' : installKind());
+          this.ready.set(true);
+          this.save('shown');
+          // Slides away by itself if ignored; the footer keeps the steps
+          setTimeout(() => this.done.set(true), 20000);
+        };
+        show();
       }, 6000);
     });
   }
@@ -69,6 +77,10 @@ export class InstallHint {
 
   private remember(v: string) {
     this.done.set(true);
+    this.save(v);
+  }
+
+  private save(v: string) {
     try {
       localStorage.setItem(KEY, v);
     } catch {
