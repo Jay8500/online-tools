@@ -6,6 +6,7 @@ import { CounterService } from '../core/counter.service';
 import { SeoService } from '../core/seo.service';
 import { SITE } from '../core/site.config';
 import { TOOL_LINKS } from '../core/tool-links';
+import { SOURCES } from '../core/sources';
 import { HUB_PATHS } from '../core/hub-paths';
 import { DISCLAIMERS, ToolPageInfo, toolPage } from '../core/tool-pages';
 import { AdSlot } from '../shared/ad-slot';
@@ -94,6 +95,9 @@ import { TravelTool } from './tools/travel-tool';
         <p class="mt-2 flex items-start gap-1.5 text-xs text-muted">
           <svg lucideIcon="info" [size]="14" class="mt-px shrink-0" /> {{ disclaimer() }}
         </p>
+        @if (sources(); as ss) {
+          <p class="mt-1 pl-5 text-xs text-muted">Data sources: @for (s of ss; track s.url; let last = $last) {<a [href]="s.url" target="_blank" rel="noopener" class="font-medium text-brand underline">{{ s.name }}</a>@if (!last) {, }}</p>
+        }
 
         <app-ad-slot slot="top" />
 
@@ -143,6 +147,7 @@ export class ToolPageView {
   protected readonly wide = computed(() => this.info().id === 'gst-invoice');
   protected readonly related = computed(() => TOOL_LINKS.filter((t) => t.group === this.info().group && t.id !== this.info().id));
   protected readonly hubPath = computed(() => HUB_PATHS[this.info().group]);
+  protected readonly sources = computed(() => SOURCES[this.info().path] ?? null);
   protected readonly disclaimer = computed(() => DISCLAIMERS[this.info().disclaimer]);
 
   constructor() {

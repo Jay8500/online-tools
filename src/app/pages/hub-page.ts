@@ -9,6 +9,7 @@ import { AdSlot } from '../shared/ad-slot';
 import { FaqList } from '../shared/faq-list';
 import { Icon } from '../shared/icon';
 import { LiveBadge } from '../shared/live-badge';
+import { SOURCES } from '../core/sources';
 
 /** Category page, e.g. /health-calculators — intro + every tool in the group + other groups. */
 @Component({
@@ -41,14 +42,18 @@ import { LiveBadge } from '../shared/live-badge';
       <ul class="mt-4 grid grid-cols-1 gap-2 min-[420px]:grid-cols-2 md:grid-cols-3">
         @for (t of h.items; track t.path) {
           <li>
-            <a [routerLink]="'/' + t.path" class="card group flex h-full items-center gap-3 p-3 transition hover:border-brand/50">
+            <div class="card group relative flex h-full items-center gap-3 p-3 transition hover:border-brand/50">
+              <a [routerLink]="'/' + t.path" class="absolute inset-0 rounded-2xl" [attr.aria-label]="t.name"></a>
               <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-brand/10 text-brand"><svg [lucideIcon]="t.icon" [size]="20" /></span>
               <span class="min-w-0">
                 <h2 class="text-sm font-semibold group-hover:text-brand">{{ t.name }}</h2>
                 <span class="block text-xs text-muted">{{ t.blurb }}</span>
+                @if (src(t.path); as ss) {
+                  <span class="relative z-10 mt-0.5 block text-[10px] text-muted">Data: @for (s of ss; track s.url; let last = $last) {<a [href]="s.url" target="_blank" rel="noopener" class="underline decoration-dotted hover:text-brand">{{ s.name }}</a>@if (!last) {, }}</span>
+                }
               </span>
               @if (live(t.path); as k) { <app-live-badge [kind]="k" /> }
-            </a>
+            </div>
           </li>
         }
       </ul>
@@ -130,6 +135,11 @@ export class HubPage {
         ],
       });
     });
+  }
+
+  /** Third-party data credit (with links) for live tools. */
+  protected src(path: string | null) {
+    return path ? (SOURCES[path] ?? null) : null;
   }
 
   /** Cards that show a live value on the right (gold rate, weather). */

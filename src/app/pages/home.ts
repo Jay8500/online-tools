@@ -10,6 +10,7 @@ import { HUB_PATHS } from '../core/hub-paths';
 import { TOOL_GROUPS, groupAnchor } from '../core/tools';
 import { AdSlot } from '../shared/ad-slot';
 import { LiveBadge } from '../shared/live-badge';
+import { SOURCES } from '../core/sources';
 
 const HOME_PER_GROUP = 4;
 const HOME_EXAMS = 5;
@@ -65,11 +66,15 @@ const HOME_EXAMS = 5;
         <div class="grid grid-cols-1 gap-2 min-[400px]:grid-cols-2 md:grid-cols-4">
           @for (t of g.tools; track t.name) {
             @if (t.path) {
-              <a [routerLink]="'/' + t.path" class="card group flex items-center gap-3 p-3 transition hover:border-brand/50">
+              <div class="card group relative flex items-center gap-3 p-3 transition hover:border-brand/50">
+                <a [routerLink]="'/' + t.path" class="absolute inset-0 rounded-2xl" [attr.aria-label]="t.name"></a>
                 <span class="grid size-9 shrink-0 place-items-center rounded-xl bg-brand/10 text-brand"><svg [lucideIcon]="t.icon" [size]="18" /></span>
-                <span class="min-w-0"><span class="block text-sm font-semibold group-hover:text-brand">{{ t.name }}</span><span class="block text-xs text-muted">{{ t.blurb }}</span></span>
+                <span class="min-w-0"><span class="block text-sm font-semibold group-hover:text-brand">{{ t.name }}</span><span class="block text-xs text-muted">{{ t.blurb }}</span>
+                @if (src(t.path); as ss) {
+                  <span class="relative z-10 mt-0.5 block text-[10px] text-muted">Data: @for (s of ss; track s.url; let last = $last) {<a [href]="s.url" target="_blank" rel="noopener" class="underline decoration-dotted hover:text-brand">{{ s.name }}</a>@if (!last) {, }}</span>
+                }</span>
                 @if (live(t.path); as k) { <app-live-badge [kind]="k" /> }
-              </a>
+              </div>
             } @else {
               <div class="card flex items-center gap-3 p-3 opacity-70">
                 <span class="grid size-9 shrink-0 place-items-center rounded-xl bg-surface-2 text-muted"><svg [lucideIcon]="t.icon" [size]="18" /></span>
@@ -118,6 +123,11 @@ export class Home {
       path: '',
       jsonLd: [{ '@type': 'WebSite', name: SITE.name, url: SITE.url, inLanguage: 'en-IN' }],
     });
+  }
+
+  /** Third-party data credit (with links) for live tools. */
+  protected src(path: string | null) {
+    return path ? (SOURCES[path] ?? null) : null;
   }
 
   /** Cards that show a live value on the right (gold rate, weather). */
