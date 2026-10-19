@@ -42,8 +42,11 @@ No database, no login — files are processed in the browser.
 - [ ] Telugu / Hindi versions of tool pages (hreflang)
 - [ ] Lighthouse/PageSpeed run on the live URL (Core Web Vitals) after deploy
 
-## Phase 2 — Indian money calculators
-EMI, SIP, FD, PPF, income tax old vs new (FY 2026-27 slabs), GST, HRA, in-hand salary. Each: own page, charts, "estimates, not financial/tax advice" disclaimer, FAQ + JSON-LD.
+## Phase 2 — Indian money calculators ✅ built (2026-10-19)
+- [x] 12 prerendered pages: EMI (+ home/car/personal loan), SIP (step-up), lumpsum, FD, PPF (7.1%), income tax old vs new (FY 2026-27, 87A + marginal relief + surcharge relief), GST (GST 2.0 5/18/40, CGST/SGST/IGST), HRA (new 8-metro list), in-hand salary
+- [x] Formulas in `core/finance.ts` checked against reference values (23 checks); browser test 24 checks at 320/390/768/1280
+- [ ] After every Budget / quarter: update `TAX_YEAR`, slabs, `PPF_RATE`, GST rates in `core/finance.ts`
+- [ ] Later: shareable result links (?amount=…), prepayment in EMI, capital-gains tax, NPS/EPF/SSY/RD calculators, Hindi/Telugu
 
 ## Phase 3 — PDF tools (lazy-loaded pdf-lib / pdf.js)
 Merge, split, compress, image → PDF, PDF → image. All on device.

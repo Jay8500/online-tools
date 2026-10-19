@@ -1,9 +1,11 @@
 import { Routes } from '@angular/router';
+import { CALC_LINKS } from './core/calc-links';
 import { EXAMS, KB_PRESETS, examPath, kbPath } from './core/exams';
 
 const examTool = () => import('./pages/exam-tool').then((m) => m.ExamTool);
 const kbTool = () => import('./pages/kb-tool').then((m) => m.KbTool);
 const legal = () => import('./pages/legal');
+const calcPage = () => import('./pages/calc-page').then((m) => m.CalcPageView);
 
 /** Every route here is prerendered to static HTML at build time (see app.routes.server.ts). */
 export const routes: Routes = [
@@ -11,6 +13,7 @@ export const routes: Routes = [
   ...EXAMS.flatMap((e) => e.docs.map((d) => ({ path: examPath(e, d.kind), loadComponent: examTool, data: { exam: e.slug, kind: d.kind } }))),
   { path: 'resize-image-to-kb', loadComponent: kbTool, data: { kb: 50, generic: true } },
   ...KB_PRESETS.map((kb) => ({ path: kbPath(kb), loadComponent: kbTool, data: { kb } })),
+  ...CALC_LINKS.map((c) => ({ path: c.path, loadComponent: calcPage, data: { calc: c.id } })),
   { path: 'about', loadComponent: () => legal().then((m) => m.About) },
   { path: 'privacy', loadComponent: () => legal().then((m) => m.Privacy) },
   { path: 'terms', loadComponent: () => legal().then((m) => m.Terms) },

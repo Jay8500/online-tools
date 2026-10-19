@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { Icon } from './shared/icon';
 import { ConsentService } from './core/consent.service';
+import { CALC_LINKS } from './core/calc-links';
 import { EXAMS, examPath } from './core/exams';
 import { ThemeService } from './core/theme.service';
 import { Brand } from './shared/brand';
@@ -21,6 +22,7 @@ import { UpdateBanner } from './shared/update-banner';
         <nav class="ml-auto flex items-center gap-1 text-sm font-medium" aria-label="Main">
           <a routerLink="/" fragment="exam-photo" class="hidden rounded-lg px-2.5 py-1.5 text-muted hover:bg-surface-2 hover:text-ink sm:block">Exam photos</a>
           <a routerLink="/resize-image-to-kb" class="hidden rounded-lg px-2.5 py-1.5 text-muted hover:bg-surface-2 hover:text-ink sm:block">Resize to KB</a>
+          <a routerLink="/" fragment="calculators" class="hidden rounded-lg px-2.5 py-1.5 text-muted hover:bg-surface-2 hover:text-ink sm:block">Calculators</a>
           <button class="btn-icon size-9 border-transparent bg-transparent" (click)="theme.toggle()"
                   [attr.aria-label]="theme.dark() ? 'Switch to light theme' : 'Switch to dark theme'">
             <svg [lucideIcon]="theme.dark() ? 'sun' : 'moon'" [size]="18" />
@@ -34,7 +36,7 @@ import { UpdateBanner } from './shared/update-banner';
     </main>
 
     <footer class="border-t border-line bg-surface">
-      <div class="mx-auto grid max-w-6xl gap-6 px-4 py-8 text-sm sm:grid-cols-3">
+      <div class="mx-auto grid max-w-6xl gap-6 px-4 py-8 text-sm sm:grid-cols-2 lg:grid-cols-4">
         <div>
           <a href="https://spreadapps.in" aria-label="SpreadApps website"><app-brand [size]="26" /></a>
           <p class="mt-2 flex items-start gap-1.5 text-muted">
@@ -47,6 +49,14 @@ import { UpdateBanner } from './shared/update-banner';
           <ul class="grid grid-cols-2 gap-x-3 gap-y-1.5 text-muted">
             @for (e of exams; track e.slug) {
               <li><a [routerLink]="'/' + photoPath(e)" class="hover:text-brand">{{ e.name }} photo</a></li>
+            }
+          </ul>
+        </nav>
+        <nav aria-label="Money calculators">
+          <p class="mb-2 font-semibold">Money calculators</p>
+          <ul class="grid grid-cols-2 gap-x-3 gap-y-1.5 text-muted">
+            @for (c of calcs; track c.id) {
+              <li><a [routerLink]="'/' + c.path" class="hover:text-brand">{{ c.name }}</a></li>
             }
           </ul>
         </nav>
@@ -76,6 +86,7 @@ export class App {
   protected readonly theme = inject(ThemeService);
   protected readonly consent = inject(ConsentService);
   protected readonly exams = EXAMS;
+  protected readonly calcs = CALC_LINKS.filter((c) => !/-loan-emi$/.test(c.id));
   protected readonly year = new Date().getFullYear();
 
   constructor() {

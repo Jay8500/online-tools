@@ -16,7 +16,7 @@ import { AdSlot } from '../shared/ad-slot';
     <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
       <div>
         <h1 class="text-lg font-bold sm:text-2xl">Free online tools for India</h1>
-        <p class="text-sm text-muted">Exam photo & signature resizer, image to KB and more — fast, free, nothing uploaded.</p>
+        <p class="text-sm text-muted">Exam photo resizer, image to KB, EMI, SIP, income tax & more — fast, free, private.</p>
       </div>
       <label class="relative block sm:w-72">
         <span class="sr-only">Search tools</span>
@@ -49,7 +49,7 @@ import { AdSlot } from '../shared/ad-slot';
     </section>
 
     @for (g of groups(); track g.title) {
-      <section class="mt-6" [attr.aria-label]="g.title">
+      <section class="mt-6 scroll-mt-16" [attr.aria-label]="g.title" [id]="g.title === 'Money calculators' ? 'calculators' : null">
         <h2 class="mb-2 text-sm font-bold tracking-wide text-muted uppercase">{{ g.title }}</h2>
         <div class="grid grid-cols-1 gap-2 min-[400px]:grid-cols-2 md:grid-cols-4">
           @for (t of g.tools; track t.name) {
@@ -86,7 +86,7 @@ export class Home {
   protected readonly exams = computed(() => {
     const q = this.q().trim().toLowerCase();
     if (!q) return EXAMS;
-    return EXAMS.filter((e) => `${e.name} ${e.full} photo signature thumb`.toLowerCase().includes(q));
+    return EXAMS.filter((e) => `${e.name} ${e.full} photo signature thumb resize`.toLowerCase().includes(q));
   });
   protected readonly groups = computed(() => {
     const q = this.q().trim().toLowerCase();
@@ -99,7 +99,7 @@ export class Home {
     inject(SeoService).set({
       title: `${SITE.name} — Exam Photo Resizer, Image to KB & Free Indian Tools`,
       description:
-        'Free tools for Indian students and families: resize photo and signature for SSC, UPSC, IBPS, SBI, RRB, TSPSC, APPSC, NEET, JEE; compress image to KB. Works on mobile, nothing uploaded.',
+        'Free tools for India: exam photo & signature resizer (SSC, UPSC, IBPS, RRB, TSPSC, APPSC, NEET, JEE), image to KB, EMI, SIP, FD, PPF, income tax, GST, HRA and salary calculators.',
       path: '',
       jsonLd: [{ '@type': 'WebSite', name: SITE.name, url: SITE.url, inLanguage: 'en-IN' }],
     });

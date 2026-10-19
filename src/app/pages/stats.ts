@@ -1,6 +1,7 @@
 import { DecimalPipe, isPlatformBrowser } from '@angular/common';
 import { Component, PLATFORM_ID, afterNextRender, computed, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { CALC_LINKS } from '../core/calc-links';
 import { CounterService } from '../core/counter.service';
 import { DOC_SHORT, EXAMS, KB_PRESETS, examPath, kbPath } from '../core/exams';
 import { SeoService } from '../core/seo.service';
@@ -29,6 +30,7 @@ interface Row {
 const NAMES: Record<string, { name: string; path: string }> = {
   home: { name: 'Home page', path: '' },
   'resize-kb': { name: 'Resize image to KB', path: 'resize-image-to-kb' },
+  ...Object.fromEntries(CALC_LINKS.map((c) => [c.id, { name: c.name, path: c.path }])),
   ...Object.fromEntries(KB_PRESETS.map((k) => [`resize-${k}kb`, { name: `Resize to ${k} KB`, path: kbPath(k) }])),
   ...Object.fromEntries(EXAMS.flatMap((e) => e.docs.map((d) => [`${e.slug}-${d.kind}`, { name: `${e.name} ${DOC_SHORT[d.kind].toLowerCase()}`, path: examPath(e, d.kind) }]))),
 };
