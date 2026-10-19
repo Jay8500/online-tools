@@ -1,7 +1,7 @@
 import { Faq } from './seo.service';
 import { TOOL_LINKS, ToolKind, ToolLinkLite } from './tool-links';
 
-export type Disclaimer = 'files' | 'health' | 'invoice' | 'upi' | 'language' | 'land' | 'units' | 'gold' | 'weather';
+export type Disclaimer = 'files' | 'health' | 'invoice' | 'upi' | 'language' | 'land' | 'units' | 'gold' | 'weather' | 'travel';
 
 export interface ToolPageInfo extends ToolLinkLite {
   h1: string;
@@ -164,6 +164,24 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
     ],
     disclaimer: 'gold',
   },
+  travel: {
+    h1: 'Travel Planner — Route, Stops & Travel Time',
+    title: 'Travel Planner India — Distance, Route, Stops & Time by Car, Bus, Train, Flight',
+    description: 'Plan a journey between Indian cities: road route with towns along the way, distance and travel time by car, bike, bus, walking or cycling, plus train and flight estimates with IRCTC, TGSRTC and APSRTC links.',
+    intro: 'Enter where you start and where you’re going, pick how you travel, and see the distance, time and the places you pass.',
+    steps: [
+      'Type the starting place and destination (pick from the list or type any town).',
+      'Choose car, bike, bus, walk, cycle, train or flight.',
+      'Tap “Show journey” — road modes show the route, towns along the way and turn-by-turn directions.',
+      'For trains, buses and flights, use the official links for real timings and tickets.',
+    ],
+    faqs: [
+      { q: 'Why don’t you show exact train and bus timings?', a: 'Indian Railways, TGSRTC and APSRTC don’t offer free public timetable data, so we link straight to IRCTC/NTES and the RTC websites for the real schedule instead of guessing.' },
+      { q: 'How accurate are the road times?', a: 'Road routes come from OpenStreetMap. Times assume normal driving without breaks; buses and bikes are adjusted slower. Traffic, ghats and road works can add time.' },
+      { q: 'Is my trip stored?', a: 'No. The place names are sent to the route service to work out the journey and are not stored by us.' },
+    ],
+    disclaimer: 'travel',
+  },
   weather: {
     h1: 'Weather Today & 5-Day Forecast',
     title: 'Weather Today — Hyderabad, Vijayawada, Vizag & Any Indian City',
@@ -298,6 +316,7 @@ export const DISCLAIMERS: Record<Disclaimer, string> = {
   upi: 'Always test the QR by paying ₹1 with your own UPI app before printing. We never handle your money.',
   land: 'Conversions use standard definitions (1 acre = 40 guntas = 100 cents). Always confirm the area in your sale deed, pahani/1-B or registration documents. Prices exclude stamp duty and registration.',
   gold: 'Estimates only. Rates change during the day and differ between jewellers; wastage and making charges vary by design. Confirm the final bill at the shop.',
+  travel: 'Times are estimates. Check IRCTC/NTES, TGSRTC/APSRTC or the airline for real timetables, and follow traffic and safety advisories.',
   weather: 'Forecasts can change. For cyclone, heavy-rain and heatwave warnings follow IMD (mausam.imd.gov.in) and local authorities.',
   units: 'Conversions use standard international definitions and run on your device.',
   language: 'Typing happens on your device. Spellings follow a phonetic scheme — check important text before sending.',

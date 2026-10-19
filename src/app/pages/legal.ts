@@ -53,6 +53,9 @@ const UPDATED = '19 October 2026';
         through our server to OpenWeather to get the forecast. We don’t store it. Your last city is remembered only in your browser.
       </p>
 
+      <h2>2c. Travel planner</h2>
+      <p>The start and destination you type are sent through our server to OpenRouteService (OpenStreetMap data) to work out the route. We don’t store them.</p>
+
       <h2>3. Usage counter</h2>
       <p>
         Some pages show how many times a tool was used. When you download a result, your browser sends only the tool’s name.

@@ -59,6 +59,9 @@ No database, no login — files are processed in the browser.
 - [x] Daily tools (/daily-tools): gold & silver jewellery price calculator (visitor enters today’s rate; grams/tola/sovereign; 24K–14K, 999/925; wastage, making, 3% GST)
 - [x] Weather page + Netlify function /api/weather (OpenWeatherMap, CDN cache 20 min per city) — [ ] OWNER: create free OpenWeatherMap key and set Netlify env OPENWEATHER_API_KEY
 - [ ] Later: live gold/silver rate from a metals API key (shown as approximate)
+- [x] Travel planner (/travel-planner): estimates for car/bike/bus/train/flight/walk/cycle + IRCTC/NTES/TGSRTC/APSRTC/Google links; road route + towns timeline via netlify/functions/route.mts — [ ] OWNER: free OpenRouteService key → Netlify env ORS_API_KEY
+- [ ] On hold: movie finder / cast & crew (TMDB is non-commercial only; needs commercial licence or paid API)
+- [x] Declined: song lyrics (copyrighted; would break AdSense policy)
 - [x] Home = quick menu (top 4 per group / 5 exams, "See all N"); group pages carry guides (exam size table, tax slabs, Indian BMI chart, land unit table, GST invoice checklist, PDF task table, gold purity, Telugu letters)
 - [x] Back button on every non-home page (history back, or home when landed directly)
 - [ ] Later: Hindi typing, PDF password unlock/protect, page reorder/rotate thumbnails, invoice multi-template + saved customers, UPI QR with logo, HEIC support
