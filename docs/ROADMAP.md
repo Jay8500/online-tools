@@ -68,6 +68,11 @@ No database, no login — files are processed in the browser.
 - [x] Home search: rotating hints with icons, multi-word search
 - [ ] Later: nutrition facts (protein, minerals) for vegetables/groceries from USDA/IFCT; curd prices
 - [x] Cinemas near me (/cinemas-near-me): 352 cinemas in TS/AP from OSM (112 Hyderabad), distance from typed area (1,094 built-in places, else /api/geocode via ORS) or device location; Shows & tickets = Google showtimes search, District/BookMyShow links. No showtimes/prices copied (booking sites have no public API; scraping breaks ToS). Refresh data: scripts/cinemas/build-cinemas.cjs (few times a year)
+- [x] Holiday calendar (/holiday-calendar): India central 2026+2027 (DoPT), Telangana 2026 (G.O.Rt.1715), AP 2026 (G.O.Rt.2276); next-holiday banner + NEXT badge on card, long weekends, .ics download — [ ] DECEMBER: add TS & AP 2027 lists to core/holidays.ts when the GOs come out; more states later
+- [x] Traffic fines & rules (/traffic-challan-fines): MV Act 2019 amounts (sections), TS/AP e-challan links + 10 rule cards — [ ] add per-state compounding amounts only from an official notification; more states later
+- [x] Vegetable page: market controls hidden while DATA_GOV_IN_API_KEY is missing; egg per piece/dozen/tray and milk per litre shown
+- [ ] Milk: only Vijaya + Heritage have verifiable prices; add Dodla/Jersey/Amul when a dated source (pack MRP photo or official notice) is available
+- [ ] Initial bundle ~423 kB (warning raised to 440 kB): if it grows, lazy-load tool page text (tool-pages.ts)
 - [ ] On hold: movie finder / cast & crew (TMDB is non-commercial only; needs commercial licence or paid API)
 - [x] Declined: song lyrics (copyrighted; would break AdSense policy)
 - [x] Home = quick menu (top 4 per group / 5 exams, "See all N"); group pages carry guides (exam size table, tax slabs, Indian BMI chart, land unit table, GST invoice checklist, PDF task table, gold purity, Telugu letters)

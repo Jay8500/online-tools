@@ -26,7 +26,9 @@ export type ToolKind =
   | 'metro'
   | 'fuel'
   | 'grocery'
-  | 'cinema';
+  | 'cinema'
+  | 'holidays'
+  | 'traffic';
 
 export type ToolGroupName = 'PDF tools' | 'Business tools' | 'Health calculators' | 'Language tools' | 'Converters' | 'Daily tools';
 
@@ -53,9 +55,11 @@ export const TOOL_LINKS: ToolLinkLite[] = [
   { id: 'due-date', path: 'pregnancy-due-date-calculator', name: 'Pregnancy due date', group: 'Health calculators', icon: 'baby', blurb: 'Due date & week by week' },
   { id: 'gold', path: 'gold-price-calculator', name: 'Gold & silver price', group: 'Daily tools', icon: 'scale', blurb: 'Jewellery price with making & GST' },
   { id: 'fuel', path: 'petrol-diesel-price', name: 'Petrol & diesel price', group: 'Daily tools', icon: 'gauge', blurb: 'Hyderabad, AP & metros with ▲▼' },
+  { id: 'holidays', path: 'holiday-calendar', name: 'Holiday calendar', group: 'Daily tools', icon: 'calendar-days', blurb: 'India, Telangana & AP holidays 2026–27' },
   { id: 'weather', path: 'weather', name: 'Weather', group: 'Daily tools', icon: 'thermometer', blurb: 'Today + 5-day forecast, any city' },
   { id: 'grocery', path: 'vegetable-prices-today', name: 'Vegetable & grocery prices', group: 'Daily tools', icon: 'receipt', blurb: 'Rythu Bazar & mandi rates, milk, eggs' },
   { id: 'metro', path: 'hyderabad-metro-fare', name: 'Hyderabad Metro fare', group: 'Daily tools', icon: 'map-pin', blurb: 'Fare, stations & route, all 3 lines' },
+  { id: 'traffic', path: 'traffic-challan-fines', name: 'Traffic fines & rules', group: 'Daily tools', icon: 'traffic-cone', blurb: 'Challan amounts for TS & AP, rules in short' },
   { id: 'cinema', path: 'cinemas-near-me', name: 'Cinemas near me', group: 'Daily tools', icon: 'clapperboard', blurb: 'Theatres by distance, shows & tickets' },
   { id: 'travel', path: 'travel-planner', name: 'Travel planner', group: 'Daily tools', icon: 'map-pin', blurb: 'Route, stops & time by road, rail, air' },
   { id: 'land', path: 'land-area-converter', name: 'Land area & price', group: 'Converters', icon: 'ruler', blurb: 'Acre, gunta, cent, ankanam, gajam' },

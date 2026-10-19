@@ -22,6 +22,7 @@ const kg = (perQuintal: number) => perQuintal / 100;
   selector: 'app-grocery-tool',
   imports: [Icon],
   template: `
+    @if (!off()) {
     <div class="flex flex-wrap gap-1.5" role="group" aria-label="State">
       @for (s of states; track s) { <button type="button" class="chip min-h-8 text-xs" [attr.aria-pressed]="state() === s" (click)="pickState(s)">{{ s }}</button> }
     </div>
@@ -36,15 +37,16 @@ const kg = (perQuintal: number) => perQuintal / 100;
       <div class="relative">
         <label class="label" for="g-q">Find an item</label>
         <svg lucideIcon="search" [size]="16" class="pointer-events-none absolute bottom-3 left-3 text-muted" />
-        <input id="g-q" class="input pl-9" type="search" placeholder="Tomato, onion, rice…" [value]="q()" (input)="q.set(val($event))" />
+        <input id="g-q" class="input pl-9" type="search" placeholder="Tomato, onion, rice…" [value]="q()" (input)="q.set(val($event))" [disabled]="loading() || !!error()" />
       </div>
     </div>
+    }
 
     <div class="mt-4" aria-live="polite">
       @if (loading()) {
         <div class="h-40 animate-pulse rounded-2xl bg-surface-2"></div>
       } @else if (off()) {
-        <p class="rounded-xl border border-amber-300/50 bg-amber-500/10 px-3 py-2 text-sm">Live market prices are being switched on. The milk and egg prices below are already available.</p>
+        <p class="rounded-xl border border-amber-300/50 bg-amber-500/10 px-3 py-2 text-sm">Daily vegetable &amp; market prices from the government feed are being switched on — district and item search will appear here then. Milk and egg prices below are live now.</p>
       } @else if (error()) {
         <p class="rounded-xl bg-rose-500/10 px-3 py-2 text-sm font-medium text-rose-600" role="alert">{{ error() }}</p>
       } @else {
@@ -78,8 +80,9 @@ const kg = (perQuintal: number) => perQuintal / 100;
           <div class="rounded-xl border border-line bg-surface p-3">
             <p class="text-sm font-semibold">{{ p.item }}</p>
             <p class="text-lg font-bold tabular-nums">₹{{ p.price }} <span class="text-xs font-normal text-muted">/ {{ p.pack }}</span>
-              @if (p.prev && p.prev !== p.price) { <span class="text-xs font-semibold" [class]="p.price > p.prev ? 'text-red-600' : 'text-green-600'">{{ p.price > p.prev ? '▲' : '▼' }} ₹{{ abs(p.price - p.prev) }} on {{ day(p.changedOn!) }}</span> }
+              @if (p.prev && p.prev !== p.price) { <span class="ml-1 text-xs font-semibold" [class]="p.price > p.prev ? 'text-red-600' : 'text-green-600'">{{ p.price > p.prev ? '▲' : '▼' }} ₹{{ abs(p.price - p.prev) }} on {{ day(p.changedOn!) }}</span> }
             </p>
+            @if (per(p); as u) { <p class="mt-0.5 text-xs font-medium text-brand">{{ u }}</p> }
             <p class="text-[11px] text-muted">Source: <a [href]="p.url" target="_blank" rel="noopener" class="underline">{{ p.source }}</a> · checked {{ day(p.checked) }}</p>
           </div>
         }
@@ -163,6 +166,18 @@ export class GroceryTool {
   protected n(perQuintal: number) {
     const v = kg(perQuintal);
     return v >= 100 ? Math.round(v).toLocaleString('en-IN') : v.toLocaleString('en-IN', { maximumFractionDigits: 1 });
+  }
+  /** Easy numbers: ₹545 / 100 eggs → ₹5.45 per egg · ₹65 a dozen · ₹164 a tray (30); milk → per litre. */
+  protected per(p: RefPrice): string | null {
+    const eggs = /^(\d+) eggs$/.exec(p.pack);
+    if (eggs) {
+      const one = p.price / +eggs[1];
+      const r = (x: number) => '₹' + (Number.isInteger(x) ? x : x.toFixed(x < 20 ? 2 : 0));
+      return `= ${r(one)} per egg · ${r(Math.round(one * 12))} a dozen · ${r(Math.round(one * 30))} a tray of 30 (shops: ~₹${Math.ceil(one + 0.5)}–${Math.ceil(one + 1.5)} an egg)`;
+    }
+    const ml = /^(\d+) ml$/.exec(p.pack);
+    if (ml) return `= ₹${Math.round((p.price * 1000) / +ml[1])} per litre`;
+    return null;
   }
   protected abs(n: number) {
     return Math.abs(n);

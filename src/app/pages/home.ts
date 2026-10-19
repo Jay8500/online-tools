@@ -23,6 +23,8 @@ const HINTS = [
   { icon: 'map-pin', text: 'train route' },
   { icon: 'thermometer', text: 'weather' },
   { icon: 'clapperboard', text: 'cinemas near me' },
+  { icon: 'calendar-days', text: 'holidays 2026' },
+  { icon: 'traffic-cone', text: 'helmet fine' },
   { icon: 'file-stack', text: 'merge PDF' },
   { icon: 'receipt', text: 'income tax' },
   { icon: 'ruler', text: 'acre to gunta' },
@@ -35,6 +37,8 @@ const HINTS = [
 const KEYWORDS: Record<string, string> = {
   'gold-price-calculator': 'gold rate today silver price jewellery 22k 24k',
   weather: 'weather temperature rain forecast climate',
+  'holiday-calendar': 'holiday holidays calendar festival leave list government public 2026 2027 diwali dasara sankranti',
+  'traffic-challan-fines': 'traffic challan fine penalty helmet drunk signal rules licence police',
   'cinemas-near-me': 'cinema movie theatre theater film show ticket pvr inox near me',
   'travel-planner': 'travel route distance bus train flight trip journey stops',
   'land-area-converter': 'land acre to gunta cent ankanam gajam square yards plot',
@@ -193,8 +197,8 @@ export class Home {
   }
 
   /** Cards that show a live value on the right (gold rate, weather). */
-  protected live(path: string | null): 'gold' | 'weather' | 'fuel' | null {
-    return path === 'gold-price-calculator' ? 'gold' : path === 'weather' ? 'weather' : path === 'petrol-diesel-price' ? 'fuel' : null;
+  protected live(path: string | null): 'gold' | 'weather' | 'fuel' | 'holiday' | null {
+    return path === 'gold-price-calculator' ? 'gold' : path === 'weather' ? 'weather' : path === 'petrol-diesel-price' ? 'fuel' : path === 'holiday-calendar' ? 'holiday' : null;
   }
 
   protected hub(title: string) {

@@ -1,7 +1,7 @@
 import { Faq } from './seo.service';
 import { TOOL_LINKS, ToolKind, ToolLinkLite } from './tool-links';
 
-export type Disclaimer = 'files' | 'health' | 'invoice' | 'upi' | 'language' | 'land' | 'units' | 'gold' | 'weather' | 'travel' | 'metro' | 'fuel' | 'grocery' | 'cinema';
+export type Disclaimer = 'files' | 'health' | 'invoice' | 'upi' | 'language' | 'land' | 'units' | 'gold' | 'weather' | 'travel' | 'metro' | 'fuel' | 'grocery' | 'cinema' | 'holidays' | 'traffic';
 
 export interface ToolPageInfo extends ToolLinkLite {
   h1: string;
@@ -202,6 +202,34 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
     ],
     disclaimer: 'grocery',
   },
+  holidays: {
+    h1: 'Holiday Calendar 2026 & 2027 — India, Telangana, Andhra Pradesh',
+    title: 'Holidays 2026 & 2027 List — India, Telangana & Andhra Pradesh Government Holidays',
+    description: 'Government holiday list for 2026 and 2027: Central Government (India), Telangana and Andhra Pradesh general holidays with dates, days, long weekends and a countdown to the next holiday. Add them to your phone calendar.',
+    intro: 'Every general holiday for India, Telangana and Andhra Pradesh — with the next holiday, long weekends and a one-tap calendar download.',
+    steps: ['Pick India (Central Govt), Telangana or Andhra Pradesh.', 'Pick the year.', 'See the next holiday on top and every holiday month by month.', 'Tap “Add to my calendar” to save them on your phone.'],
+    faqs: [
+      { q: 'Where do these dates come from?', a: 'From the official orders: DoPT’s list for Central Government offices, Telangana G.O.Rt.No.1715 (6 Dec 2025) and Andhra Pradesh G.O.Rt.No.2276 (4 Dec 2025).' },
+      { q: 'Can a holiday date change?', a: 'Yes. Eid, Bakrid, Muharram and Milad-un-Nabi depend on the moon, so the government may move them by a day and announces it in the news.' },
+      { q: 'Are banks and schools closed on all these days?', a: 'Not always. These are holidays for government offices. Banks follow RBI’s list, and schools follow the education department’s calendar, which can differ.' },
+      { q: 'When will the Telangana and AP 2027 lists come?', a: 'Usually in December. We add them as soon as the government order is out.' },
+    ],
+    disclaimer: 'holidays',
+  },
+  traffic: {
+    h1: 'Traffic Challan Fines & Rules — Telangana & Andhra Pradesh',
+    title: 'Traffic Challan Fines 2026 Telangana & Andhra Pradesh — Helmet, Drunk Driving, Signal, Licence',
+    description: 'Traffic fine list for Telangana (Hyderabad) and Andhra Pradesh as per the Motor Vehicles Act: helmet, seat belt, drunk driving, signal jumping, over-speeding, no licence, insurance, parking — plus key traffic rules and the official e-challan links.',
+    intro: 'How much each traffic offence costs, what else can happen (licence suspension, jail), and the rules that keep you safe — in one look.',
+    steps: ['Pick your state.', 'Search a violation, like helmet or signal.', 'See the fine, the fine if repeated and other action.', 'Check or pay your own challan on the official portal.'],
+    faqs: [
+      { q: 'Why can my challan be less than the amount shown?', a: 'The amounts are the fines written in the Motor Vehicles Act. States may settle (compound) some offences for a smaller amount. Your e-challan shows the exact amount for your vehicle.' },
+      { q: 'How do I check challans on my vehicle?', a: 'Telangana: echallan.tspolice.gov.in. Andhra Pradesh and other states: echallan.parivahan.gov.in. Enter your vehicle number.' },
+      { q: 'Is a fake challan SMS possible?', a: 'Yes. Scammers send links that look like challans. Never pay through a link in an SMS or WhatsApp — open the official portal yourself.' },
+      { q: 'Are digital documents accepted?', a: 'Yes. Licence, RC, insurance and PUC in DigiLocker or mParivahan are valid.' },
+    ],
+    disclaimer: 'traffic',
+  },
   cinema: {
     h1: 'Cinemas Near Me — Theatres by Distance',
     title: 'Cinemas Near Me in Hyderabad, Vijayawada, Vizag — Movie Theatres by Distance',
@@ -376,6 +404,8 @@ export const DISCLAIMERS: Record<Disclaimer, string> = {
   metro: 'Fares follow the published HMRL chart (after the 24 May 2025 cut); distances are measured from OpenStreetMap and may differ slightly near a fare band. Check at the station.',
   fuel: 'Prices from the oil companies’ daily revision as published on 19 Oct 2026; your pump may differ by a few paise. Tap a source to check today’s rate.',
   grocery: 'Market prices are wholesale/Rythu Bazar rates published by the Government of India; shop prices are usually higher. Milk and egg prices are checked by hand — dates shown.',
+  holidays: 'Holiday dates are from the official government orders. Moon-based festivals can shift by a day — follow the government announcement. Banks and schools may follow different lists.',
+  traffic: 'Fines shown are those in the Motor Vehicles Act, 1988 (as amended in 2019); the amount actually charged may be lower where a state compounds the offence. This is general information, not legal advice — the e-challan portal and traffic police are final.',
   cinema: 'Cinema list from OpenStreetMap and may miss new or recently closed theatres. Distances are straight-line. Shows, prices and bookings are on the cinema’s or booking app’s site, not ours.',
   travel: 'Times are estimates. Check IRCTC/NTES, TGSRTC/APSRTC or the airline for real timetables, and follow traffic and safety advisories.',
   weather: 'Forecasts can change. For cyclone, heavy-rain and heatwave warnings follow IMD (mausam.imd.gov.in) and local authorities.',

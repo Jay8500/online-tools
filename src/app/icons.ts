@@ -1,4 +1,6 @@
 import {
+  CalendarDays,
+  TrafficCone,
   Clapperboard,
   LocateFixed,
   Navigation,
@@ -65,6 +67,8 @@ import {
 
 /** Every icon used in templates (`<svg lucideIcon="name">`). Only these are bundled. */
 export const ICONS: Record<string, IconNode> = {
+  'calendar-days': CalendarDays,
+  'traffic-cone': TrafficCone,
   clapperboard: Clapperboard,
   'locate-fixed': LocateFixed,
   navigation: Navigation,

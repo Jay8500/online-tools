@@ -22,6 +22,8 @@ import { GoldTool } from './tools/gold-tool';
 import { WeatherTool } from './tools/weather-tool';
 import { TravelTool } from './tools/travel-tool';
 import { CinemaTool } from './tools/cinema-tool';
+import { HolidayTool } from './tools/holiday-tool';
+import { TrafficTool } from './tools/traffic-tool';
 import { MetroTool } from './tools/metro-tool';
 import { FuelTool } from './tools/fuel-tool';
 import { GroceryTool } from './tools/grocery-tool';
@@ -53,6 +55,8 @@ import { GroceryTool } from './tools/grocery-tool';
     WeatherTool,
     TravelTool,
     CinemaTool,
+    HolidayTool,
+    TrafficTool,
     MetroTool,
     FuelTool,
     GroceryTool,
@@ -89,6 +93,8 @@ import { GroceryTool } from './tools/grocery-tool';
             @case ('metro') { @defer (on immediate) { <app-metro-tool /> } @placeholder { <div class="h-96"></div> } }
             @case ('fuel') { @defer (on immediate) { <app-fuel-tool /> } @placeholder { <div class="h-96"></div> } }
             @case ('grocery') { @defer (on immediate) { <app-grocery-tool /> } @placeholder { <div class="h-[32rem]"></div> } }
+            @case ('holidays') { @defer (on immediate) { <app-holiday-tool /> } @placeholder { <div class="h-96"></div> } }
+            @case ('traffic') { @defer (on immediate) { <app-traffic-tool /> } @placeholder { <div class="h-96"></div> } }
             @case ('cinema') { @defer (on immediate) { <app-cinema-tool /> } @placeholder { <div class="h-96"></div> } }
             @case ('travel') { @defer (on immediate) { <app-travel-tool /> } @placeholder { <div class="h-96"></div> } }
             @case ('weather') { @defer (on immediate) { <app-weather-tool /> } @placeholder { <div class="h-96"></div> } }

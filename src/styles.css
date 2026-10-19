@@ -132,8 +132,28 @@
   background-position: 0 0, 0 8px, 8px -8px, -8px 0;
 }
 
+/* Indian flag drawn in CSS (sized by font-size, like an emoji) */
+.tricolour {
+  display: inline-block;
+  width: 1.3em;
+  height: 0.87em;
+  border-radius: 0.08em;
+  vertical-align: middle;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.08);
+  background:
+    radial-gradient(circle, #000080 0 0.09em, transparent 0.1em),
+    linear-gradient(#ff9933 0 33.3%, #fff 33.3% 66.6%, #138808 66.6%);
+}
+
+/* Gentle bob for holiday / rule pictures */
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50% { transform: translateY(-4px) rotate(-4deg); }
+}
+.animate-float { animation: float 2.6s ease-in-out infinite; }
+
 @media (prefers-reduced-motion: reduce) {
-  .animate-fade-up, .animate-fade-in { animation: none; }
+  .animate-fade-up, .animate-fade-in, .animate-float { animation: none; }
 }
 
 /* Printing (GST invoice): only the .print-area is printed, on A4, in light colours. */

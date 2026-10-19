@@ -1,6 +1,7 @@
 import { isPlatformBrowser } from '@angular/common';
 import { Component, DestroyRef, PLATFORM_ID, afterNextRender, inject, input, signal } from '@angular/core';
 import { FUEL } from '../core/fuel-data';
+import type { Region } from '../core/holidays';
 import { dailyRates } from '../core/rates-client';
 
 /** One shared request per page for every badge of the same kind. */
@@ -49,7 +50,7 @@ const INR = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 });
   `,
 })
 export class LiveBadge {
-  readonly kind = input.required<'gold' | 'weather' | 'fuel'>();
+  readonly kind = input.required<'gold' | 'weather' | 'fuel' | 'holiday'>();
   /** Small pill text (default LIVE) and colour */
   protected readonly pill = signal('LIVE');
   protected readonly text = signal('');
@@ -69,6 +70,25 @@ export class LiveBadge {
   }
 
   private async load() {
+    if (this.kind() === 'holiday') {
+      let region: Region = 'india';
+      try {
+        region = (localStorage.getItem('holiday-region') as Region) || region;
+      } catch {
+        /* default */
+      }
+      // Loaded on demand so the holiday list stays out of the first download
+      const { HOLIDAYS, YEARS } = await import('../core/holidays');
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+      const next = YEARS.flatMap((y) => HOLIDAYS[region]?.[y] ?? []).find((x) => new Date(x.date + 'T00:00:00').getTime() >= today);
+      if (!next) return;
+      const days = Math.round((new Date(next.date + 'T00:00:00').getTime() - today) / 86_400_000);
+      this.pill.set('NEXT');
+      this.text.set(days === 0 ? 'Today' : days === 1 ? 'Tomorrow' : `in ${days} days`);
+      this.sub.set(next.name.replace(/ \(.*\)$/, ''));
+      return;
+    }
     if (this.kind() === 'fuel') {
       const live = await dailyRates();
       const h = (live?.fuel ?? FUEL).find((c) => c.city === 'Hyderabad')!;

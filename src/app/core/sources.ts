@@ -23,6 +23,15 @@ export const SOURCES: Record<string, Source[]> = {
     { name: 'data.gov.in (Agmarknet)', url: 'https://data.gov.in/' },
     { name: 'NECC', url: 'https://www.e2necc.com/' },
   ],
+  'holiday-calendar': [
+    { name: 'DoPT', url: 'https://dopt.gov.in/' },
+    { name: 'Telangana GAD', url: 'https://www.telangana.gov.in/' },
+    { name: 'AP GAD', url: 'https://goir.ap.gov.in/' },
+  ],
+  'traffic-challan-fines': [
+    { name: 'Motor Vehicles Act (India Code)', url: 'https://www.indiacode.nic.in/handle/123456789/1798' },
+    { name: 'Parivahan e-Challan', url: 'https://echallan.parivahan.gov.in/' },
+  ],
   'cinemas-near-me': [{ name: 'OpenStreetMap', url: 'https://www.openstreetmap.org/copyright' }],
   'travel-planner': [
     { name: 'OpenStreetMap', url: 'https://www.openstreetmap.org/copyright' },
