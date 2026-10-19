@@ -1,6 +1,6 @@
 # SpreadApps Tools — roadmap (single pending list)
 
-Live target: https://tools.spreadapps.in (now at https://spreadapps-tools.netlify.app) · Netlify site `spreadapps-tools` (id 20179a97-8cb0-4626-b30e-c8836e495f6e) · repo `Jay8500/online-tools`.
+Live: https://tools.spreadapps.in (also https://spreadapps-tools.netlify.app) · Netlify site `spreadapps-tools` (id 20179a97-8cb0-4626-b30e-c8836e495f6e) · repo `Jay8500/online-tools`.
 Stack: Angular 22 (standalone, signals, zoneless) · Tailwind v4 · static prerender (`outputMode: static`) · PWA (ngsw) · Netlify (+ 1 function).
 No database, no login — files are processed in the browser.
 
