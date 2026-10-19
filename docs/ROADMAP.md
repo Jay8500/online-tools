@@ -22,7 +22,7 @@ No database, no login — files are processed in the browser.
 - [x] AdSense account created (ca-pub-1803903263399664, site spreadapps.in), payments info done, site verified via ads.txt, review requested 2026-10-19 (status "Getting ready"). After approval: ad-unit slot IDs (`adSlots`) + Google CMP message
 - [x] ads.txt live at https://spreadapps.in/ads.txt (portfolio repo, 2026-10-19)
 - [ ] AdSense → Privacy & messaging: create the Google-certified CMP message (EEA/UK) → then set `useGoogleCmp: true`
-- [ ] GA4: create property → put `G-…` in `site.config.ts` (`ga4Id`)
+- [x] GA4 property "SpreadApps Tools" (G-DXSGQK0JV0) — loads only after "Accept all"; tool_use events on download/share
 - [ ] Google Search Console: verify tools.spreadapps.in (DNS TXT or HTML tag) and submit sitemap.xml
 - [ ] Business name + address for Privacy/Terms (playbook §11); quick legal review before ads go live
 - [ ] Netlify form notifications → set the email that receives contact messages (Site → Forms → Notifications)

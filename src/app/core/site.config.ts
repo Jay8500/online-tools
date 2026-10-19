@@ -7,7 +7,7 @@ export const SITE = {
   url: 'https://tools.spreadapps.in',
   owner: 'SpreadApps',
   /** GA4 measurement ID, e.g. 'G-ABC123XYZ' (loaded only after analytics consent). */
-  ga4Id: '',
+  ga4Id: 'G-DXSGQK0JV0',
   /** AdSense publisher ID, e.g. 'ca-pub-1234567890123456'. */
   adsenseClient: 'ca-pub-1803903263399664',
   /** Ad unit slot IDs from AdSense → Ads → By ad unit. */
