@@ -9,7 +9,7 @@ export const SITE = {
   /** Person behind the brand (no company registered yet). */
   operator: 'Lakkoju Jaya Krishna',
   location: 'Hyderabad, Telangana, India',
-  email: 'contact@spreadapps.in',
+  email: 'jay.lakkoju@gmail.com',
   /** GA4 measurement ID, e.g. 'G-ABC123XYZ' (loaded only after analytics consent). */
   ga4Id: 'G-DXSGQK0JV0',
   /** AdSense publisher ID, e.g. 'ca-pub-1234567890123456'. */

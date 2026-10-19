@@ -24,8 +24,8 @@ No database, no login — files are processed in the browser.
 - [ ] AdSense → Privacy & messaging: create the Google-certified CMP message (EEA/UK) → then set `useGoogleCmp: true`
 - [x] GA4 property "SpreadApps Tools" (G-DXSGQK0JV0) — loads only after "Accept all"; tool_use events on download/share
 - [x] Search Console: covered by existing domain property sc-domain:spreadapps.in; sitemap submitted 2026-10-19 (first status "Couldn't fetch" = normal, recheck); indexing requested for /ssc-photo-resize
-- [x] Operator details on Privacy/Terms/About/Contact: Lakkoju Jaya Krishna, Hyderabad, Telangana, contact@spreadapps.in (no company yet — update when registered)
-- [ ] contact@spreadapps.in forwarding → Gmail (ImprovMX free: owner creates account, then MX + SPF on spreadapps.in)
+- [x] Operator details on Privacy/Terms/About/Contact: Lakkoju Jaya Krishna, Hyderabad, Telangana, jay.lakkoju@gmail.com (no company yet — update when registered)
+- [ ] (on hold) contact@spreadapps.in via ImprovMX — site shows jay.lakkoju@gmail.com for now (owner choice 2026-10-19)
 - [ ] Netlify form notifications → set the email that receives contact messages (Site → Forms → Notifications)
 
 ## When AdSense approval email arrives (REMIND OWNER)
