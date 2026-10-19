@@ -5,6 +5,8 @@ import { Injectable, PLATFORM_ID, inject, isDevMode } from '@angular/core';
  * Public "used N times" counter — a Netlify Function storing numbers in Netlify Blobs.
  * Only a tool id is sent (never files or personal data). Failures are silent: the counter is a nice-to-have.
  */
+const NO_COUNT = 'no-count';
+
 @Injectable({ providedIn: 'root' })
 export class CounterService {
   private readonly on = isPlatformBrowser(inject(PLATFORM_ID)) && !isDevMode();
@@ -32,9 +34,27 @@ export class CounterService {
     this.send(tool, 'view');
   }
 
+  /** The owner's devices (set on the /stats page) are never counted. */
+  get excluded(): boolean {
+    try {
+      return localStorage.getItem(NO_COUNT) === '1';
+    } catch {
+      return false;
+    }
+  }
+
+  setExcluded(on: boolean) {
+    try {
+      if (on) localStorage.setItem(NO_COUNT, '1');
+      else localStorage.removeItem(NO_COUNT);
+    } catch {
+      /* storage blocked */
+    }
+  }
+
   private send(tool: string, kind: 'use' | 'view') {
     const key = `${kind}:${tool}`;
-    if (!this.on || this.counted.has(key)) return;
+    if (!this.on || this.counted.has(key) || this.excluded) return;
     this.counted.add(key);
     fetch('/api/count', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ tool, kind }), keepalive: true }).catch(
       () => undefined,

@@ -28,6 +28,11 @@ No database, no login — files are processed in the browser.
 - [ ] contact@spreadapps.in forwarding → Gmail (ImprovMX free: owner creates account, then MX + SPF on spreadapps.in)
 - [ ] Netlify form notifications → set the email that receives contact messages (Site → Forms → Notifications)
 
+## When AdSense approval email arrives (REMIND OWNER)
+- [ ] AdSense → Ads → By site → spreadapps.in → turn **Auto ads OFF** (or at least Vignette + Anchor off) — they can cover the photo tool
+- [ ] Create 3 display ad units (top / inContent / sidebar) → put slot IDs in `site.config.ts` `adSlots`
+- [ ] Privacy & messaging → publish EEA/UK consent message → `useGoogleCmp: true`
+
 ## Phase 1 follow-ups
 - [ ] Re-verify every exam size against the newest official notifications (values marked "checked 2026"); add source links per exam
 - [ ] Self-host the MediaPipe wasm (now from jsDelivr, ~4 MB once) if CDN reliability is a problem

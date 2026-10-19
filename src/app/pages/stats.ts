@@ -1,6 +1,7 @@
 import { DecimalPipe, isPlatformBrowser } from '@angular/common';
 import { Component, PLATFORM_ID, afterNextRender, computed, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { CounterService } from '../core/counter.service';
 import { DOC_SHORT, EXAMS, KB_PRESETS, examPath, kbPath } from '../core/exams';
 import { SeoService } from '../core/seo.service';
 import { Icon } from '../shared/icon';
@@ -103,6 +104,14 @@ const KEY_STORE = 'stats-key';
             <p class="px-4 py-4 text-sm text-muted">No visits counted yet. Numbers appear as soon as people open the tools.</p>
           }
         </section>
+        <div class="card mt-4 flex flex-wrap items-center gap-3 p-4 text-sm">
+          <svg [lucideIcon]="excluded() ? 'shield-check' : 'info'" [size]="18" [class]="excluded() ? 'text-accent' : 'text-muted'" />
+          <p class="min-w-0 flex-1">
+            @if (excluded()) { <strong>This device is not counted.</strong> Your own visits here don't add to the numbers. }
+            @else { <strong>This device is counted.</strong> Your own visits add to the numbers. }
+          </p>
+          <button class="btn-ghost min-h-9" (click)="toggleExcluded()">{{ excluded() ? 'Count this device again' : 'Stop counting this device' }}</button>
+        </div>
         <p class="mt-3 text-xs text-muted">More detail (countries, devices, search terms) is in Google Analytics → SpreadApps Tools.</p>
       }
     </div>
@@ -115,6 +124,8 @@ export class Stats {
   protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
   private secret = '';
+  private readonly counter = inject(CounterService);
+  protected readonly excluded = signal(false);
 
   protected readonly rows = computed<Row[]>(() => {
     const d = this.data();
@@ -153,8 +164,15 @@ export class Stats {
       // Don't leave the key in the address bar (screenshots, shoulder-surfing).
       if (this.key()) history.replaceState(null, '', '/stats');
       if (!this.secret) return this.error.set('This page is private.');
+      this.excluded.set(this.counter.excluded);
       this.load();
     });
+  }
+
+  protected toggleExcluded() {
+    const next = !this.excluded();
+    this.counter.setExcluded(next);
+    this.excluded.set(next);
   }
 
   protected pct(v: number) {
@@ -171,11 +189,23 @@ export class Stats {
         } catch {
           /* ignore */
         }
+        this.counter.setExcluded(false);
+        this.excluded.set(false);
         this.error.set('Wrong or old key.');
         return;
       }
       if (!r.ok) throw new Error(String(r.status));
       this.error.set(null);
+      // Opening your private stats with the right key = this is the owner's device: stop counting it (first time only).
+      try {
+        if (localStorage.getItem('no-count-set') !== '1') {
+          localStorage.setItem('no-count-set', '1');
+          this.counter.setExcluded(true);
+          this.excluded.set(true);
+        }
+      } catch {
+        /* storage blocked */
+      }
       this.data.set((await r.json()) as StatsData);
     } catch {
       this.error.set('Could not load stats. Check your internet and try again.');
