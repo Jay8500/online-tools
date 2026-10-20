@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, input } from '@angular/core';
+import { Component, computed, effect, inject, input , afterNextRender } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DOC_SHORT, DocKind, EXAMS, Exam, examPath } from '../core/exams';
 import { HUB_GUIDES } from '../core/hub-guides';
@@ -10,12 +10,14 @@ import { FaqList } from '../shared/faq-list';
 import { Icon } from '../shared/icon';
 import { LiveBadge, WEATHER_ICON } from '../shared/live-badge';
 import { Sky } from '../shared/sky';
+import { PinButton } from '../shared/pin-button';
+import { UserTools } from '../core/user-tools';
 import { SOURCES } from '../core/sources';
 
 /** Category page, e.g. /health-calculators — intro + every tool in the group + other groups. */
 @Component({
   selector: 'app-hub-page',
-  imports: [RouterLink, Icon, AdSlot, FaqList, LiveBadge, Sky],
+  imports: [RouterLink, Icon, AdSlot, FaqList, LiveBadge, Sky, PinButton],
   template: `
     @let h = hub();
     <nav aria-label="Breadcrumb" class="mb-1 flex items-center gap-1 text-xs text-muted">
@@ -54,7 +56,10 @@ import { SOURCES } from '../core/sources';
                   <span class="relative z-10 mt-0.5 block text-[10px] text-muted">Data: @for (s of ss; track s.url; let last = $last) {<a [href]="s.url" target="_blank" rel="noopener" class="underline decoration-dotted hover:text-brand">{{ s.name }}</a>@if (!last) {, }}</span>
                 }
               </span>
-              @if (live(t.path); as k) { <app-live-badge [kind]="k" /> }
+              <span class="-my-1.5 -mr-1.5 ml-auto flex shrink-0 flex-col items-end gap-0.5 self-start">
+                @if (t.path) { <app-pin-button [path]="t.path" [name]="t.name" /> }
+                @if (live(t.path); as k) { <app-live-badge [kind]="k" class="mr-1.5" /> }
+              </span>
             </div>
           </li>
         }
@@ -102,6 +107,9 @@ import { SOURCES } from '../core/sources';
   `,
 })
 export class HubPage {
+  private readonly userTools = inject(UserTools);
+  // pin states come from this browser's storage
+  private readonly _load = afterNextRender(() => this.userTools.load());
   /** Sky behind the weather card once its badge has loaded */
   protected readonly skyIcon = WEATHER_ICON;
   /** From route data */

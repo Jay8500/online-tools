@@ -142,6 +142,15 @@ export class App {
     inject(ViewportScroller).setOffset([0, 60]);
     this.router.events.pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd)).subscribe((e) => {
       this.url.set(e.urlAfterRedirects);
+      // "Recent" row on home (this browser only)
+      const path = e.urlAfterRedirects.split(/[?#]/)[0].replace(/^\//, '');
+      if (path && typeof localStorage !== 'undefined')
+        try {
+          const r = JSON.parse(localStorage.getItem('recent-tools') || '[]') as string[];
+          localStorage.setItem('recent-tools', JSON.stringify([path, ...r.filter((x) => x !== path)].slice(0, 12)));
+        } catch {
+          /* fine */
+        }
       this.navs++;
       this.canGoBack.set(this.navs > 1);
     });

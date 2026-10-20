@@ -14,6 +14,8 @@ import { LiveBadge, WEATHER_ICON } from '../shared/live-badge';
 import { Sky } from '../shared/sky';
 import { Benefits } from '../shared/benefits';
 import { FestivalCard } from '../shared/festival-card';
+import { PinButton } from '../shared/pin-button';
+import { UserTools } from '../core/user-tools';
 import { SOURCES } from '../core/sources';
 
 const HOME_PER_GROUP = 4;
@@ -99,7 +101,7 @@ const HOME_EXAMS = 5;
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink, FormsModule, Icon, AdSlot, LiveBadge, Sky, Benefits, FestivalCard],
+  imports: [RouterLink, FormsModule, Icon, AdSlot, LiveBadge, Sky, Benefits, FestivalCard, PinButton],
   template: `
     <app-festival-card />
     <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
@@ -132,6 +134,27 @@ const HOME_EXAMS = 5;
         <button type="button" class="chip min-h-8 shrink-0 text-xs" [attr.aria-pressed]="picked().includes(c.key)" (click)="toggle(c.key)"><svg [lucideIcon]="c.icon" [size]="14" /> {{ c.label }}</button>
       }
     </div>
+
+    @if (!searching() && !picked().length && (pins().length || recents().length)) {
+      <section class="mt-3 space-y-2" aria-label="Your tools">
+        @if (pins().length) {
+          <div class="flex items-center gap-2">
+            <span class="shrink-0 text-xs font-bold text-muted">📌 Pinned</span>
+            <div class="flex gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none]">
+              @for (t of pins(); track t.path) { <a class="chip min-h-8 shrink-0 border-brand/40 bg-brand/5 text-xs" [routerLink]="'/' + t.path"><svg [lucideIcon]="t.icon" [size]="14" class="text-brand" /> {{ t.name }}</a> }
+            </div>
+          </div>
+        }
+        @if (recents().length) {
+          <div class="flex items-center gap-2">
+            <span class="shrink-0 text-xs font-bold text-muted">🕘 Recent</span>
+            <div class="flex gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none]">
+              @for (t of recents(); track t.path) { <a class="chip min-h-8 shrink-0 text-xs" [routerLink]="'/' + t.path"><svg [lucideIcon]="t.icon" [size]="14" /> {{ t.name }}</a> }
+            </div>
+          </div>
+        }
+      </section>
+    }
 
     @if (nothing()) {
       <div class="card mt-4 flex flex-col items-center gap-2 p-6 text-center animate-fade-up">
@@ -190,7 +213,10 @@ const HOME_EXAMS = 5;
                 @if (src(t.path); as ss) {
                   <span class="relative z-10 mt-0.5 block text-[10px] text-muted">Data: @for (s of ss; track s.url; let last = $last) {<a [href]="s.url" target="_blank" rel="noopener" class="underline decoration-dotted hover:text-brand">{{ s.name }}</a>@if (!last) {, }}</span>
                 }</span>
-                @if (live(t.path); as k) { <app-live-badge [kind]="k" /> }
+                <span class="-my-1.5 -mr-1.5 ml-auto flex shrink-0 flex-col items-end gap-0.5 self-start">
+                  <app-pin-button [path]="t.path" [name]="t.name" />
+                  @if (live(t.path); as k) { <app-live-badge [kind]="k" class="mr-1.5" /> }
+                </span>
               </div>
             } @else {
               <div class="card flex items-center gap-3 p-3 opacity-70">
@@ -223,6 +249,10 @@ export class Home {
   /** Home is a quick menu: top picks per group; the group pages ("See all") have everything + guides. Search shows all matches. */
   protected readonly searching = computed(() => this.q().trim().length > 0);
   protected readonly examTotal = EXAMS.length;
+  private readonly userTools = inject(UserTools);
+  /** Pinned tools, then recently opened ones (not already pinned) — this browser only */
+  protected readonly pins = computed(() => this.userTools.pinned().map((p) => this.userTools.ref(p)).filter((t) => !!t));
+  protected readonly recents = computed(() => this.userTools.recent().filter((p) => !this.userTools.pinned().includes(p)).slice(0, 6).map((p) => this.userTools.ref(p)).filter((t) => !!t));
   protected readonly chips = [...TOPICS.map(({ key, label, icon }) => ({ key, label, icon })), ...CHIPS];
   /** Sky behind the weather card once its badge has loaded */
   protected readonly skyIcon = WEATHER_ICON;
@@ -255,6 +285,7 @@ export class Home {
     const browser = isPlatformBrowser(inject(PLATFORM_ID));
     const destroy = inject(DestroyRef);
     afterNextRender(() => {
+      this.userTools.load();
       if (!browser || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       const t = setInterval(() => this.hintIndex.update((i) => i + 1), 2500);
       destroy.onDestroy(() => clearInterval(t));

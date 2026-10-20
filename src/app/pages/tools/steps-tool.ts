@@ -66,7 +66,7 @@ function today() {
           </p>
           <p class="mt-1 text-xs text-muted">Keep this page open, phone in your hand or pocket. The screen stays on.</p>
         }
-        <details class="mt-3 rounded-xl bg-surface-2 p-3 text-xs">
+        <details class="mt-3 rounded-xl bg-surface-2 p-3 text-xs" open>
           <summary class="cursor-pointer font-semibold">How counting works</summary>
           <ul class="mt-2 list-disc space-y-1 pl-4 text-muted">
             <li>Your phone’s motion sensor feels the small bounce of each step — nothing leaves your phone.</li>
