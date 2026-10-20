@@ -15,6 +15,28 @@ interface Rec {
   modal: number;
 }
 
+interface Raw {
+  district: string;
+  market: string;
+  commodity: string;
+  variety: string;
+  arrival_date: string;
+  min_price: string | number;
+  max_price: string | number;
+  modal_price: string | number;
+}
+
+/** "RYTHU BAZAR FALAKNUMA" → "Rythu Bazar Falaknuma" */
+function tidy(s: string) {
+  return s.toLowerCase().replace(/\b([a-z])/g, (c) => c.toUpperCase()).replace(/\bRbz\b/g, 'Rythu Bazar').replace(/\bApmc\b/g, 'APMC');
+}
+
+/** dd/mm/yyyy → yyyy-mm-dd */
+function toIso(d: string) {
+  const [dd, mm, yy] = d.split('/');
+  return `${yy}-${mm}-${dd}`;
+}
+
 const STATES = ['Telangana', 'Andhra Pradesh', 'Karnataka', 'Tamil Nadu', 'Maharashtra'];
 const kg = (perQuintal: number) => perQuintal / 100;
 
@@ -102,6 +124,8 @@ export class GroceryTool {
   protected readonly loading = signal(true);
   protected readonly off = signal(false);
   protected readonly error = signal<string | null>(null);
+  /** API key for data.gov.in, fetched once per visit */
+  private cfg?: Promise<{ key?: string; resource?: string; error?: string }>;
 
   protected readonly districts = computed(() => [...new Set(this.data().map((r) => r.d))].sort());
   protected readonly rows = computed(() => {
@@ -143,18 +167,41 @@ export class GroceryTool {
     this.loading.set(true);
     this.error.set(null);
     try {
-      const r = await fetch(`/api/mandi?state=${encodeURIComponent(this.state())}`);
-      const j = (await r.json().catch(() => ({}))) as { records?: Rec[]; date?: string; error?: string };
-      if (j.error === 'not-configured' || (r.status === 404 && !j.error)) this.off.set(true);
-      else if (!r.ok || j.error) this.error.set(j.error || 'Could not load prices. Please try again.');
-      else {
-        this.off.set(false);
-        this.data.set(j.records ?? []);
-        this.date.set(j.date ?? '');
-        if (this.district() && !this.districts().includes(this.district())) this.district.set('');
+      // data.gov.in blocks servers outside India, so the visitor's browser fetches it directly (see netlify/functions/mandi.mts)
+      this.cfg ??= fetch('/api/mandi').then(async (r) => ((await r.json().catch(() => ({}))) as { key?: string; resource?: string; error?: string }));
+      const cfg = await this.cfg;
+      if (!cfg.key || !cfg.resource) {
+        this.cfg = undefined;
+        if (cfg.error === 'not-configured') this.off.set(true);
+        else this.error.set('Could not load prices. Please try again.');
+        return;
       }
+      const state = this.state();
+      const rows: Rec[] = [];
+      for (let offset = 0; offset < 3000; offset += 1000) {
+        const u = `https://api.data.gov.in/resource/${cfg.resource}?api-key=${encodeURIComponent(cfg.key)}&format=json&limit=1000&offset=${offset}&filters%5Bstate.keyword%5D=${encodeURIComponent(state)}`;
+        const r = await fetch(u, { signal: AbortSignal.timeout(15000) });
+        const j = (await r.json().catch(() => ({}))) as { records?: Raw[]; status?: string; message?: string };
+        if (!r.ok || (j.status && j.status !== 'ok')) throw new Error('upstream');
+        const page = j.records ?? [];
+        rows.push(
+          ...page
+            .map((x) => ({ d: x.district, m: tidy(x.market), c: x.commodity, v: x.variety, date: x.arrival_date, min: +x.min_price, max: +x.max_price, modal: +x.modal_price }))
+            .filter((x) => x.modal > 0),
+        );
+        if (page.length < 1000) break;
+      }
+      if (state !== this.state()) return; // visitor switched state meanwhile
+      if (!rows.length) {
+        this.error.set('No prices published for this state today yet. Please check again later.');
+        return;
+      }
+      this.off.set(false);
+      this.data.set(rows);
+      this.date.set(rows.map((x) => x.date).sort((a, b) => toIso(b).localeCompare(toIso(a)))[0] ?? '');
+      if (this.district() && !this.districts().includes(this.district())) this.district.set('');
     } catch {
-      this.error.set('No internet connection. Please try again.');
+      this.error.set('The government price service is busy or your internet is off. Please try again in a minute.');
     } finally {
       this.loading.set(false);
     }
