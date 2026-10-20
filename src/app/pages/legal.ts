@@ -64,6 +64,10 @@ const UPDATED = '19 October 2026';
         Some pages show how many times a tool was used. When you download a result, your browser sends only the tool’s name.
         To stop spam, a one-way hash of your IP address is kept for one day. Nothing else is stored.
       </p>
+      <p>
+        The “Love it” button works the same way: it sends only the page name, so we can count likes and get a short anonymous note.
+        Your browser remembers that you liked a page, so you can like each page once.
+      </p>
 
       <h2>4. Contact form</h2>
       <p>

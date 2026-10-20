@@ -19,10 +19,11 @@ import { ScrollTop } from './shared/scroll-top';
 import { InstallHint } from './shared/install-hint';
 import { InstallFooter } from './shared/install-footer';
 import { MoreFrom } from './shared/more-from';
+import { LikeBox } from './shared/like-box';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, Icon, Brand, Benefits, ToastHost, DialogHost, UpdateBanner, ConsentBanner, ScrollTop, InstallHint, InstallFooter, MoreFrom],
+  imports: [RouterOutlet, RouterLink, Icon, Brand, Benefits, ToastHost, DialogHost, UpdateBanner, ConsentBanner, ScrollTop, InstallHint, InstallFooter, MoreFrom, LikeBox],
   template: `
     <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[200] focus:rounded-lg focus:bg-brand focus:px-3 focus:py-2 focus:text-brand-ink">Skip to tool</a>
     <header class="sticky top-0 z-40 border-b border-line bg-surface/90 backdrop-blur">
@@ -49,6 +50,7 @@ import { MoreFrom } from './shared/more-from';
       }
       <router-outlet />
     </main>
+    @defer (on idle) { <app-like-box /> }
 
     <footer class="border-t border-line bg-surface">
       <div class="mx-auto grid max-w-6xl gap-6 px-4 py-8 text-sm sm:grid-cols-2 lg:grid-cols-5 [&>*]:min-w-0">
