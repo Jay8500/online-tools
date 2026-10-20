@@ -87,6 +87,8 @@ No database, no login — files are processed in the browser.
 - [x] Terms: names & trademarks + third-party prices notes
 - [ ] OWNER later: register SpreadApps (Udyam/company), trademark name+logo (check ipindia first), GST only if turnover > ₹20 lakh, report AdSense income in ITR (ask a CA)
 - [ ] Consider replacing Goodreturns page-reading with paid fuel API (already planned)
+- [x] Vegetable prices LIVE (20 Oct 2026): browser fetches data.gov.in directly (gov blocks non-Indian servers); /api/mandi serves the key
+- [x] Fixed Permissions-Policy: geolocation=(self) so location buttons work on the live site
 - [ ] On hold: movie finder / cast & crew (TMDB is non-commercial only; needs commercial licence or paid API)
 - [x] Declined: song lyrics (copyrighted; would break AdSense policy)
 - [x] Home = quick menu (top 4 per group / 5 exams, "See all N"); group pages carry guides (exam size table, tax slabs, Indian BMI chart, land unit table, GST invoice checklist, PDF task table, gold purity, Telugu letters)
