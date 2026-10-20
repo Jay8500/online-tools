@@ -59,7 +59,22 @@ function today() {
           <button type="button" class="btn-ghost" (click)="reset()" [disabled]="!steps()"><svg lucideIcon="rotate-ccw" [size]="16" /> Reset today</button>
         </div>
         @if (note()) { <p class="mt-2 rounded-xl bg-amber-500/10 px-3 py-2 text-xs" role="status">{{ note() }}</p> }
-        @if (running()) { <p class="mt-2 text-xs text-muted">Keep this page open and the phone in your hand or pocket. The screen stays on while counting.</p> }
+        @if (running()) {
+          <p class="mt-2 flex items-center gap-2 text-xs font-semibold" [class]="walkState() === 'walking' ? 'text-green-700 dark:text-green-300' : 'text-amber-700 dark:text-amber-300'">
+            <span class="relative flex size-2"><span class="absolute inline-flex size-full animate-ping rounded-full opacity-75" [class]="walkState() === 'walking' ? 'bg-green-500' : 'bg-amber-500'"></span><span class="relative inline-flex size-2 rounded-full" [class]="walkState() === 'walking' ? 'bg-green-600' : 'bg-amber-500'"></span></span>
+            {{ walkState() === 'walking' ? 'Walking — counting every step' : 'Start walking — counting begins after a few steady steps' }}
+          </p>
+          <p class="mt-1 text-xs text-muted">Keep this page open, phone in your hand or pocket. The screen stays on.</p>
+        }
+        <details class="mt-3 rounded-xl bg-surface-2 p-3 text-xs">
+          <summary class="cursor-pointer font-semibold">How counting works</summary>
+          <ul class="mt-2 list-disc space-y-1 pl-4 text-muted">
+            <li>Your phone’s motion sensor feels the small bounce of each step — nothing leaves your phone.</li>
+            <li>It starts counting after about 7 steady steps (and adds them), so picking up or putting down the phone isn’t counted.</li>
+            <li>Shakes, bumps and very fast or uneven movement are ignored.</li>
+            <li>Counts only while this page is open. Usually within 5–10% of a fitness band.</li>
+          </ul>
+        </details>
       </div>
     </div>
 
@@ -146,11 +161,18 @@ export class StepsTool {
     return out.some((o) => o.steps) ? out : [];
   });
 
-  // Step detection state
-  private avg = 9.8;
-  private lastStep = 0;
+  // Step detection state (gravity-removed, smoothed signal; steps confirmed only during steady walking)
+  private gravity = 9.81;
+  private smooth = 0;
   private above = false;
+  private peak = 0;
+  private lastCandidate = 0;
+  private intervals: number[] = [];
+  private pending = 0;
+  private walking = false;
   private gotMotion = false;
+  /** Shown while counting: 'waiting' until steady walking is confirmed, then 'walking' */
+  protected readonly walkState = signal<'waiting' | 'walking'>('waiting');
   private wake: { release(): Promise<void> } | null = null;
   private readonly onMotion = (e: DeviceMotionEvent) => this.motion(e);
 
@@ -188,6 +210,8 @@ export class StepsTool {
       }
     }
     this.gotMotion = false;
+    this.resetWalk();
+    this.lastCandidate = 0;
     window.addEventListener('devicemotion', this.onMotion);
     this.running.set(true);
     try {
@@ -213,20 +237,62 @@ export class StepsTool {
   }
 
   /** Peak detection on acceleration magnitude: a step is a rise above the running average, at most ~3 per second. */
+  /**
+   * Pedometer, the way phone step counters work:
+   * 1. remove gravity (slow average) and smooth jitter → only body bounce remains;
+   * 2. a step = a bounce peak between 1.2 and 12 m/s² (bigger = phone put down / dropped / shaken → ignored);
+   * 3. steps must come at a walking rhythm (0.27–2 s apart) and evenly spaced;
+   * 4. counting starts only after 7 steady steps in a row (those 7 are then added), and a pause > 2 s resets it.
+   */
   private motion(e: DeviceMotionEvent) {
     const a = e.accelerationIncludingGravity;
     if (!a || a.x == null || a.y == null || a.z == null) return;
     this.gotMotion = true;
     const m = Math.sqrt(a.x * a.x + a.y * a.y + a.z * a.z);
-    this.avg = this.avg * 0.9 + m * 0.1;
+    this.gravity = this.gravity * 0.95 + m * 0.05;
+    this.smooth = this.smooth * 0.6 + (m - this.gravity) * 0.4;
     const now = performance.now();
-    if (!this.above && m > this.avg + 1.3 && now - this.lastStep > 300) {
-      this.above = true;
-      this.lastStep = now;
-      this.add(1);
-    } else if (this.above && m < this.avg) {
-      this.above = false;
+    if (this.walking && now - this.lastCandidate > 2000) this.resetWalk();
+    if (!this.above) {
+      if (this.smooth > 1.2) (this.above = true), (this.peak = this.smooth);
+      return;
     }
+    this.peak = Math.max(this.peak, this.smooth);
+    if (this.smooth > 0.3) return; // still on the same bounce
+    this.above = false;
+    if (this.peak > 12) return this.resetWalk(); // a jolt, not a step
+    const dt = now - this.lastCandidate;
+    this.lastCandidate = now;
+    if (dt < 270) return; // too fast to be a step (vibration)
+    if (dt > 2000) {
+      // first step after a pause: start a fresh check
+      this.resetWalk();
+      this.pending = 1;
+      return;
+    }
+    this.intervals = [...this.intervals.slice(-5), dt];
+    const avg = this.intervals.reduce((x, y) => x + y, 0) / this.intervals.length;
+    const steady = this.intervals.every((i) => Math.abs(i - avg) < avg * 0.45);
+    if (this.walking) return void this.add(1);
+    if (!steady) {
+      this.pending = 1;
+      this.intervals = [dt];
+      return;
+    }
+    this.pending++;
+    if (this.pending >= 7) {
+      this.walking = true;
+      this.walkState.set('walking');
+      this.add(this.pending);
+      this.pending = 0;
+    }
+  }
+
+  private resetWalk() {
+    this.walking = false;
+    this.pending = 0;
+    this.intervals = [];
+    this.walkState.set('waiting');
   }
 
   private add(n: number) {
