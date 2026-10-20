@@ -91,7 +91,8 @@ No database, no login — files are processed in the browser.
 - [x] Fixed Permissions-Policy: geolocation=(self) so location buttons work on the live site
 - [ ] Initial bundle ~440 kB raw / 114 kB gz (warning raised to 460 kB on 20 Oct 2026): next feature → lazy-load more of the shell (e.g. consent/update banners, toast/dialog hosts) to win back room
 - [x] Telugu Panchangam (/telugu-panchangam): calculated with astronomy-engine (MIT), Lahiri ayanamsa, amanta months, sunrise-based; tithi/nakshatram/yogam/karanam with end times + next tithi, sunrise/sunset/moonrise, Rahu/Yama/Gulika/Abhijit with NOW tag, city + date, WhatsApp share. Verified vs 2026 festival tithis (Ugadi, Rama Navami, Chavithi, Dasara, Deepavali, Shivaratri, Rakhi)
-- [ ] Panchangam later: festivals list per lunar month, per-day SEO pages, free npm package of the calculator
+- [ ] Panchangam later: festivals list per lunar month, per-day SEO pages. npm package of the calculator: ON HOLD (user, 20 Oct 2026)
+- [x] First-visit welcome: 3.5 s glitter + thank-you toast once per device (skipped for returning visitors; festival shower takes precedence)
 - [ ] On hold: movie finder / cast & crew (TMDB is non-commercial only; needs commercial licence or paid API)
 - [x] Declined: song lyrics (copyrighted; would break AdSense policy)
 - [x] Home = quick menu (top 4 per group / 5 exams, "See all N"); group pages carry guides (exam size table, tax slabs, Indian BMI chart, land unit table, GST invoice checklist, PDF task table, gold purity, Telugu letters)

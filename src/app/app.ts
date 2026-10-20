@@ -4,6 +4,7 @@ import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router
 import { filter } from 'rxjs';
 import { Icon } from './shared/icon';
 import { ConsentService } from './core/consent.service';
+import { ToastService } from './core/toast.service';
 import { CALC_LINKS } from './core/calc-links';
 import { TOOL_LINKS } from './core/tool-links';
 import { EXAMS, examPath } from './core/exams';
@@ -117,6 +118,7 @@ import { MoreFrom } from './shared/more-from';
 export class App {
   protected readonly theme = inject(ThemeService);
   protected readonly consent = inject(ConsentService);
+  private readonly toast = inject(ToastService);
   protected readonly exams = EXAMS;
   protected readonly tools = TOOL_LINKS;
   protected readonly calcs = CALC_LINKS.filter((c) => !/-loan-emi$/.test(c.id));
@@ -150,21 +152,36 @@ export class App {
         e.preventDefault();
         (window as { __installEvent?: Event }).__installEvent = e;
       });
-    // Festival day: a short shower of confetti/sparkles once a day per device (code loads only then)
+    // Festival day: a short shower once a day per device. First visit ever: a little glitter + thank-you note.
     afterNextRender(() => {
       setTimeout(async () => {
+        let firstVisit = false;
+        try {
+          // "consent" already set = a returning visitor from before this welcome existed
+          firstVisit = !localStorage.getItem('welcomed') && !localStorage.getItem('consent');
+          localStorage.setItem('welcomed', '1');
+        } catch {
+          /* private mode: skip the welcome */
+        }
         const c = await import('./core/celebrate');
         const today = c.todayIso();
         const f = c.festivalOn(today);
-        if (!f) return;
-        try {
-          // Once a day per device, not on every visit
-          if (localStorage.getItem('celebrated') === today || sessionStorage.getItem('celebrated') === today) return;
-          localStorage.setItem('celebrated', today);
-        } catch {
-          /* still show once */
+        let showered = false;
+        if (f) {
+          try {
+            if (localStorage.getItem('celebrated') !== today && sessionStorage.getItem('celebrated') !== today) {
+              localStorage.setItem('celebrated', today);
+              c.shower(f.theme);
+              showered = true;
+            }
+          } catch {
+            /* fine */
+          }
         }
-        c.shower(f.theme);
+        if (firstVisit) {
+          if (!showered) c.shower('festive', 3500);
+          this.toast.show('🙏 Welcome! Thanks for visiting Spread Apps Tools — every tool is free.', 'success', 5000);
+        }
       }, 900);
     });
   }
