@@ -13,7 +13,7 @@
   [headers.values]
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "camera=(self), microphone=(), geolocation=(), interest-cohort=()"
+    Permissions-Policy = "camera=(self), microphone=(), geolocation=(self), interest-cohort=()"
     X-Frame-Options = "SAMEORIGIN"
     Strict-Transport-Security = "max-age=31536000; includeSubDomains"
 
