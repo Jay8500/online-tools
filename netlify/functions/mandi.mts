@@ -20,10 +20,12 @@ export default async (req: Request) => {
     // The API pages results; 1,000 rows a call is plenty for one state's daily data.
     for (let offset = 0; offset < 3000; offset += 1000) {
       const u = `https://api.data.gov.in/resource/${RESOURCE}?api-key=${key}&format=json&limit=1000&offset=${offset}&filters%5Bstate.keyword%5D=${encodeURIComponent(state)}`;
-      const r = await fetch(u);
+      // Government server can be slow: give up after 8 s so the visitor gets a clear message
+      const r = await fetch(u, { signal: AbortSignal.timeout(8000) });
       if (r.status === 401 || r.status === 403) return json({ error: 'not-configured', reason: 'key-rejected' }, 503, 'no-store');
-      if (!r.ok) throw new Error(String(r.status));
-      const j = (await r.json()) as { records?: Raw[] };
+      if (!r.ok) throw new Error(`upstream ${r.status}`);
+      const j = (await r.json()) as { records?: Raw[]; status?: string; message?: string };
+      if (j.status && j.status !== 'ok') throw new Error(`upstream says: ${String(j.message ?? j.status).slice(0, 80)}`);
       const page = j.records ?? [];
       records.push(...page);
       if (page.length < 1000) break;
@@ -34,8 +36,10 @@ export default async (req: Request) => {
       .filter((r) => r.modal > 0);
     const latest = slim.map((r) => r.date).sort((a, b) => toIso(b).localeCompare(toIso(a)))[0];
     return json({ state, date: latest, records: slim }, 200, 'public, max-age=600', 'public, s-maxage=3600, stale-while-revalidate=7200');
-  } catch {
-    return json({ error: 'The government price service is not reachable right now. Please try again later.' }, 502, 'no-store');
+  } catch (e) {
+    // Reason helps diagnose (never contains the key: the URL is not part of these messages)
+    const reason = e instanceof Error ? (e.name === 'TimeoutError' ? 'timeout' : e.message.replace(/api-key=[^&s]+/g, 'api-key=***')).slice(0, 120) : 'unknown';
+    return json({ error: 'The government price service is not reachable right now. Please try again later.', reason }, 502, 'no-store');
   }
 };
 
