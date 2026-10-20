@@ -35,7 +35,8 @@ export type ToolKind =
   | 'currency'
   | 'techterms'
   | 'recharge'
-  | 'ott';
+  | 'ott'
+  | 'panchangam';
 
 export type ToolGroupName = 'PDF tools' | 'Business tools' | 'Health calculators' | 'Language tools' | 'Converters' | 'Daily tools';
 
@@ -65,6 +66,7 @@ export const TOOL_LINKS: ToolLinkLite[] = [
   { id: 'fuel', path: 'petrol-diesel-price', name: 'Petrol & diesel price', group: 'Daily tools', icon: 'gauge', blurb: 'Hyderabad, AP & metros with ▲▼' },
   { id: 'holidays', path: 'holiday-calendar', name: 'Holiday calendar', group: 'Daily tools', icon: 'calendar-days', blurb: 'India, Telangana & AP holidays 2026–27' },
   { id: 'weather', path: 'weather', name: 'Weather', group: 'Daily tools', icon: 'thermometer', blurb: 'Today + 5-day forecast, any city' },
+  { id: 'panchangam', path: 'telugu-panchangam', name: 'Telugu Panchangam', group: 'Daily tools', icon: 'sun', blurb: 'Today’s tithi, nakshatram, Rahu kalam' },
   { id: 'grocery', path: 'vegetable-prices-today', name: 'Vegetable & grocery prices', group: 'Daily tools', icon: 'receipt', blurb: 'Rythu Bazar & mandi rates, milk, eggs' },
   { id: 'metro', path: 'hyderabad-metro-fare', name: 'Hyderabad Metro fare', group: 'Daily tools', icon: 'map-pin', blurb: 'Fare, stations & route, all 3 lines' },
   { id: 'traffic', path: 'traffic-challan-fines', name: 'Traffic fines & rules', group: 'Daily tools', icon: 'traffic-cone', blurb: 'Challan amounts for TS & AP, rules in short' },

@@ -32,6 +32,7 @@ export const SOURCES: Record<string, Source[]> = {
     { name: 'Motor Vehicles Act (India Code)', url: 'https://www.indiacode.nic.in/handle/123456789/1798' },
     { name: 'Parivahan e-Challan', url: 'https://echallan.parivahan.gov.in/' },
   ],
+  'telugu-panchangam': [{ name: 'astronomy-engine (MIT)', url: 'https://github.com/cosinekitty/astronomy' }],
   'currency-converter': [{ name: 'ExchangeRate-API', url: 'https://www.exchangerate-api.com/' }],
   'mobile-recharge-plans': [
     { name: 'Jio', url: 'https://www.jio.com/selfcare/plans/mobility/prepaid-plans-list/' },

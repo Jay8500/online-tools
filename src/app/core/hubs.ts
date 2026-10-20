@@ -125,7 +125,7 @@ export const HUBS: Hub[] = [
     name: 'Daily tools',
     h1: 'Daily Tools',
     title: 'Daily Tools — Gold Rate, Petrol Price, Vegetable Prices, Metro Fare, Weather',
-    description: 'Everyday tools for India: live gold rate, petrol & diesel prices, vegetable prices from Rythu Bazars, Hyderabad Metro fares, cinemas, police stations & petrol bunks near you, recharge & OTT prices, holiday calendar, traffic fines, travel planner and weather.',
+    description: 'Everyday tools for India: live gold rate, petrol & diesel prices, vegetable prices from Rythu Bazars, Hyderabad Metro fares, cinemas, police stations & petrol bunks near you, recharge & OTT prices, Telugu panchangam, holiday calendar, traffic fines, travel planner and weather.',
     intro: 'Handy everyday tools — plan a journey, work out a jewellery bill or check the weather for your city.',
     items: fromGroup('Daily tools'),
     faqs: [{ q: 'Are these free?', a: 'Yes, every tool on Spread Apps Tools is free to use.' }],

@@ -1,7 +1,7 @@
 import { Faq } from './seo.service';
 import { TOOL_LINKS, ToolKind, ToolLinkLite } from './tool-links';
 
-export type Disclaimer = 'files' | 'health' | 'invoice' | 'upi' | 'language' | 'land' | 'units' | 'gold' | 'weather' | 'travel' | 'metro' | 'fuel' | 'grocery' | 'cinema' | 'holidays' | 'traffic' | 'nearby' | 'currency' | 'plans';
+export type Disclaimer = 'files' | 'health' | 'invoice' | 'upi' | 'language' | 'land' | 'units' | 'gold' | 'weather' | 'travel' | 'metro' | 'fuel' | 'grocery' | 'cinema' | 'holidays' | 'traffic' | 'nearby' | 'currency' | 'plans' | 'panchangam';
 
 export interface ToolPageInfo extends ToolLinkLite {
   h1: string;
@@ -243,6 +243,18 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
       { q: 'Is my data stored online?', a: 'No. Your steps, weight and height are saved only in this browser on your phone.' },
     ],
     disclaimer: 'health',
+  },
+  panchangam: {
+    h1: 'Telugu Panchangam Today',
+    title: 'Telugu Panchangam Today — Tithi, Nakshatram, Rahu Kalam | Hyderabad, Vijayawada',
+    description: 'Today’s Telugu panchangam for your city: tithi, nakshatram, yogam, karanam, sunrise, sunset, Rahu kalam, Yamagandam and Gulika — free, any date.',
+    intro: 'Tithi, nakshatram and Rahu kalam for your city — today or any date.',
+    steps: ['Pick your city.', 'See today’s panchangam, or move to any date.', 'Share it on WhatsApp.'],
+    faqs: [
+      { q: 'Is this the same as my printed calendar?', a: 'It is calculated with the Lahiri method used by most Telugu calendars. Times can differ by a few minutes; for muhurtham, follow your purohit.' },
+      { q: 'Why does the tithi change during the day?', a: 'A tithi runs by the moon, not the clock. The card shows when it ends and which tithi comes next.' },
+    ],
+    disclaimer: 'panchangam',
   },
   currency: {
     h1: 'Currency Converter — Dollar, Dirham, Riyal to Rupees',
@@ -499,6 +511,7 @@ export const DISCLAIMERS: Record<Disclaimer, string> = {
   grocery: 'Market prices are wholesale/Rythu Bazar rates published by the Government of India; shop prices are usually higher. Milk and egg prices are checked by hand — dates shown.',
   holidays: 'Holiday dates are from the official government orders. Moon-based festivals can shift by a day — follow the government announcement. Banks and schools may follow different lists.',
   traffic: 'Fines shown are those in the Motor Vehicles Act, 1988 (as amended in 2019); the amount actually charged may be lower where a state compounds the offence. This is general information, not legal advice — the e-challan portal and traffic police are final.',
+  panchangam: 'Calculated from sun and moon positions (Lahiri ayanamsa, amanta months, IST). Timings may differ slightly from printed panchangams — consult your purohit for muhurtham.',
   currency: 'Market (mid) rates from a public data source, updated daily — banks, cards and exchange houses apply their own rates and fees. Not financial advice.',
   plans: 'Prices copied from each company’s official website on the date shown; plans, offers and circle prices change often. Confirm in the official app before paying. We are not linked to any operator or app.',
   nearby: 'Places come from OpenStreetMap and may be missing, closed or moved. Distances are straight-line. In an emergency call 112.',
