@@ -93,43 +93,43 @@ import { GroceryTool } from './tools/grocery-tool';
 
         <section class="card p-3 sm:p-4" (input)="used()" (change)="used()" aria-label="Tool">
           @switch (t.id) {
-            @case ('bmi') { @defer (on immediate) { <app-bmi-tool /> } @placeholder { <div class="h-72"></div> } }
-            @case ('calorie') { @defer (on immediate) { <app-calorie-tool /> } @placeholder { <div class="h-96"></div> } }
-            @case ('ideal-weight') { @defer (on immediate) { <app-ideal-weight-tool /> } @placeholder { <div class="h-56"></div> } }
-            @case ('due-date') { @defer (on immediate) { <app-due-date-tool /> } @placeholder { <div class="h-72"></div> } }
-            @case ('upi-qr') { @defer (on immediate) { <app-upi-qr-tool /> } @placeholder { <div class="h-96"></div> } }
-            @case ('telugu') { @defer (on immediate) { <app-telugu-tool /> } @placeholder { <div class="h-80"></div> } }
-            @case ('gst-invoice') { @defer (on immediate) { <app-invoice-tool /> } @placeholder { <div class="h-[60rem]"></div> } }
-            @case ('pdf-merge') { @defer (on immediate) { <app-pdf-merge /> } @placeholder { <div class="h-48"></div> } }
-            @case ('pdf-split') { @defer (on immediate) { <app-pdf-split /> } @placeholder { <div class="h-48"></div> } }
-            @case ('pdf-compress') { @defer (on immediate) { <app-pdf-compress /> } @placeholder { <div class="h-48"></div> } }
-            @case ('image-to-pdf') { @defer (on immediate) { <app-image-to-pdf /> } @placeholder { <div class="h-48"></div> } }
-            @case ('gold') { @defer (on immediate) { <app-gold-tool /> } @placeholder { <div class="h-[36rem]"></div> } }
-            @case ('metro') { @defer (on immediate) { <app-metro-tool /> } @placeholder { <div class="h-96"></div> } }
-            @case ('fuel') { @defer (on immediate) { <app-fuel-tool /> } @placeholder { <div class="h-96"></div> } }
-            @case ('grocery') { @defer (on immediate) { <app-grocery-tool /> } @placeholder { <div class="h-[32rem]"></div> } }
-            @case ('holidays') { @defer (on immediate) { <app-holiday-tool /> } @placeholder { <div class="h-96"></div> } }
-            @case ('traffic') { @defer (on immediate) { <app-traffic-tool /> } @placeholder { <div class="h-96"></div> } }
-            @case ('panchangam') { @defer (on immediate) { <app-panchangam-tool /> } @placeholder { <div class="h-96"></div> } }
-            @case ('currency') { @defer (on immediate) { <app-currency-tool /> } @placeholder { <div class="h-96"></div> } }
-            @case ('techterms') { @defer (on immediate) { <app-tech-terms-tool /> } @placeholder { <div class="h-96"></div> } }
-            @case ('recharge') { @defer (on immediate) { <app-recharge-tool /> } @placeholder { <div class="h-96"></div> } }
-            @case ('ott') { @defer (on immediate) { <app-ott-tool /> } @placeholder { <div class="h-96"></div> } }
-            @case ('steps') { @defer (on immediate) { <app-steps-tool /> } @placeholder { <div class="h-96"></div> } }
-            @case ('police') { @defer (on immediate) { <app-nearby-tool kind="police" /> } @placeholder { <div class="h-96"></div> } }
-            @case ('bunks') { @defer (on immediate) { <app-nearby-tool kind="fuel" /> } @placeholder { <div class="h-96"></div> } }
-            @case ('cinema') { @defer (on immediate) { <app-cinema-tool /> } @placeholder { <div class="h-96"></div> } }
-            @case ('travel') { @defer (on immediate) { <app-travel-tool /> } @placeholder { <div class="h-96"></div> } }
-            @case ('weather') { @defer (on immediate) { <app-weather-tool /> } @placeholder { <div class="h-96"></div> } }
-            @case ('land') { @defer (on immediate) { <app-land-tool /> } @placeholder { <div class="h-96"></div> } }
-            @case ('length') { @defer (on immediate) { <app-unit-tool category="length" /> } @placeholder { <div class="h-96"></div> } }
-            @case ('weight') { @defer (on immediate) { <app-unit-tool category="weight" /> } @placeholder { <div class="h-96"></div> } }
-            @case ('volume') { @defer (on immediate) { <app-unit-tool category="volume" /> } @placeholder { <div class="h-96"></div> } }
-            @case ('temperature') { @defer (on immediate) { <app-unit-tool category="temperature" /> } @placeholder { <div class="h-96"></div> } }
-            @case ('speed') { @defer (on immediate) { <app-unit-tool category="speed" /> } @placeholder { <div class="h-96"></div> } }
-            @case ('data') { @defer (on immediate) { <app-unit-tool category="data" /> } @placeholder { <div class="h-96"></div> } }
-            @case ('count') { @defer (on immediate) { <app-unit-tool category="count" /> } @placeholder { <div class="h-96"></div> } }
-            @case ('pdf-to-image') { @defer (on immediate) { <app-pdf-to-image /> } @placeholder { <div class="h-48"></div> } }
+            @case ('bmi') { @defer (on immediate; hydrate on immediate) { <app-bmi-tool /> } @placeholder { <div class="h-72"></div> } }
+            @case ('calorie') { @defer (on immediate; hydrate on immediate) { <app-calorie-tool /> } @placeholder { <div class="h-96"></div> } }
+            @case ('ideal-weight') { @defer (on immediate; hydrate on immediate) { <app-ideal-weight-tool /> } @placeholder { <div class="h-56"></div> } }
+            @case ('due-date') { @defer (on immediate; hydrate on immediate) { <app-due-date-tool /> } @placeholder { <div class="h-72"></div> } }
+            @case ('upi-qr') { @defer (on immediate; hydrate on immediate) { <app-upi-qr-tool /> } @placeholder { <div class="h-96"></div> } }
+            @case ('telugu') { @defer (on immediate; hydrate on immediate) { <app-telugu-tool /> } @placeholder { <div class="h-80"></div> } }
+            @case ('gst-invoice') { @defer (on immediate; hydrate on immediate) { <app-invoice-tool /> } @placeholder { <div class="h-[60rem]"></div> } }
+            @case ('pdf-merge') { @defer (on immediate; hydrate on immediate) { <app-pdf-merge /> } @placeholder { <div class="h-48"></div> } }
+            @case ('pdf-split') { @defer (on immediate; hydrate on immediate) { <app-pdf-split /> } @placeholder { <div class="h-48"></div> } }
+            @case ('pdf-compress') { @defer (on immediate; hydrate on immediate) { <app-pdf-compress /> } @placeholder { <div class="h-48"></div> } }
+            @case ('image-to-pdf') { @defer (on immediate; hydrate on immediate) { <app-image-to-pdf /> } @placeholder { <div class="h-48"></div> } }
+            @case ('gold') { @defer (on immediate; hydrate on immediate) { <app-gold-tool /> } @placeholder { <div class="h-[36rem]"></div> } }
+            @case ('metro') { @defer (on immediate; hydrate on immediate) { <app-metro-tool /> } @placeholder { <div class="h-96"></div> } }
+            @case ('fuel') { @defer (on immediate; hydrate on immediate) { <app-fuel-tool /> } @placeholder { <div class="h-96"></div> } }
+            @case ('grocery') { @defer (on immediate; hydrate on immediate) { <app-grocery-tool /> } @placeholder { <div class="h-[32rem]"></div> } }
+            @case ('holidays') { @defer (on immediate; hydrate on immediate) { <app-holiday-tool /> } @placeholder { <div class="h-96"></div> } }
+            @case ('traffic') { @defer (on immediate; hydrate on immediate) { <app-traffic-tool /> } @placeholder { <div class="h-96"></div> } }
+            @case ('panchangam') { @defer (on immediate; hydrate on immediate) { <app-panchangam-tool /> } @placeholder { <div class="h-96"></div> } }
+            @case ('currency') { @defer (on immediate; hydrate on immediate) { <app-currency-tool /> } @placeholder { <div class="h-96"></div> } }
+            @case ('techterms') { @defer (on immediate; hydrate on immediate) { <app-tech-terms-tool /> } @placeholder { <div class="h-96"></div> } }
+            @case ('recharge') { @defer (on immediate; hydrate on immediate) { <app-recharge-tool /> } @placeholder { <div class="h-96"></div> } }
+            @case ('ott') { @defer (on immediate; hydrate on immediate) { <app-ott-tool /> } @placeholder { <div class="h-96"></div> } }
+            @case ('steps') { @defer (on immediate; hydrate on immediate) { <app-steps-tool /> } @placeholder { <div class="h-96"></div> } }
+            @case ('police') { @defer (on immediate; hydrate on immediate) { <app-nearby-tool kind="police" /> } @placeholder { <div class="h-96"></div> } }
+            @case ('bunks') { @defer (on immediate; hydrate on immediate) { <app-nearby-tool kind="fuel" /> } @placeholder { <div class="h-96"></div> } }
+            @case ('cinema') { @defer (on immediate; hydrate on immediate) { <app-cinema-tool /> } @placeholder { <div class="h-96"></div> } }
+            @case ('travel') { @defer (on immediate; hydrate on immediate) { <app-travel-tool /> } @placeholder { <div class="h-96"></div> } }
+            @case ('weather') { @defer (on immediate; hydrate on immediate) { <app-weather-tool /> } @placeholder { <div class="h-96"></div> } }
+            @case ('land') { @defer (on immediate; hydrate on immediate) { <app-land-tool /> } @placeholder { <div class="h-96"></div> } }
+            @case ('length') { @defer (on immediate; hydrate on immediate) { <app-unit-tool category="length" /> } @placeholder { <div class="h-96"></div> } }
+            @case ('weight') { @defer (on immediate; hydrate on immediate) { <app-unit-tool category="weight" /> } @placeholder { <div class="h-96"></div> } }
+            @case ('volume') { @defer (on immediate; hydrate on immediate) { <app-unit-tool category="volume" /> } @placeholder { <div class="h-96"></div> } }
+            @case ('temperature') { @defer (on immediate; hydrate on immediate) { <app-unit-tool category="temperature" /> } @placeholder { <div class="h-96"></div> } }
+            @case ('speed') { @defer (on immediate; hydrate on immediate) { <app-unit-tool category="speed" /> } @placeholder { <div class="h-96"></div> } }
+            @case ('data') { @defer (on immediate; hydrate on immediate) { <app-unit-tool category="data" /> } @placeholder { <div class="h-96"></div> } }
+            @case ('count') { @defer (on immediate; hydrate on immediate) { <app-unit-tool category="count" /> } @placeholder { <div class="h-96"></div> } }
+            @case ('pdf-to-image') { @defer (on immediate; hydrate on immediate) { <app-pdf-to-image /> } @placeholder { <div class="h-48"></div> } }
           }
         </section>
 
