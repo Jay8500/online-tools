@@ -6,8 +6,9 @@ import { Component, input } from '@angular/core';
  */
 const PRODUCTS = [
   // Hidden while employed elsewhere (similar to the employer's software) — set hidden: false to show again
-  { name: 'Spread Apps AI-Lab', emoji: '🧪', line: 'Lab software: patient tokens, sample tracking, instant reports on WhatsApp', url: 'https://ailab.spreadapps.in/?ref=tools', hidden: true },
-  { name: 'Circles', emoji: '⭕', line: 'Project management app — every project, one circle', url: 'https://circles.spreadapps.in/?ref=tools', hidden: false },
+  { name: 'Spread Apps AI-Lab', emoji: '🧪', line: 'Lab software: patient tokens, sample tracking, instant reports on WhatsApp', url: 'https://ailab.spreadapps.in/?ref=tools', logo: '', status: '', hidden: true },
+  // status: shown as a small badge; set to '' when Circles is back online (its Supabase project is paused)
+  { name: 'Circles', emoji: '⭕', logo: 'brand/circles-logo.svg', status: 'Under maintenance', line: 'Project management app — every project, one circle', url: 'https://circles.spreadapps.in/?ref=tools', hidden: false },
 ];
 const SHOWN = PRODUCTS.filter((p) => !p.hidden);
 /** The AI-Lab line on health pages follows the AI-Lab switch above */
@@ -28,8 +29,13 @@ const SHOW_LAB = !PRODUCTS[0].hidden;
         <div class="grid gap-2" [class.sm:grid-cols-2]="shown.length > 1">
           @for (p of shown; track p.name) {
             <a [href]="p.url" target="_blank" rel="noopener" class="flex items-center gap-3 rounded-xl border border-line px-3 py-2 hover:border-brand/50">
-              <span class="text-2xl" aria-hidden="true">{{ p.emoji }}</span>
-              <span class="min-w-0"><b class="block">{{ p.name }} <span class="font-normal text-muted">↗</span></b><span class="block text-xs text-muted">{{ p.line }}</span></span>
+              @if (p.logo) { <img [src]="p.logo" alt="" width="32" height="32" class="size-8 shrink-0" /> } @else { <span class="text-2xl" aria-hidden="true">{{ p.emoji }}</span> }
+              <span class="min-w-0">
+                <b class="flex flex-wrap items-center gap-x-2">{{ p.name }} <span class="font-normal text-muted">↗</span>
+                  @if (p.status) { <span class="rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-semibold text-amber-700 dark:text-amber-300">🛠 {{ p.status }}</span> }
+                </b>
+                <span class="block text-xs text-muted">{{ p.line }}</span>
+              </span>
             </a>
           }
         </div>
