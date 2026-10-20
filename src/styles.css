@@ -218,3 +218,17 @@
 .sky-card .sky-cloud { opacity: 0.35 !important; }
 .sky-card .sky-sun { width: 110px !important; height: 110px !important; top: -55px !important; right: -45px !important; }
 .sky-card app-sky::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgb(0 0 0 / 0.28), rgb(0 0 0 / 0.08) 70%, transparent); }
+
+/* Gentle "bubble" on hover for clickable / list cards (mouse devices only; never on tool forms) */
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .card.group:hover, .card:has(> a):hover, ul > li.rounded-xl.border:hover, ul > li.rounded-2xl.border:hover {
+    animation: bubble 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+}
+@keyframes bubble {
+  0% { transform: translateY(0) scale(1); }
+  35% { transform: translateY(-3px) scale(1.022); }
+  60% { transform: translateY(-1px) scale(0.997); }
+  80% { transform: translateY(-2px) scale(1.01); }
+  100% { transform: translateY(-2px) scale(1.008); }
+}

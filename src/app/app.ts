@@ -59,33 +59,35 @@ import { InstallFooter } from './shared/install-footer';
           @defer (on idle) { <app-install-footer /> }
         </div>
         <nav aria-label="Exam photo tools">
-          <a routerLink="/exam-photo-signature-resize" class="mb-2 block font-semibold hover:text-brand">Exam photo & signature</a>
-          <ul class="grid grid-cols-2 gap-x-3 gap-y-1.5 text-muted">
+          <div class="mb-2 flex items-center gap-2"><a routerLink="/exam-photo-signature-resize" class="font-semibold hover:text-brand">Exam photo & signature</a><button type="button" class="ml-auto grid size-8 place-items-center rounded-lg text-muted hover:bg-surface-2 lg:hidden" (click)="toggle('exam')" [attr.aria-expanded]="!!open()['exam']" aria-label="Show or hide links"><svg [lucideIcon]="open()['exam'] ? 'chevron-up' : 'chevron-down'" [size]="18" /></button></div>
+          <ul class="grid grid-cols-2 gap-x-3 gap-y-1.5 text-muted" [class.max-lg:hidden]="!open()['exam']">
             @for (e of exams; track e.slug) {
               <li><a [routerLink]="'/' + photoPath(e)" class="hover:text-brand">{{ e.name }} photo</a></li>
             }
           </ul>
         </nav>
         <nav aria-label="Money calculators">
-          <a routerLink="/money-calculators" class="mb-2 block font-semibold hover:text-brand">Money calculators</a>
-          <ul class="grid grid-cols-2 gap-x-3 gap-y-1.5 text-muted">
+          <div class="mb-2 flex items-center gap-2"><a routerLink="/money-calculators" class="font-semibold hover:text-brand">Money calculators</a><button type="button" class="ml-auto grid size-8 place-items-center rounded-lg text-muted hover:bg-surface-2 lg:hidden" (click)="toggle('money')" [attr.aria-expanded]="!!open()['money']" aria-label="Show or hide links"><svg [lucideIcon]="open()['money'] ? 'chevron-up' : 'chevron-down'" [size]="18" /></button></div>
+          <ul class="grid grid-cols-2 gap-x-3 gap-y-1.5 text-muted" [class.max-lg:hidden]="!open()['money']">
             @for (c of calcs; track c.id) {
               <li><a [routerLink]="'/' + c.path" class="hover:text-brand">{{ c.name }}</a></li>
             }
           </ul>
         </nav>
         <nav aria-label="More free tools">
-          <p class="mb-2 font-semibold">PDF, business & more</p>
+          <div class="mb-2 flex items-center gap-2"><p class="font-semibold">PDF, business & more</p><button type="button" class="ml-auto grid size-8 place-items-center rounded-lg text-muted hover:bg-surface-2 lg:hidden" (click)="toggle('more')" [attr.aria-expanded]="!!open()['more']" aria-label="Show or hide links"><svg [lucideIcon]="open()['more'] ? 'chevron-up' : 'chevron-down'" [size]="18" /></button></div>
+          <div [class.max-lg:hidden]="!open()['more']">
           <p class="mb-2 flex flex-wrap gap-x-3 gap-y-1 text-xs"><a routerLink="/pdf-tools" class="text-brand hover:underline">PDF tools</a><a routerLink="/business-tools" class="text-brand hover:underline">Business</a><a routerLink="/health-calculators" class="text-brand hover:underline">Health</a><a routerLink="/language-tools" class="text-brand hover:underline">Language</a><a routerLink="/unit-converters" class="text-brand hover:underline">Converters</a><a routerLink="/daily-tools" class="text-brand hover:underline">Daily</a></p>
           <ul class="grid grid-cols-2 gap-x-3 gap-y-1.5 text-muted">
             @for (t of tools; track t.id) {
               <li><a [routerLink]="'/' + t.path" class="hover:text-brand">{{ t.name }}</a></li>
             }
           </ul>
+          </div>
         </nav>
         <nav aria-label="About this site">
-          <p class="mb-2 font-semibold">About</p>
-          <ul class="grid grid-cols-2 gap-x-3 gap-y-1.5 text-muted">
+          <div class="mb-2 flex items-center gap-2"><p class="font-semibold">About</p><button type="button" class="ml-auto grid size-8 place-items-center rounded-lg text-muted hover:bg-surface-2 lg:hidden" (click)="toggle('about')" [attr.aria-expanded]="!!open()['about']" aria-label="Show or hide links"><svg [lucideIcon]="open()['about'] ? 'chevron-up' : 'chevron-down'" [size]="18" /></button></div>
+          <ul class="grid grid-cols-2 gap-x-3 gap-y-1.5 text-muted" [class.max-lg:hidden]="!open()['about']">
             <li><a routerLink="/about" class="hover:text-brand">About us</a></li>
             <li><a routerLink="/contact" class="hover:text-brand">Contact</a></li>
             <li><a routerLink="/privacy" class="hover:text-brand">Privacy policy</a></li>
@@ -117,6 +119,11 @@ export class App {
   protected readonly tools = TOOL_LINKS;
   protected readonly calcs = CALC_LINKS.filter((c) => !/-loan-emi$/.test(c.id));
   protected readonly year = new Date().getFullYear();
+  /** Footer sections folded on phones/tablets (all open on large screens) */
+  protected readonly open = signal<Record<string, boolean>>({});
+  protected toggle(k: string) {
+    this.open.update((o) => ({ ...o, [k]: !o[k] }));
+  }
 
   private readonly router = inject(Router);
   private readonly location = inject(Location);
