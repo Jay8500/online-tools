@@ -38,7 +38,7 @@ export default async (req: Request) => {
     return json({ state, date: latest, records: slim }, 200, 'public, max-age=600', 'public, s-maxage=3600, stale-while-revalidate=7200');
   } catch (e) {
     // Reason helps diagnose (never contains the key: the URL is not part of these messages)
-    const reason = e instanceof Error ? (e.name === 'TimeoutError' ? 'timeout' : e.message.replace(/api-key=[^&s]+/g, 'api-key=***')).slice(0, 120) : 'unknown';
+    const reason = e instanceof Error ? (e.name === 'TimeoutError' ? 'timeout' : e.message.replace(/api-key=[^&\s]+/g, 'api-key=***')).slice(0, 120) : 'unknown';
     return json({ error: 'The government price service is not reachable right now. Please try again later.', reason }, 502, 'no-store');
   }
 };
