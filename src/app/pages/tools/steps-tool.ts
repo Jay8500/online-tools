@@ -3,6 +3,8 @@ import { Component, DestroyRef, PLATFORM_ID, afterNextRender, computed, inject, 
 import { Icon } from '../../shared/icon';
 
 const KEY = 'steps-v1';
+/** Set while counting is on, so the page starts counting by itself next time it's opened. */
+const AUTO_KEY = 'steps-auto';
 interface Saved {
   weight: number;
   height: number;
@@ -36,7 +38,7 @@ function today() {
         </svg>
         <div class="absolute inset-0 grid place-items-center text-center">
           <div>
-            <span class="text-3xl" [class.walker]="running()" aria-hidden="true">🚶</span>
+            <span class="text-3xl" [class.walker]="running() && walkState() === 'walking'" aria-hidden="true">{{ running() && walkState() === 'resting' ? '🧘' : '🚶' }}</span>
             <p class="text-3xl font-extrabold tabular-nums" aria-live="polite">{{ fmt(steps()) }}</p>
             <p class="text-xs text-muted">of {{ fmt(goal()) }} steps</p>
             @if (pct() >= 1) { <p class="text-xs font-bold text-green-600">🎉 Goal reached!</p> }
@@ -60,17 +62,23 @@ function today() {
         </div>
         @if (note()) { <p class="mt-2 rounded-xl bg-amber-500/10 px-3 py-2 text-xs" role="status">{{ note() }}</p> }
         @if (running()) {
-          <p class="mt-2 flex items-center gap-2 text-xs font-semibold" [class]="walkState() === 'walking' ? 'text-green-700 dark:text-green-300' : 'text-amber-700 dark:text-amber-300'">
+          <p class="mt-2 flex items-center gap-2 text-xs font-semibold" role="status" [class]="walkState() === 'walking' ? 'text-green-700 dark:text-green-300' : 'text-amber-700 dark:text-amber-300'">
             <span class="relative flex size-2"><span class="absolute inline-flex size-full animate-ping rounded-full opacity-75" [class]="walkState() === 'walking' ? 'bg-green-500' : 'bg-amber-500'"></span><span class="relative inline-flex size-2 rounded-full" [class]="walkState() === 'walking' ? 'bg-green-600' : 'bg-amber-500'"></span></span>
-            {{ walkState() === 'walking' ? 'Walking — counting every step' : 'Start walking — counting begins after a few steady steps' }}
+            @switch (walkState()) {
+              @case ('walking') { Walking — counting every step }
+              @case ('resting') { Auto-paused — you stopped. Starts again by itself when you walk. }
+              @default { Ready — start walking, counting begins after a few steady steps }
+            }
           </p>
-          <p class="mt-1 text-xs text-muted">Keep this page open, phone in your hand or pocket. The screen stays on.</p>
+          <p class="mt-1 text-xs text-muted">No need to tap Pause when you sit — just keep this page open (phone in hand, pocket or on the table). The screen stays on.</p>
         }
         <details class="mt-3 rounded-xl bg-surface-2 p-3 text-xs" open>
           <summary class="cursor-pointer font-semibold">How counting works</summary>
           <ul class="mt-2 list-disc space-y-1 pl-4 text-muted">
             <li>Your phone’s motion sensor feels the small bounce of each step — nothing leaves your phone.</li>
+            <li>Tap Start once. When you sit or keep the phone down it auto-pauses, and when you walk again it starts by itself — no Pause/Continue needed.</li>
             <li>It starts counting after about 7 steady steps (and adds them), so picking up or putting down the phone isn’t counted.</li>
+            <li>Next time you open this page, counting turns on automatically (tap Pause to turn that off).</li>
             <li>Shakes, bumps and very fast or uneven movement are ignored.</li>
             <li>Counts only while this page is open. Usually within 5–10% of a fitness band.</li>
           </ul>
@@ -171,8 +179,8 @@ export class StepsTool {
   private pending = 0;
   private walking = false;
   private gotMotion = false;
-  /** Shown while counting: 'waiting' until steady walking is confirmed, then 'walking' */
-  protected readonly walkState = signal<'waiting' | 'walking'>('waiting');
+  /** Shown while counting: 'waiting' until steady walking is confirmed, 'walking', then 'resting' once the walker stops (auto-pause) */
+  protected readonly walkState = signal<'waiting' | 'walking' | 'resting'>('waiting');
   private wake: { release(): Promise<void> } | null = null;
   private readonly onMotion = (e: DeviceMotionEvent) => this.motion(e);
 
@@ -189,11 +197,28 @@ export class StepsTool {
         /* defaults */
       }
       this.hasMotion.set(typeof DeviceMotionEvent !== 'undefined');
+      // Counting was on last time: start again without a tap
+      let auto = false;
+      try {
+        auto = localStorage.getItem(AUTO_KEY) === '1';
+      } catch {
+        /* no storage */
+      }
+      if (auto && this.hasMotion()) void this.start(true);
     });
-    inject(DestroyRef).onDestroy(() => this.stop());
+    // The browser drops the screen lock when the tab is hidden — take it again on return
+    const onVisible = () => {
+      if (document.visibilityState === 'visible' && this.running() && !this.wake) void this.keepAwake();
+    };
+    if (this.browser) document.addEventListener('visibilitychange', onVisible);
+    inject(DestroyRef).onDestroy(() => {
+      if (this.browser) document.removeEventListener('visibilitychange', onVisible);
+      this.halt();
+    });
   }
 
-  protected async start() {
+  /** `auto`: opened without a tap — on iPhone motion permission needs a tap, so just wait for Start. */
+  protected async start(auto = false) {
     if (!this.browser) return;
     this.note.set(null);
     if (typeof DeviceMotionEvent === 'undefined') {
@@ -204,21 +229,22 @@ export class StepsTool {
     const req = (DeviceMotionEvent as unknown as { requestPermission?: () => Promise<string> }).requestPermission;
     if (req) {
       try {
-        if ((await req()) !== 'granted') return this.note.set('Motion permission was denied. Allow “Motion & Orientation” in Settings → Safari, then try again.');
+        const r = await req();
+        if (r !== 'granted' && auto) return;
+        if (r !== 'granted') return this.note.set('Motion permission was denied. Allow “Motion & Orientation” in Settings → Safari, then try again.');
       } catch {
+        if (auto) return;
         return this.note.set('Couldn’t get motion permission. Enter steps below instead.');
       }
     }
     this.gotMotion = false;
     this.resetWalk();
+    this.walkState.set('waiting');
     this.lastCandidate = 0;
     window.addEventListener('devicemotion', this.onMotion);
     this.running.set(true);
-    try {
-      this.wake = await (navigator as unknown as { wakeLock?: { request(t: 'screen'): Promise<{ release(): Promise<void> }> } }).wakeLock?.request('screen') ?? null;
-    } catch {
-      this.wake = null;
-    }
+    this.setAuto(true);
+    await this.keepAwake();
     setTimeout(() => {
       if (this.running() && !this.gotMotion) {
         this.stop();
@@ -228,7 +254,13 @@ export class StepsTool {
     }, 3000);
   }
 
+  /** Pause button: stop counting and don't auto-start on the next visit. */
   protected stop() {
+    this.setAuto(false);
+    this.halt();
+  }
+
+  private halt() {
     if (typeof window !== 'undefined') window.removeEventListener('devicemotion', this.onMotion);
     if (this.running()) this.save();
     this.running.set(false);
@@ -236,7 +268,25 @@ export class StepsTool {
     this.wake = null;
   }
 
-  /** Peak detection on acceleration magnitude: a step is a rise above the running average, at most ~3 per second. */
+  private async keepAwake() {
+    try {
+      const lock = await (navigator as unknown as { wakeLock?: { request(t: 'screen'): Promise<WakeLockSentinel> } }).wakeLock?.request('screen');
+      this.wake = lock ?? null;
+      lock?.addEventListener('release', () => (this.wake = null));
+    } catch {
+      this.wake = null;
+    }
+  }
+
+  private setAuto(on: boolean) {
+    try {
+      if (on) localStorage.setItem(AUTO_KEY, '1');
+      else localStorage.removeItem(AUTO_KEY);
+    } catch {
+      /* no storage */
+    }
+  }
+
   /**
    * Pedometer, the way phone step counters work:
    * 1. remove gravity (slow average) and smooth jitter → only body bounce remains;
@@ -289,10 +339,13 @@ export class StepsTool {
   }
 
   private resetWalk() {
+    if (this.walking) {
+      this.walkState.set('resting'); // auto-pause: resumes by itself after a few steady steps
+      this.save();
+    }
     this.walking = false;
     this.pending = 0;
     this.intervals = [];
-    this.walkState.set('waiting');
   }
 
   private add(n: number) {
