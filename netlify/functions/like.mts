@@ -64,7 +64,7 @@ export default async (req: Request, context: Context) => {
 };
 
 async function sendEmail(key: string, to: string, page: string, name: string, count: number, day: string) {
-  const from = Netlify.env.get('LIKE_EMAIL_FROM')?.trim() || 'Spread Apps Tools <tools@spreadapps.in>';
+  const from = Netlify.env.get('LIKE_EMAIL_FROM')?.trim() || 'Spread Apps Tools <tools@mail.spreadapps.in>'; // mail.spreadapps.in is the domain verified in Resend
   const link = `${SITE}/${page === 'home' ? '' : page}`;
   const time = new Date(Date.now() + 5.5 * 3600_000).toISOString().slice(11, 16);
   const html = `<div style="font-family:system-ui,sans-serif;font-size:15px;line-height:1.5">
