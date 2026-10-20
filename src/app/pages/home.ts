@@ -28,7 +28,13 @@ const CHIPS: { key: string; label: string; icon: string }[] = [
   { key: 'Converters', label: 'Converters', icon: 'ruler' },
   { key: 'Business tools', label: 'Business', icon: 'receipt' },
   { key: 'Health calculators', label: 'Health', icon: 'heart-pulse' },
-  { key: 'Language tools', label: 'Telugu', icon: 'languages' },
+  { key: 'Language tools', label: 'Language', icon: 'languages' },
+];
+/** Topic chips: related tools picked across groups (shown first, after "All"). */
+const TOPICS: { key: string; label: string; icon: string; title: string; paths: string[] }[] = [
+  { key: 'topic:prices', label: 'Prices', icon: 'banknote', title: 'Prices today', paths: ['gold-price-calculator', 'petrol-diesel-price', 'vegetable-prices-today', 'mobile-recharge-plans', 'ott-subscription-prices', 'currency-converter'] },
+  { key: 'topic:near', label: 'Near me', icon: 'map-pin', title: 'Near me & travel', paths: ['cinemas-near-me', 'police-station-near-me', 'petrol-bunk-near-me', 'hyderabad-metro-fare', 'travel-planner'] },
+  { key: 'topic:calendar', label: 'Calendar', icon: 'sun', title: 'Calendar & weather', paths: ['telugu-panchangam', 'holiday-calendar', 'weather'] },
 ];
 /** Rotating search hints — each one finds a tool when typed. */
 const HINTS = [
@@ -217,7 +223,7 @@ export class Home {
   /** Home is a quick menu: top picks per group; the group pages ("See all") have everything + guides. Search shows all matches. */
   protected readonly searching = computed(() => this.q().trim().length > 0);
   protected readonly examTotal = EXAMS.length;
-  protected readonly chips = CHIPS;
+  protected readonly chips = [...TOPICS.map(({ key, label, icon }) => ({ key, label, icon })), ...CHIPS];
   /** Sky behind the weather card once its badge has loaded */
   protected readonly skyIcon = WEATHER_ICON;
   /** Groups the visitor picked; empty = everything (the normal quick menu). */
@@ -232,7 +238,9 @@ export class Home {
   protected readonly groups = computed(() => {
     const q = this.q().trim().toLowerCase();
     const p = this.picked();
-    const inPick = TOOL_GROUPS.filter((g) => !p.length || p.includes(g.title));
+    const all = TOOL_GROUPS.flatMap((g) => g.tools);
+    const topics = TOPICS.filter((t) => p.includes(t.key)).map((t) => ({ title: t.title, tools: t.paths.map((path) => all.find((x) => x.path === path)).filter((x) => !!x) }));
+    const inPick = [...topics, ...TOOL_GROUPS.filter((g) => !p.length || p.includes(g.title))];
     // A picked group shows all its tools; the default menu shows the top few per group
     if (!q) return inPick.map((g) => ({ ...g, total: g.tools.length, tools: p.length ? g.tools : g.tools.slice(0, HOME_PER_GROUP) }));
     return inPick.map((g) => ({ ...g, total: g.tools.length, tools: g.tools.filter((t) => matches(q, `${t.name} ${t.blurb} ${t.path ?? ''} ${KEYWORDS[t.path ?? ''] ?? ''}`)) })).filter((g) => g.tools.length);
