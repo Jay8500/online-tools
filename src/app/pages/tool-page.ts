@@ -11,6 +11,7 @@ import { HUB_PATHS } from '../core/hub-paths';
 import { DISCLAIMERS, ToolPageInfo, toolPage } from '../core/tool-pages';
 import { AdSlot } from '../shared/ad-slot';
 import { FaqList } from '../shared/faq-list';
+import { MoreFrom } from '../shared/more-from';
 import { Icon } from '../shared/icon';
 import { BmiTool, CalorieTool, DueDateTool, IdealWeightTool } from './tools/health-tools';
 import { InvoiceTool } from './tools/invoice-tool';
@@ -42,7 +43,7 @@ import { GroceryTool } from './tools/grocery-tool';
     DecimalPipe,
     Icon,
     AdSlot,
-    FaqList,
+    FaqList, MoreFrom,
     BmiTool,
     CalorieTool,
     IdealWeightTool,
@@ -156,6 +157,7 @@ import { GroceryTool } from './tools/grocery-tool';
           <h2>Frequently asked questions</h2>
         </article>
         <app-faq-list [faqs]="t.faqs" />
+        @if (t.group === 'Health calculators') { <app-more-from variant="health" /> }
       </div>
       @if (!wide()) {
         <aside class="mt-6 hidden lg:mt-0 lg:block" aria-label="More tools">

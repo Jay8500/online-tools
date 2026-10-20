@@ -17,10 +17,11 @@ import { UpdateBanner } from './shared/update-banner';
 import { ScrollTop } from './shared/scroll-top';
 import { InstallHint } from './shared/install-hint';
 import { InstallFooter } from './shared/install-footer';
+import { MoreFrom } from './shared/more-from';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, Icon, Brand, Benefits, ToastHost, DialogHost, UpdateBanner, ConsentBanner, ScrollTop, InstallHint, InstallFooter],
+  imports: [RouterOutlet, RouterLink, Icon, Brand, Benefits, ToastHost, DialogHost, UpdateBanner, ConsentBanner, ScrollTop, InstallHint, InstallFooter, MoreFrom],
   template: `
     <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[200] focus:rounded-lg focus:bg-brand focus:px-3 focus:py-2 focus:text-brand-ink">Skip to tool</a>
     <header class="sticky top-0 z-40 border-b border-line bg-surface/90 backdrop-blur">
@@ -96,6 +97,7 @@ import { InstallFooter } from './shared/install-footer';
           </ul>
         </nav>
       </div>
+      @defer (on idle) { <app-more-from /> }
       <div class="border-t border-line px-4 py-3"><app-benefits [center]="true" /></div>
       <p class="border-t border-line px-4 py-3 text-center text-xs text-muted">
         © {{ year }} <a href="https://spreadapps.in" class="font-semibold hover:text-brand">Spread Apps™</a> · Lakkoju Jaya Krishna · All rights reserved · Made in India
