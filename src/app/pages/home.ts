@@ -236,7 +236,7 @@ const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-p
     </section>
     }
 
-    @for (g of groups(); track g.title) {
+    @for (g of popularMode() ? [] : groups(); track g.title) {
       <section class="mt-6 scroll-mt-16" [attr.aria-label]="g.title" [id]="anchor(g.title)">
         <div class="mb-2 flex items-baseline justify-between gap-2">
           <h2 class="text-sm font-bold tracking-wide text-muted uppercase">{{ g.title }}</h2>
@@ -313,7 +313,7 @@ export class Home {
     return EXAMS.filter((e) => matches(q, `${e.name} ${e.full} photo signature thumb declaration resize size kb exam`));
   });
   /** While searching, a group with no match is hidden instead of showing an empty heading. */
-  protected readonly showExams = computed(() => (!this.picked().length || this.picked().includes(EXAM_KEY)) && (!this.searching() || this.exams().length > 0));
+  protected readonly showExams = computed(() => !this.popularMode() && (!this.picked().length || this.picked().includes(EXAM_KEY)) && (!this.searching() || this.exams().length > 0));
   protected readonly groups = computed(() => {
     const q = this.q().trim().toLowerCase();
     const p = this.picked();
