@@ -1,7 +1,7 @@
 import { Faq } from './seo.service';
 import { TOOL_LINKS, ToolKind, ToolLinkLite } from './tool-links';
 
-export type Disclaimer = 'files' | 'health' | 'invoice' | 'upi' | 'language' | 'land' | 'units' | 'gold' | 'weather' | 'travel' | 'metro' | 'fuel' | 'grocery' | 'cinema' | 'holidays' | 'traffic' | 'nearby' | 'currency' | 'plans' | 'panchangam';
+export type Disclaimer = 'files' | 'health' | 'invoice' | 'upi' | 'language' | 'land' | 'units' | 'gold' | 'weather' | 'travel' | 'metro' | 'fuel' | 'grocery' | 'cinema' | 'holidays' | 'traffic' | 'nearby' | 'currency' | 'plans' | 'panchangam' | 'everyday';
 
 export interface ToolPageInfo extends ToolLinkLite {
   h1: string;
@@ -477,6 +477,31 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
     ],
     disclaimer: 'units',
   },
+  age: {
+    h1: 'Age Calculator',
+    title: 'Age Calculator — Exact Age in Years, Months & Days (with exam cut-off date)',
+    description: 'Find your exact age from date of birth in years, months and days, your next birthday and total days lived. Set an “age as on” date for exam and job forms.',
+    intro: 'Enter your date of birth to see your exact age. Change the “age on” date for exam or job forms.',
+    steps: ['Pick your date of birth.', 'Leave “Age on” as today, or set the date your form asks for.', 'Read your age, next birthday and total days.'],
+    faqs: [
+      { q: 'How do I find my age as on a cut-off date?', a: 'Many exam notifications say “age as on 1 August” or similar. Set that date in “Age on” and the tool shows your age on that day.' },
+      { q: 'Is my date of birth saved?', a: 'No. The calculation happens on your phone and nothing is uploaded.' },
+    ],
+    disclaimer: 'everyday',
+  },
+  percent: {
+    h1: 'Percentage Calculator',
+    title: 'Percentage Calculator — Marks %, Discount & Percentage Increase',
+    description: 'Free percentage calculator: marks percentage (450 out of 600), X% of a number (discounts, GST, tips) and percentage increase or decrease (salary, prices).',
+    intro: 'Marks percentage, discount or price increase — pick what you want to find and type two numbers.',
+    steps: ['Choose Marks %, % of a number, or % increase.', 'Type the two numbers.', 'Read the answer and the simple explanation below it.'],
+    faqs: [
+      { q: 'How do I calculate marks percentage?', a: 'Divide your marks by the total and multiply by 100. Example: 450 ÷ 600 × 100 = 75%.' },
+      { q: 'How do I calculate a discount?', a: 'Use “% of a number”: 20% of ₹1,500 = ₹300, so you pay ₹1,200.' },
+      { q: 'How is percentage increase calculated?', a: '(New − Old) ÷ Old × 100. Salary ₹30,000 → ₹36,000 is a 20% increase.' },
+    ],
+    disclaimer: 'everyday',
+  },
   telugu: {
     h1: 'Telugu Typing — English to Telugu',
     title: 'Telugu Typing Online — Type English, Get తెలుగు',
@@ -500,6 +525,7 @@ export function toolPage(id: string): ToolPageInfo | undefined {
 }
 
 export const DISCLAIMERS: Record<Disclaimer, string> = {
+  everyday: 'Calculated on your device; nothing you type is uploaded. For official forms, follow the rules in the notification.',
   files: 'Files are processed on your device and never uploaded. Keep a copy of your original file.',
   health: 'Health tools are not medical advice. Talk to a doctor before changing your diet, exercise or treatment.',
   invoice: 'This tool helps you format an invoice; it is not tax advice. Check GST rates, HSN codes and e-invoicing rules with your CA.',

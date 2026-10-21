@@ -35,6 +35,7 @@ import { PanchangamTool } from './tools/panchangam-tool';
 import { MetroTool } from './tools/metro-tool';
 import { FuelTool } from './tools/fuel-tool';
 import { GroceryTool } from './tools/grocery-tool';
+import { AgeTool, PercentTool } from './tools/everyday-tools';
 
 /** Pages for PDF, business, health and language tools (route data `tool` = id from core/tool-links.ts). */
 @Component({
@@ -75,6 +76,8 @@ import { GroceryTool } from './tools/grocery-tool';
     MetroTool,
     FuelTool,
     GroceryTool,
+    AgeTool,
+    PercentTool,
   ],
   template: `
     @let t = info();
@@ -129,6 +132,8 @@ import { GroceryTool } from './tools/grocery-tool';
             @case ('speed') { @defer (on immediate; hydrate on immediate) { <app-unit-tool category="speed" /> } @placeholder { <div class="h-96"></div> } }
             @case ('data') { @defer (on immediate; hydrate on immediate) { <app-unit-tool category="data" /> } @placeholder { <div class="h-96"></div> } }
             @case ('count') { @defer (on immediate; hydrate on immediate) { <app-unit-tool category="count" /> } @placeholder { <div class="h-96"></div> } }
+            @case ('age') { @defer (on immediate; hydrate on immediate) { <app-age-tool /> } @placeholder { <div class="h-80"></div> } }
+            @case ('percent') { @defer (on immediate; hydrate on immediate) { <app-percent-tool /> } @placeholder { <div class="h-80"></div> } }
             @case ('pdf-to-image') { @defer (on immediate; hydrate on immediate) { <app-pdf-to-image /> } @placeholder { <div class="h-48"></div> } }
           }
         </section>

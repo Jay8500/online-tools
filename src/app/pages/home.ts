@@ -61,11 +61,15 @@ const HINTS = [
   { icon: 'smartphone', text: 'Jio recharge' },
   { icon: 'tv', text: 'Netflix price' },
   { icon: 'cpu', text: 'RAM full form' },
+  { icon: 'cake', text: 'age calculator' },
+  { icon: 'percent', text: 'marks percentage' },
   { icon: 'languages', text: 'Telugu typing' },
   { icon: 'image-up', text: '20 KB photo' },
 ];
 /** Everyday words people type, per tool path. */
 const KEYWORDS: Record<string, string> = {
+  'age-calculator': 'age calculator date of birth dob birthday years old exam cut-off',
+  'percentage-calculator': 'percentage percent marks discount increase decrease hike salary',
   'gold-price-calculator': 'gold rate today silver price jewellery 22k 24k',
   weather: 'weather temperature rain forecast climate',
   'holiday-calendar': 'holiday holidays calendar festival leave list government public 2026 2027 diwali dasara sankranti',

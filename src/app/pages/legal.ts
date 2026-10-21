@@ -68,6 +68,10 @@ const UPDATED = '19 October 2026';
         The “Love it” button works the same way: it sends only the page name, so we can count likes and get a short anonymous note.
         Your browser remembers that you liked a page, so you can like each page once.
       </p>
+      <p>
+        The “Suggest” box sends only the page name and the words you type, by email to us, so we can fix or add tools. We don’t ask for your
+        name, phone or email there — please don’t type personal details. “Share on WhatsApp” simply opens WhatsApp with the page link; we see nothing you share.
+      </p>
 
       <h2>4. Contact form</h2>
       <p>

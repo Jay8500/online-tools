@@ -36,7 +36,9 @@ export type ToolKind =
   | 'techterms'
   | 'recharge'
   | 'ott'
-  | 'panchangam';
+  | 'panchangam'
+  | 'age'
+  | 'percent';
 
 export type ToolGroupName = 'PDF tools' | 'Business tools' | 'Health calculators' | 'Language tools' | 'Converters' | 'Daily tools';
 
@@ -76,6 +78,8 @@ export const TOOL_LINKS: ToolLinkLite[] = [
   { id: 'ott', path: 'ott-subscription-prices', name: 'OTT subscription prices', group: 'Daily tools', icon: 'tv', blurb: 'Netflix, Prime, JioHotstar, aha & more' },
   { id: 'cinema', path: 'cinemas-near-me', name: 'Cinemas near me', group: 'Daily tools', icon: 'clapperboard', blurb: 'Theatres by distance, shows & tickets' },
   { id: 'travel', path: 'travel-planner', name: 'Travel planner', group: 'Daily tools', icon: 'map-pin', blurb: 'Route, stops & time by road, rail, air' },
+  { id: 'age', path: 'age-calculator', name: 'Age calculator', group: 'Daily tools', icon: 'cake', blurb: 'Exact age in years, months, days' },
+  { id: 'percent', path: 'percentage-calculator', name: 'Percentage calculator', group: 'Daily tools', icon: 'percent', blurb: 'Marks %, discount, % increase' },
   { id: 'currency', path: 'currency-converter', name: 'Currency converter', group: 'Converters', icon: 'banknote', blurb: 'Dollar, dirham, riyal ↔ rupee, live' },
   { id: 'land', path: 'land-area-converter', name: 'Land area & price', group: 'Converters', icon: 'ruler', blurb: 'Acre, gunta, cent, ankanam, gajam' },
   { id: 'length', path: 'length-converter', name: 'Length converter', group: 'Converters', icon: 'ruler', blurb: 'km, miles, feet, inches' },
