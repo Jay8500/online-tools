@@ -1,6 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ConsentService } from '../core/consent.service';
+import { DialogService } from '../core/dialog.service';
+import { ToastService } from '../core/toast.service';
 import { SeoService } from '../core/seo.service';
 import { SITE } from '../core/site.config';
 
@@ -91,6 +93,11 @@ const UPDATED = '19 October 2026';
         to be corrected or deleted, and raise a grievance. Grievance contact: {{ site.operator }},
         <a [href]="'mailto:' + site.email">{{ site.email }}</a> (or the <a routerLink="/contact">contact page</a>). We reply within 30 days.
       </p>
+      <div class="not-prose my-4 rounded-2xl border border-line bg-surface-2 p-4">
+        <p class="font-semibold text-ink">🗑️ Delete my data on this device</p>
+        <p class="mt-1 text-sm text-muted">Clears everything this site saved in your browser: pinned and recent tools, likes, cookie choice, step counts and typed text. Nothing is stored on our servers to delete.</p>
+        <button type="button" class="btn-ghost mt-3 min-h-10 border-rose-300 text-rose-600" (click)="wipe()">Delete my data</button>
+      </div>
 
       <h2>8. Changes</h2>
       <p>We will update this page if anything changes and show the new date at the top.</p>
@@ -100,6 +107,21 @@ const UPDATED = '19 October 2026';
 export class Privacy {
   protected readonly site = SITE;
   protected readonly consent = inject(ConsentService);
+  private readonly dialog = inject(DialogService);
+  private readonly toast = inject(ToastService);
+
+  /** DPDP: one tap to erase everything this site keeps in this browser. */
+  protected async wipe() {
+    if (!(await this.dialog.confirm({ title: 'Delete my data?', message: 'Pins, recent tools, likes, cookie choice and saved text on this device will be removed.', confirmText: 'Delete', tone: 'danger' }))) return;
+    try {
+      localStorage.clear();
+      sessionStorage.clear();
+    } catch {
+      /* storage blocked — nothing saved */
+    }
+    this.toast.show('🗑️ Done — your data on this device is deleted.', 'success', 2500);
+    setTimeout(() => location.reload(), 1200);
+  }
   protected readonly updated = UPDATED;
   constructor() {
     inject(SeoService).set({ title: 'Privacy Policy', description: 'How Spread Apps Tools handles your data: files never leave your device; analytics only with consent; AdSense cookies explained.', path: 'privacy' });

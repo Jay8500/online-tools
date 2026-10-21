@@ -81,6 +81,17 @@ export class LikeBox {
 
   constructor() {
     this.update(this.router.url);
+    if (typeof window !== 'undefined') {
+      window.addEventListener('open-suggest', (e) => {
+        this.text.set(String((e as CustomEvent).detail ?? ''));
+        this.open.set(true);
+        setTimeout(() => {
+          const t = document.getElementById('fb-text') as HTMLTextAreaElement | null;
+          t?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          t?.focus();
+        }, 50);
+      });
+    }
     this.router.events.pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd)).subscribe((e) => this.update(e.urlAfterRedirects));
   }
 

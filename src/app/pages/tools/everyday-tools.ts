@@ -1,6 +1,6 @@
 import { Component, computed, signal } from '@angular/core';
 import { localIso } from '../../core/dates';
-import { age, percentChange, percentOf, whatPercent } from '../../core/everyday';
+import { age, daysBetween, percentChange, percentOf, whatPercent } from '../../core/everyday';
 import { fmtDate } from '../../core/health';
 import { NumField } from '../../shared/num-field';
 
@@ -55,6 +55,51 @@ export class AgeTool {
     return null;
   });
   protected readonly r = computed(() => (this.error() ? null : age(new Date(this.dob() + 'T00:00:00'), new Date(this.on() + 'T00:00:00'))));
+  protected val(e: Event) {
+    return (e.target as HTMLInputElement).value;
+  }
+  protected n(v: number) {
+    return NUM.format(v);
+  }
+  protected fmt = fmtDate;
+}
+
+// ---------------- Days counter ----------------
+@Component({
+  selector: 'app-days-tool',
+  template: `
+    <div class="grid gap-4 md:grid-cols-2">
+      <div class="space-y-4">
+        <div>
+          <label class="label" for="d-from">From</label>
+          <input id="d-from" type="date" class="input" [value]="from()" (input)="from.set(val($event) || today)" />
+        </div>
+        <div>
+          <label class="label" for="d-to">To (exam, EMI, trip, event…)</label>
+          <input id="d-to" type="date" class="input" [value]="to()" (input)="to.set(val($event) || today)" />
+        </div>
+        <label class="flex items-center gap-2 text-sm"><input type="checkbox" class="size-4 accent-brand" [checked]="inclusive()" (change)="inclusive.set(!inclusive())" /> Count the end day too</label>
+      </div>
+      <div class="rounded-2xl border border-line bg-surface-2 p-4" aria-live="polite">
+        @let d = r();
+        <p class="text-xs font-semibold text-muted">{{ d.days === 0 ? 'Same day' : d.past ? 'That date was' : 'Days left' }}</p>
+        <p class="text-2xl font-bold text-brand">{{ n(d.days) }} {{ d.days === 1 ? 'day' : 'days' }}{{ d.past && d.days ? ' ago' : '' }}</p>
+        <ul class="mt-3 space-y-1 border-t border-line pt-2 text-sm">
+          <li class="flex justify-between gap-2"><span class="text-muted">Weeks</span><span>{{ d.weeks }} weeks {{ d.weekDays }} days</span></li>
+          <li class="flex justify-between gap-2"><span class="text-muted">Working days (Mon–Fri)</span><span class="tabular-nums">{{ n(d.workingDays) }}</span></li>
+          <li class="flex justify-between gap-2"><span class="text-muted">Target date</span><span>{{ fmt(toDate()) }}</span></li>
+        </ul>
+      </div>
+    </div>
+  `,
+})
+export class DaysTool {
+  protected readonly today = localIso();
+  protected readonly from = signal(this.today);
+  protected readonly to = signal(localIso(new Date(new Date().getFullYear(), 11, 31)));
+  protected readonly inclusive = signal(false);
+  protected readonly toDate = computed(() => new Date(this.to() + 'T00:00:00'));
+  protected readonly r = computed(() => daysBetween(new Date(this.from() + 'T00:00:00'), this.toDate(), this.inclusive()));
   protected val(e: Event) {
     return (e.target as HTMLInputElement).value;
   }

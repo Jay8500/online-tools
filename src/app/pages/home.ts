@@ -69,6 +69,7 @@ const HINTS = [
 /** Everyday words people type, per tool path. */
 const KEYWORDS: Record<string, string> = {
   'age-calculator': 'age calculator date of birth dob birthday years old exam cut-off',
+  'days-calculator': 'days counter calculator between dates countdown left exam emi date difference working days',
   'percentage-calculator': 'percentage percent marks discount increase decrease hike salary',
   'gold-price-calculator': 'gold rate today silver price jewellery 22k 24k',
   weather: 'weather temperature rain forecast climate',

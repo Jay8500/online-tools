@@ -35,7 +35,7 @@ import { PanchangamTool } from './tools/panchangam-tool';
 import { MetroTool } from './tools/metro-tool';
 import { FuelTool } from './tools/fuel-tool';
 import { GroceryTool } from './tools/grocery-tool';
-import { AgeTool, PercentTool } from './tools/everyday-tools';
+import { AgeTool, DaysTool, PercentTool } from './tools/everyday-tools';
 
 /** Pages for PDF, business, health and language tools (route data `tool` = id from core/tool-links.ts). */
 @Component({
@@ -77,6 +77,7 @@ import { AgeTool, PercentTool } from './tools/everyday-tools';
     FuelTool,
     GroceryTool,
     AgeTool,
+    DaysTool,
     PercentTool,
   ],
   template: `
@@ -133,6 +134,7 @@ import { AgeTool, PercentTool } from './tools/everyday-tools';
             @case ('data') { @defer (on immediate; hydrate on immediate) { <app-unit-tool category="data" /> } @placeholder { <div class="h-96"></div> } }
             @case ('count') { @defer (on immediate; hydrate on immediate) { <app-unit-tool category="count" /> } @placeholder { <div class="h-96"></div> } }
             @case ('age') { @defer (on immediate; hydrate on immediate) { <app-age-tool /> } @placeholder { <div class="h-80"></div> } }
+            @case ('days') { @defer (on immediate; hydrate on immediate) { <app-days-tool /> } @placeholder { <div class="h-72"></div> } }
             @case ('percent') { @defer (on immediate; hydrate on immediate) { <app-percent-tool /> } @placeholder { <div class="h-80"></div> } }
             @case ('pdf-to-image') { @defer (on immediate; hydrate on immediate) { <app-pdf-to-image /> } @placeholder { <div class="h-48"></div> } }
           }
@@ -141,6 +143,9 @@ import { AgeTool, PercentTool } from './tools/everyday-tools';
         <p class="mt-2 flex items-start gap-1.5 text-xs text-muted">
           <svg lucideIcon="info" [size]="14" class="mt-px shrink-0" /> {{ disclaimer() }}
         </p>
+        @if (priceTool()) {
+          <p class="mt-1 pl-5 text-xs text-muted">Price looks wrong? <button type="button" class="font-medium text-brand underline" (click)="reportPrice()">Tell us</button> — we fix it fast.</p>
+        }
         @if (sources(); as ss) {
           <p class="mt-1 pl-5 text-xs text-muted">Data sources: @for (s of ss; track s.url; let last = $last) {<a [href]="s.url" target="_blank" rel="noopener" class="font-medium text-brand underline">{{ s.name }}</a>@if (!last) {, }}</p>
         }
@@ -196,6 +201,12 @@ export class ToolPageView {
   protected readonly hubPath = computed(() => HUB_PATHS[this.info().group]);
   protected readonly sources = computed(() => SOURCES[this.info().path] ?? null);
   protected readonly disclaimer = computed(() => DISCLAIMERS[this.info().disclaimer]);
+  protected readonly priceTool = computed(() => ['gold', 'fuel', 'grocery', 'recharge', 'ott', 'metro', 'currency'].includes(this.info().id));
+
+  /** Opens the Suggest box (like-box) with a ready "wrong price" note. */
+  protected reportPrice() {
+    window.dispatchEvent(new CustomEvent('open-suggest', { detail: `Wrong price on ${this.info().name}: ` }));
+  }
 
   constructor() {
     effect(() => {

@@ -44,6 +44,28 @@ export function age(dob: Date, on: Date): AgeResult | null {
   };
 }
 
+export interface DaysResult {
+  days: number;
+  weeks: number;
+  weekDays: number;
+  /** Monday–Friday count (start and end included when `inclusive`) */
+  workingDays: number;
+  past: boolean;
+}
+
+/** Days between two local dates; `inclusive` counts both the start and end day. */
+export function daysBetween(a: Date, b: Date, inclusive = false): DaysResult {
+  const past = utc(b) < utc(a);
+  const [from, to] = past ? [b, a] : [a, b];
+  const days = Math.round((utc(to) - utc(from)) / DAY) + (inclusive ? 1 : 0);
+  let workingDays = 0;
+  for (let i = 0; i < days; i++) {
+    const wd = new Date(from.getFullYear(), from.getMonth(), from.getDate() + i + (inclusive ? 0 : 1)).getDay();
+    if (wd !== 0 && wd !== 6) workingDays++;
+  }
+  return { days, weeks: Math.floor(days / 7), weekDays: days % 7, workingDays, past };
+}
+
 /** X% of Y */
 export const percentOf = (pct: number, of: number) => (pct / 100) * of;
 /** X is what % of Y (marks: 450 of 600 = 75%) */

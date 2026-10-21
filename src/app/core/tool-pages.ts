@@ -489,6 +489,18 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
     ],
     disclaimer: 'everyday',
   },
+  days: {
+    h1: 'Days Counter — Days Between Two Dates',
+    title: 'Days Calculator — Days Left to Exam, EMI or Any Date (Working Days Too)',
+    description: 'Count the days between two dates or days left to your exam, EMI, trip or event, with weeks and working days (Mon–Fri). Free and instant.',
+    intro: 'How many days to your exam, EMI or trip? Pick two dates to see days, weeks and working days.',
+    steps: ['“From” is today by default — change it if needed.', 'Pick the “To” date (exam, EMI, event…).', 'Tick “Count the end day too” if your form asks for it.'],
+    faqs: [
+      { q: 'Does it count the start and end day?', a: 'By default it counts the days in between, like a calendar (1 Jan → 2 Jan = 1 day). Tick “Count the end day too” to include both days.' },
+      { q: 'Are holidays removed from working days?', a: 'No — working days are Monday to Friday only. Check our holiday calendar for public holidays.' },
+    ],
+    disclaimer: 'everyday',
+  },
   percent: {
     h1: 'Percentage Calculator',
     title: 'Percentage Calculator — Marks %, Discount & Percentage Increase',
