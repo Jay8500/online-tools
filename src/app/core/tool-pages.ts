@@ -489,6 +489,30 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
     ],
     disclaimer: 'everyday',
   },
+  cgpa: {
+    h1: 'CGPA to Percentage Calculator',
+    title: 'CGPA to Percentage Converter — JNTUH, CBSE, AICTE, VTU, Anna University',
+    description: 'Convert CGPA or SGPA to percentage with your board or university formula: CBSE (× 9.5), JNTUH ((CGPA − 0.5) × 10), AICTE/VTU ((CGPA − 0.75) × 10) or your own.',
+    intro: 'Job and higher-study forms ask for a percentage. Type your CGPA and pick your board or university.',
+    steps: ['Type your CGPA (out of 10).', 'Pick your board or university, or “Other” to type your formula.', 'Use the percentage — and keep your memo handy, its formula is final.'],
+    faqs: [
+      { q: 'Which formula should I use?', a: 'The one printed on your marks memo or in your university regulations. CBSE uses CGPA × 9.5; JNTUH uses (CGPA − 0.5) × 10; AICTE suggests (CGPA − 0.75) × 10.' },
+      { q: 'Is a form going to accept this?', a: 'Most forms accept the percentage your university’s formula gives. If the form names a formula, use that one.' },
+    ],
+    disclaimer: 'everyday',
+  },
+  split: {
+    h1: 'Split Bill Calculator',
+    title: 'Split Bill Calculator — Trip, Party & Rent: Who Pays Whom',
+    description: 'Split a trip, party or flat bill equally between friends. Enter what each person paid and see who pays whom with the fewest UPI transfers. Share to WhatsApp.',
+    intro: 'Trip or party with friends? Type what each person paid — see who owes whom in the fewest payments.',
+    steps: ['Add each person and what they paid (0 if nothing).', 'See the total and each person’s share.', 'Follow “Who pays whom” — then send it to your WhatsApp group.'],
+    faqs: [
+      { q: 'How does it keep payments to a minimum?', a: 'Whoever owes the most pays whoever is owed the most first, and so on. Usually that needs one payment fewer than the number of people.' },
+      { q: 'Can I split unequally?', a: 'This version splits equally. For a different share, ask the person to pay their extra part directly.' },
+    ],
+    disclaimer: 'everyday',
+  },
   days: {
     h1: 'Days Counter — Days Between Two Dates',
     title: 'Days Calculator — Days Left to Exam, EMI or Any Date (Working Days Too)',

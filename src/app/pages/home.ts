@@ -62,6 +62,8 @@ const HINTS = [
   { icon: 'tv', text: 'Netflix price' },
   { icon: 'cpu', text: 'RAM full form' },
   { icon: 'cake', text: 'age calculator' },
+  { icon: 'graduation-cap', text: 'CGPA to %' },
+  { icon: 'users', text: 'split bill' },
   { icon: 'percent', text: 'marks percentage' },
   { icon: 'languages', text: 'Telugu typing' },
   { icon: 'image-up', text: '20 KB photo' },
@@ -69,6 +71,8 @@ const HINTS = [
 /** Everyday words people type, per tool path. */
 const KEYWORDS: Record<string, string> = {
   'age-calculator': 'age calculator date of birth dob birthday years old exam cut-off',
+  'cgpa-to-percentage-calculator': 'cgpa sgpa gpa percentage convert marks jntu jntuh cbse aicte vtu btech degree',
+  'split-bill-calculator': 'split bill expense trip party friends share who pays owe rent hisaab',
   'days-calculator': 'days counter calculator between dates countdown left exam emi date difference working days',
   'percentage-calculator': 'percentage percent marks discount increase decrease hike salary',
   'gold-price-calculator': 'gold rate today silver price jewellery 22k 24k',

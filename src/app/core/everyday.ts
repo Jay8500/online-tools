@@ -72,3 +72,39 @@ export const percentOf = (pct: number, of: number) => (pct / 100) * of;
 export const whatPercent = (part: number, whole: number) => (whole === 0 ? null : (part / whole) * 100);
 /** % change from A to B (positive = increase) */
 export const percentChange = (from: number, to: number) => (from === 0 ? null : ((to - from) / Math.abs(from)) * 100);
+
+/** CGPA → percentage formulas (10-point scale). The university's own regulation is always final. */
+export const CGPA_FORMULAS = [
+  { id: 'cbse', label: 'CBSE (× 9.5)', mul: 9.5, sub: 0 },
+  { id: 'jntuh', label: 'JNTUH ((CGPA − 0.5) × 10)', mul: 10, sub: 0.5 },
+  { id: 'aicte', label: 'AICTE / VTU ((CGPA − 0.75) × 10)', mul: 10, sub: 0.75 },
+  { id: 'x10', label: 'Anna Univ / simple (× 10)', mul: 10, sub: 0 },
+] as const;
+
+export const cgpaToPercent = (cgpa: number, mul: number, sub: number) => Math.max(0, Math.min(100, (cgpa - sub) * mul));
+
+export interface Transfer {
+  from: string;
+  to: string;
+  amount: number;
+}
+
+/** Equal split: who pays whom, with the fewest transfers (greedy, rounded to the rupee). */
+export function settle(people: { name: string; paid: number }[]): { total: number; share: number; transfers: Transfer[] } {
+  const total = people.reduce((s, p) => s + p.paid, 0);
+  const share = people.length ? total / people.length : 0;
+  const bal = people.map((p) => ({ name: p.name, v: p.paid - share }));
+  const give = bal.filter((b) => b.v < -0.5).sort((a, b) => a.v - b.v);
+  const get = bal.filter((b) => b.v > 0.5).sort((a, b) => b.v - a.v);
+  const transfers: Transfer[] = [];
+  let i = 0, j = 0;
+  while (i < give.length && j < get.length) {
+    const amt = Math.min(-give[i].v, get[j].v);
+    if (Math.round(amt) > 0) transfers.push({ from: give[i].name, to: get[j].name, amount: Math.round(amt) });
+    give[i].v += amt;
+    get[j].v -= amt;
+    if (give[i].v > -0.5) i++;
+    if (get[j].v < 0.5) j++;
+  }
+  return { total, share, transfers };
+}

@@ -39,7 +39,9 @@ export type ToolKind =
   | 'panchangam'
   | 'age'
   | 'percent'
-  | 'days';
+  | 'days'
+  | 'cgpa'
+  | 'split';
 
 export type ToolGroupName = 'PDF tools' | 'Business tools' | 'Health calculators' | 'Language tools' | 'Converters' | 'Daily tools';
 
@@ -80,6 +82,8 @@ export const TOOL_LINKS: ToolLinkLite[] = [
   { id: 'cinema', path: 'cinemas-near-me', name: 'Cinemas near me', group: 'Daily tools', icon: 'clapperboard', blurb: 'Theatres by distance, shows & tickets' },
   { id: 'travel', path: 'travel-planner', name: 'Travel planner', group: 'Daily tools', icon: 'map-pin', blurb: 'Route, stops & time by road, rail, air' },
   { id: 'age', path: 'age-calculator', name: 'Age calculator', group: 'Daily tools', icon: 'cake', blurb: 'Exact age in years, months, days' },
+  { id: 'cgpa', path: 'cgpa-to-percentage-calculator', name: 'CGPA to percentage', group: 'Daily tools', icon: 'graduation-cap', blurb: 'JNTU, CBSE, AICTE formulas' },
+  { id: 'split', path: 'split-bill-calculator', name: 'Split bill', group: 'Daily tools', icon: 'users', blurb: 'Trip & party: who pays whom' },
   { id: 'days', path: 'days-calculator', name: 'Days counter', group: 'Daily tools', icon: 'calendar-days', blurb: 'Days left to exam, EMI or any date' },
   { id: 'percent', path: 'percentage-calculator', name: 'Percentage calculator', group: 'Daily tools', icon: 'percent', blurb: 'Marks %, discount, % increase' },
   { id: 'currency', path: 'currency-converter', name: 'Currency converter', group: 'Converters', icon: 'banknote', blurb: 'Dollar, dirham, riyal ↔ rupee, live' },

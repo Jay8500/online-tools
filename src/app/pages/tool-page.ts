@@ -35,7 +35,7 @@ import { PanchangamTool } from './tools/panchangam-tool';
 import { MetroTool } from './tools/metro-tool';
 import { FuelTool } from './tools/fuel-tool';
 import { GroceryTool } from './tools/grocery-tool';
-import { AgeTool, DaysTool, PercentTool } from './tools/everyday-tools';
+import { AgeTool, CgpaTool, DaysTool, PercentTool, SplitTool } from './tools/everyday-tools';
 
 /** Pages for PDF, business, health and language tools (route data `tool` = id from core/tool-links.ts). */
 @Component({
@@ -77,6 +77,8 @@ import { AgeTool, DaysTool, PercentTool } from './tools/everyday-tools';
     FuelTool,
     GroceryTool,
     AgeTool,
+    CgpaTool,
+    SplitTool,
     DaysTool,
     PercentTool,
   ],
@@ -134,6 +136,8 @@ import { AgeTool, DaysTool, PercentTool } from './tools/everyday-tools';
             @case ('data') { @defer (on immediate; hydrate on immediate) { <app-unit-tool category="data" /> } @placeholder { <div class="h-96"></div> } }
             @case ('count') { @defer (on immediate; hydrate on immediate) { <app-unit-tool category="count" /> } @placeholder { <div class="h-96"></div> } }
             @case ('age') { @defer (on immediate; hydrate on immediate) { <app-age-tool /> } @placeholder { <div class="h-80"></div> } }
+            @case ('cgpa') { @defer (on immediate; hydrate on immediate) { <app-cgpa-tool /> } @placeholder { <div class="h-80"></div> } }
+            @case ('split') { @defer (on immediate; hydrate on immediate) { <app-split-tool /> } @placeholder { <div class="h-96"></div> } }
             @case ('days') { @defer (on immediate; hydrate on immediate) { <app-days-tool /> } @placeholder { <div class="h-72"></div> } }
             @case ('percent') { @defer (on immediate; hydrate on immediate) { <app-percent-tool /> } @placeholder { <div class="h-80"></div> } }
             @case ('pdf-to-image') { @defer (on immediate; hydrate on immediate) { <app-pdf-to-image /> } @placeholder { <div class="h-48"></div> } }
