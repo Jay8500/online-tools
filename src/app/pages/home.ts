@@ -98,6 +98,8 @@ function matches(q: string, hay: string): boolean {
 }
 
 const HOME_EXAMS = 5;
+/** Default "Popular" tab: the few tools most people open first (keeps the first screen simple). */
+const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-price', 'weather', 'emi-calculator', 'merge-pdf', 'telugu-panchangam', 'holiday-calendar'];
 
 @Component({
   selector: 'app-home',
@@ -127,15 +129,16 @@ const HOME_EXAMS = 5;
       </label>
     </div>
 
-    <!-- Quick filter: pick one or more groups (none picked = the normal quick menu) -->
-    <div class="-mx-3 mt-3 flex gap-1.5 overflow-x-auto px-3 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0" role="group" aria-label="Filter tools by type">
-      <button type="button" class="chip min-h-8 shrink-0 text-xs" [attr.aria-pressed]="!picked().length" (click)="picked.set([])">All</button>
+    <!-- Tabs: Popular (default, short) · All · one type at a time -->
+    <div id="tool-tabs" class="-mx-3 mt-3 flex scroll-mt-16 gap-1.5 overflow-x-auto px-3 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0" role="group" aria-label="Show tools by type">
+      <button type="button" class="chip min-h-8 shrink-0 text-xs" [attr.aria-pressed]="tab() === 'popular'" (click)="tab.set('popular')"><svg lucideIcon="sparkles" [size]="14" /> Popular</button>
+      <button type="button" class="chip min-h-8 shrink-0 text-xs" [attr.aria-pressed]="tab() === 'all'" (click)="tab.set('all')">All</button>
       @for (c of chips; track c.key) {
-        <button type="button" class="chip min-h-8 shrink-0 text-xs" [attr.aria-pressed]="picked().includes(c.key)" (click)="toggle(c.key)"><svg [lucideIcon]="c.icon" [size]="14" /> {{ c.label }}</button>
+        <button type="button" class="chip min-h-8 shrink-0 text-xs" [attr.aria-pressed]="tab() === c.key" (click)="tab.set(c.key)"><svg [lucideIcon]="c.icon" [size]="14" /> {{ c.label }}</button>
       }
     </div>
 
-    @if (!searching() && !picked().length && (pins().length || recents().length)) {
+    @if (!searching() && tab() === 'popular' && (pins().length || recents().length)) {
       <section class="mt-3 space-y-2" aria-label="Your tools">
         @if (pins().length) {
           <div class="flex items-center gap-2">
@@ -160,12 +163,45 @@ const HOME_EXAMS = 5;
       <div class="card mt-4 flex flex-col items-center gap-2 p-6 text-center animate-fade-up">
         <svg lucideIcon="search" [size]="28" class="text-muted" />
         <p class="font-semibold">No tools found for “{{ q().trim() }}”{{ picked().length ? ' in the chosen types' : '' }}</p>
-        <p class="text-sm text-muted">Try a simpler word like “photo”, “EMI”, “PDF” or “gold”@if (picked().length) {, or <button type="button" class="text-brand underline" (click)="picked.set([])">search all types</button>}.</p>
+        <p class="text-sm text-muted">Try a simpler word like “photo”, “EMI”, “PDF” or “gold”@if (picked().length) {, or <button type="button" class="text-brand underline" (click)="tab.set('all')">search all types</button>}.</p>
         <div class="mt-1 flex flex-wrap justify-center gap-2">
           <button type="button" class="btn-ghost min-h-9 text-sm" (click)="q.set('')">Clear search</button>
           <a routerLink="/contact" class="btn-ghost min-h-9 text-sm">Ask for this tool</a>
         </div>
       </div>
+    }
+
+    @if (popularMode()) {
+      <section class="mt-4" aria-labelledby="h-popular">
+        <h2 id="h-popular" class="mb-2 text-sm font-bold tracking-wide text-muted uppercase">Popular tools</h2>
+        <div class="grid grid-cols-1 gap-2 min-[400px]:grid-cols-2 md:grid-cols-4">
+          @for (t of popular; track t.path) {
+            <div class="card group relative isolate flex items-center gap-3 overflow-hidden p-3 transition hover:border-brand/50" [class.sky-card]="t.path === 'weather' && !!skyIcon()">
+              @if (t.path === 'weather' && skyIcon()) { <app-sky [icon]="skyIcon()" class="-z-10" /> }
+              <a [routerLink]="'/' + t.path" class="absolute inset-0 rounded-2xl" [attr.aria-label]="t.name"></a>
+              <span class="grid size-9 shrink-0 place-items-center rounded-xl bg-brand/10 text-brand"><svg [lucideIcon]="t.icon" [size]="18" /></span>
+              <span class="min-w-0"><span class="block text-sm font-semibold group-hover:text-brand">{{ t.name }}</span><span class="block text-xs text-muted">{{ t.blurb }}</span></span>
+              <span class="-my-1.5 -mr-1.5 ml-auto flex shrink-0 flex-col items-end gap-0.5 self-start">
+                <app-pin-button [path]="t.path!" [name]="t.name" />
+                @if (live(t.path); as k) { <app-live-badge [kind]="k" class="mr-1.5" /> }
+              </span>
+            </div>
+          }
+        </div>
+      </section>
+
+      <section class="mt-6" aria-labelledby="h-browse">
+        <h2 id="h-browse" class="mb-2 text-sm font-bold tracking-wide text-muted uppercase">Browse by type</h2>
+        <div class="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
+          @for (c of browse; track c.key) {
+            <button type="button" class="card group flex items-center gap-3 p-3 text-left transition hover:border-brand/50" (click)="openTab(c.key)">
+              <span class="grid size-9 shrink-0 place-items-center rounded-xl bg-brand/10 text-brand"><svg [lucideIcon]="c.icon" [size]="18" /></span>
+              <span class="min-w-0"><span class="block text-sm font-semibold group-hover:text-brand">{{ c.label }}</span><span class="block text-xs text-muted">{{ c.count }} tools</span></span>
+              <svg lucideIcon="chevron-right" [size]="16" class="ml-auto shrink-0 text-muted" />
+            </button>
+          }
+        </div>
+      </section>
     }
 
     @if (showExams()) {
@@ -256,8 +292,17 @@ export class Home {
   protected readonly chips = [...TOPICS.map(({ key, label, icon }) => ({ key, label, icon })), ...CHIPS];
   /** Sky behind the weather card once its badge has loaded */
   protected readonly skyIcon = WEATHER_ICON;
+  /** Open tab: 'popular' (default, short list), 'all' (quick menu of every group) or one chip key. */
+  protected readonly tab = signal<string>('popular');
   /** Groups the visitor picked; empty = everything (the normal quick menu). */
-  protected readonly picked = signal<string[]>([]);
+  protected readonly picked = computed(() => (this.tab() === 'popular' || this.tab() === 'all' ? [] : [this.tab()]));
+  protected readonly popularMode = computed(() => this.tab() === 'popular' && !this.searching());
+  protected readonly popular = POPULAR.map((p) => TOOL_GROUPS.flatMap((g) => g.tools).find((t) => t.path === p)).filter((t) => !!t);
+  /** "Browse by type" tiles: topics first, then every group, with tool counts. */
+  protected readonly browse = this.chips.map((c) => ({
+    ...c,
+    count: c.key === EXAM_KEY ? EXAMS.length : (TOPICS.find((t) => t.key === c.key)?.paths.length ?? TOOL_GROUPS.find((g) => g.title === c.key)?.tools.length ?? 0),
+  }));
   protected readonly exams = computed(() => {
     const q = this.q().trim().toLowerCase();
     if (!q) return this.picked().length ? EXAMS : EXAMS.slice(0, HOME_EXAMS);
@@ -277,8 +322,10 @@ export class Home {
   });
   protected readonly nothing = computed(() => this.searching() && !this.showExams() && !this.groups().length);
 
-  protected toggle(key: string) {
-    this.picked.update((p) => (p.includes(key) ? p.filter((k) => k !== key) : [...p, key]));
+  /** Tile click: open that type and bring the tabs to the top so the list starts on screen. */
+  protected openTab(key: string) {
+    this.tab.set(key);
+    document.getElementById('tool-tabs')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   constructor() {
