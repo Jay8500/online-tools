@@ -31,6 +31,7 @@ import { CurrencyTool } from './tools/currency-tool';
 import { TechTermsTool } from './tools/tech-terms-tool';
 import { RechargeTool } from './tools/recharge-tool';
 import { OttTool } from './tools/ott-tool';
+import { MarketsTool } from './tools/markets-tool';
 import { PanchangamTool } from './tools/panchangam-tool';
 import { MetroTool } from './tools/metro-tool';
 import { FuelTool } from './tools/fuel-tool';
@@ -72,6 +73,7 @@ import { AgeTool, CgpaTool, DaysTool, PercentTool, SplitTool } from './tools/eve
     TechTermsTool,
     RechargeTool,
     OttTool,
+    MarketsTool,
     PanchangamTool,
     MetroTool,
     FuelTool,
@@ -120,6 +122,7 @@ import { AgeTool, CgpaTool, DaysTool, PercentTool, SplitTool } from './tools/eve
             @case ('currency') { @defer (on immediate; hydrate on immediate) { <app-currency-tool /> } @placeholder { <div class="h-96"></div> } }
             @case ('techterms') { @defer (on immediate; hydrate on immediate) { <app-tech-terms-tool /> } @placeholder { <div class="h-96"></div> } }
             @case ('recharge') { @defer (on immediate; hydrate on immediate) { <app-recharge-tool /> } @placeholder { <div class="h-96"></div> } }
+            @case ('markets') { @defer (on immediate; hydrate on immediate) { <app-markets-tool /> } @placeholder { <div class="h-96"></div> } }
             @case ('ott') { @defer (on immediate; hydrate on immediate) { <app-ott-tool /> } @placeholder { <div class="h-96"></div> } }
             @case ('steps') { @defer (on immediate; hydrate on immediate) { <app-steps-tool /> } @placeholder { <div class="h-96"></div> } }
             @case ('police') { @defer (on immediate; hydrate on immediate) { <app-nearby-tool kind="police" /> } @placeholder { <div class="h-96"></div> } }

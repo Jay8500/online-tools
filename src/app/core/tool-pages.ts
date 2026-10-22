@@ -1,7 +1,7 @@
 import { Faq } from './seo.service';
 import { TOOL_LINKS, ToolKind, ToolLinkLite } from './tool-links';
 
-export type Disclaimer = 'files' | 'health' | 'invoice' | 'upi' | 'language' | 'land' | 'units' | 'gold' | 'weather' | 'travel' | 'metro' | 'fuel' | 'grocery' | 'cinema' | 'holidays' | 'traffic' | 'nearby' | 'currency' | 'plans' | 'panchangam' | 'everyday';
+export type Disclaimer = 'files' | 'health' | 'invoice' | 'upi' | 'language' | 'land' | 'units' | 'gold' | 'weather' | 'travel' | 'metro' | 'fuel' | 'grocery' | 'cinema' | 'holidays' | 'traffic' | 'nearby' | 'currency' | 'plans' | 'panchangam' | 'markets' | 'everyday';
 
 export interface ToolPageInfo extends ToolLinkLite {
   h1: string;
@@ -295,6 +295,19 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
     ],
     disclaimer: 'plans',
   },
+  markets: {
+    h1: 'Stock Market Today — Sensex, US & World',
+    title: 'Stock Market Today — Sensex, US & World Markets, IPOs in Simple Words',
+    description: 'See Sensex, Bankex, top Indian shares, S&P 500, Nasdaq, Dow, gold, crude and the dollar in one place, with easy charts and market words explained simply. How IPOs work, with official NSE, BSE and SEBI links.',
+    intro: 'India, US and world markets on one page — with charts and every market word explained simply.',
+    steps: ['Pick India, US or World.', 'Tap or hover a chart to see the value on any day.', 'Green ▲ means up, red ▼ means down.', 'Open “Market words” if a term is new to you.'],
+    faqs: [
+      { q: 'Is this live data?', a: 'Prices come from TradingView and update during market hours. Indian prices may be a few minutes delayed.' },
+      { q: 'Should I buy or sell based on this?', a: 'No. This page only shows prices and explains terms. It is not investment advice — talk to a SEBI-registered adviser before investing.' },
+      { q: 'When is the Indian market open?', a: 'NSE and BSE trade Monday to Friday, 9:15 am to 3:30 pm IST, except market holidays.' },
+    ],
+    disclaimer: 'markets',
+  },
   ott: {
     h1: 'OTT Subscription Prices in India',
     title: 'OTT Subscription Prices India 2026 — Netflix, Prime Video, JioHotstar, SonyLIV, ZEE5, aha',
@@ -575,6 +588,7 @@ export const DISCLAIMERS: Record<Disclaimer, string> = {
   traffic: 'Fines shown are those in the Motor Vehicles Act, 1988 (as amended in 2019); the amount actually charged may be lower where a state compounds the offence. This is general information, not legal advice — the e-challan portal and traffic police are final.',
   panchangam: 'Calculated from sun and moon positions (Lahiri ayanamsa, amanta months, IST). Timings may differ slightly from printed panchangams — consult your purohit for muhurtham.',
   currency: 'Market (mid) rates from a public data source, updated daily — banks, cards and exchange houses apply their own rates and fees. Not financial advice.',
+  markets: 'Prices and charts by TradingView; Indian prices may be delayed. For information and learning only — not investment advice or a recommendation to buy or sell. Investing in shares carries risk.',
   plans: 'Prices copied from each company’s official website on the date shown; plans, offers and circle prices change often. Confirm in the official app before paying. We are not linked to any operator or app.',
   nearby: 'Places come from OpenStreetMap and may be missing, closed or moved. Distances are straight-line. In an emergency call 112.',
   cinema: 'Cinema list from OpenStreetMap and may miss new or recently closed theatres. Distances are straight-line. Shows, prices and bookings are on the cinema’s or booking app’s site, not ours.',

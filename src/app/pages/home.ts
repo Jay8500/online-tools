@@ -83,6 +83,7 @@ const KEYWORDS: Record<string, string> = {
   'currency-converter': 'currency converter dollar usd dirham aed riyal sar pound euro exchange rate rupee inr forex',
   'computer-abbreviations': 'computer full form abbreviation cpu ram rom url otp imei it terms meaning',
   'mobile-recharge-plans': 'mobile recharge plan jio airtel vi bsnl prepaid data 5g',
+  'stock-market-today': 'stock market share nifty sensex bank nifty nse bse ipo us stocks nasdaq dow s&p bull bear trading investment',
   'ott-subscription-prices': 'ott netflix prime video amazon hotstar jiohotstar aha zee5 sonyliv etv sun nxt subscription price',
   'step-counter': 'step steps counter pedometer walking walk calories burn km distance fitness',
   'police-station-near-me': 'police station near me nearest emergency 100 112 complaint',
