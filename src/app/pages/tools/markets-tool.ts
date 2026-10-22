@@ -36,7 +36,7 @@ type Tab = 'india' | 'us' | 'world';
     </div>
     <p class="mt-2 text-xs text-muted">{{ hint() }} Tap or hover a chart to see the value on that day.</p>
     <div class="mt-2 min-h-[460px] overflow-hidden rounded-2xl border border-line" #chart></div>
-    <p class="mt-1 text-[11px] text-muted">Indian prices are from BSE (NSE/Nifty data can't be shown on free websites). Charts & prices by <a href="https://www.tradingview.com/" target="_blank" rel="noopener" class="underline">TradingView</a>; Indian prices may be delayed.</p>
+    <p class="mt-1 text-[11px] text-muted">Indian prices are BSE closing prices (marked E — end of day); NSE/Nifty can't be shown on free websites. US prices (marked D) are about 15 minutes delayed. Charts & prices by <a href="https://www.tradingview.com/" target="_blank" rel="noopener" class="underline">TradingView</a>.</p>
 
     <!-- Words in simple language -->
     <h2 class="mt-6 mb-2 text-base font-bold">Market words, in simple language</h2>

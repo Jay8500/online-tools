@@ -34,7 +34,7 @@ const CHIPS: { key: string; label: string; icon: string }[] = [
 ];
 /** Topic chips: related tools picked across groups (shown first, after "All"). */
 const TOPICS: { key: string; label: string; icon: string; title: string; paths: string[] }[] = [
-  { key: 'topic:prices', label: 'Prices', icon: 'banknote', title: 'Prices today', paths: ['gold-price-calculator', 'petrol-diesel-price', 'vegetable-prices-today', 'mobile-recharge-plans', 'ott-subscription-prices', 'currency-converter'] },
+  { key: 'topic:prices', label: 'Prices', icon: 'banknote', title: 'Prices today', paths: ['gold-price-calculator', 'stock-market-today', 'petrol-diesel-price', 'vegetable-prices-today', 'mobile-recharge-plans', 'ott-subscription-prices', 'currency-converter'] },
   { key: 'topic:near', label: 'Near me', icon: 'map-pin', title: 'Near me & travel', paths: ['cinemas-near-me', 'police-station-near-me', 'petrol-bunk-near-me', 'hyderabad-metro-fare', 'travel-planner'] },
   { key: 'topic:calendar', label: 'Calendar', icon: 'sun', title: 'Calendar & weather', paths: ['telugu-panchangam', 'holiday-calendar', 'weather'] },
 ];
