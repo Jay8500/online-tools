@@ -117,10 +117,6 @@ const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-p
   imports: [RouterLink, FormsModule, Icon, AdSlot, LiveBadge, Sky, MarketArt, Benefits, FestivalCard, PinButton],
   template: `
     <app-festival-card />
-    <!-- Frosted-glass panel around the title, search, chips and tools; soft colour glows sit behind it -->
-    <div class="relative isolate">
-      <div class="glass-glow" aria-hidden="true"><span></span><span></span><span></span></div>
-      <div class="glass-zone">
     <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
       <div>
         <h1 class="text-lg font-bold sm:text-2xl">Free online tools for India</h1>
@@ -281,8 +277,6 @@ const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-p
         </div>
       </section>
     }
-      </div>
-    </div>
 
     <app-ad-slot slot="top" />
 

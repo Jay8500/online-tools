@@ -26,7 +26,9 @@ import { LikeBox } from './shared/like-box';
   imports: [RouterOutlet, RouterLink, Icon, Brand, Benefits, ToastHost, DialogHost, UpdateBanner, ConsentBanner, ScrollTop, InstallHint, InstallFooter, MoreFrom, LikeBox],
   template: `
     <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[200] focus:rounded-lg focus:bg-brand focus:px-3 focus:py-2 focus:text-brand-ink">Skip to tool</a>
-    <header class="sticky top-0 z-40 border-b border-line bg-surface/90 backdrop-blur">
+    <!-- Soft colour lights behind the whole site; header, cards, chips and footer are see-through glass over them -->
+    <div class="page-glow" aria-hidden="true"><span></span><span></span><span></span></div>
+    <header class="sticky top-0 z-40 border-b border-line/70 bg-surface/60 backdrop-blur-xl backdrop-saturate-150">
       <div class="mx-auto flex h-12 max-w-6xl items-center gap-2 px-3 sm:px-4">
         <a routerLink="/" aria-label="Spread Apps Tools home"><app-brand [size]="30" /></a>
         <nav class="ml-auto flex items-center gap-1 text-sm font-medium" aria-label="Main">
@@ -52,7 +54,7 @@ import { LikeBox } from './shared/like-box';
     </main>
     @defer (on idle) { <app-like-box /> }
 
-    <footer class="border-t border-line bg-surface">
+    <footer class="border-t border-line/70 bg-surface/55 backdrop-blur-xl">
       <div class="mx-auto grid max-w-6xl gap-6 px-4 py-8 text-sm sm:grid-cols-2 lg:grid-cols-5 [&>*]:min-w-0">
         <div>
           <a href="https://spreadapps.in" aria-label="Spread Apps website"><app-brand [size]="26" /></a>
