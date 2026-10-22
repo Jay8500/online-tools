@@ -12,6 +12,7 @@ import { TOOL_GROUPS, groupAnchor } from '../core/tools';
 import { AdSlot } from '../shared/ad-slot';
 import { LiveBadge, WEATHER_ICON } from '../shared/live-badge';
 import { Sky } from '../shared/sky';
+import { MarketArt } from '../shared/market-art';
 import { Benefits } from '../shared/benefits';
 import { FestivalCard } from '../shared/festival-card';
 import { PinButton } from '../shared/pin-button';
@@ -113,7 +114,7 @@ const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-p
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink, FormsModule, Icon, AdSlot, LiveBadge, Sky, Benefits, FestivalCard, PinButton],
+  imports: [RouterLink, FormsModule, Icon, AdSlot, LiveBadge, Sky, MarketArt, Benefits, FestivalCard, PinButton],
   template: `
     <app-festival-card />
     <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
@@ -188,6 +189,7 @@ const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-p
           @for (t of popular; track t.path) {
             <div class="card group relative isolate flex items-center gap-3 overflow-hidden p-3 transition hover:border-brand/50" [class.sky-card]="t.path === 'weather' && !!skyIcon()">
               @if (t.path === 'weather' && skyIcon()) { <app-sky [icon]="skyIcon()" class="-z-10" /> }
+              @if (t.path === 'stock-market-today') { @defer (on idle) { <app-market-art /> } }
               <a [routerLink]="'/' + t.path" class="absolute inset-0 rounded-2xl" [attr.aria-label]="t.name"></a>
               <span class="grid size-9 shrink-0 place-items-center rounded-xl bg-brand/10 text-brand"><svg [lucideIcon]="t.icon" [size]="18" /></span>
               <span class="min-w-0"><span class="block text-sm font-semibold group-hover:text-brand">{{ t.name }}</span><span class="block text-xs text-muted">{{ t.blurb }}</span></span>
@@ -253,6 +255,7 @@ const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-p
             @if (t.path) {
               <div class="card group relative flex items-center gap-3 p-3 transition hover:border-brand/50 isolate overflow-hidden" [class.sky-card]="t.path === 'weather' && !!skyIcon()">
                 @if (t.path === 'weather' && skyIcon()) { <app-sky [icon]="skyIcon()" class="-z-10" /> }
+              @if (t.path === 'stock-market-today') { @defer (on idle) { <app-market-art /> } }
                 <a [routerLink]="'/' + t.path" class="absolute inset-0 rounded-2xl" [attr.aria-label]="t.name"></a>
                 <span class="grid size-9 shrink-0 place-items-center rounded-xl bg-brand/10 text-brand"><svg [lucideIcon]="t.icon" [size]="18" /></span>
                 <span class="min-w-0"><span class="block text-sm font-semibold group-hover:text-brand">{{ t.name }}</span><span class="block text-xs text-muted">{{ t.blurb }}</span>

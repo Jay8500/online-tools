@@ -10,6 +10,7 @@ import { FaqList } from '../shared/faq-list';
 import { Icon } from '../shared/icon';
 import { LiveBadge, WEATHER_ICON } from '../shared/live-badge';
 import { Sky } from '../shared/sky';
+import { MarketArt } from '../shared/market-art';
 import { PinButton } from '../shared/pin-button';
 import { UserTools } from '../core/user-tools';
 import { SOURCES } from '../core/sources';
@@ -17,7 +18,7 @@ import { SOURCES } from '../core/sources';
 /** Category page, e.g. /health-calculators — intro + every tool in the group + other groups. */
 @Component({
   selector: 'app-hub-page',
-  imports: [RouterLink, Icon, AdSlot, FaqList, LiveBadge, Sky, PinButton],
+  imports: [RouterLink, Icon, AdSlot, FaqList, LiveBadge, Sky, MarketArt, PinButton],
   template: `
     @let h = hub();
     <nav aria-label="Breadcrumb" class="mb-1 flex items-center gap-1 text-xs text-muted">
@@ -47,6 +48,7 @@ import { SOURCES } from '../core/sources';
           <li>
             <div class="card group relative flex h-full items-center gap-3 p-3 transition hover:border-brand/50 isolate overflow-hidden" [class.sky-card]="t.path === 'weather' && !!skyIcon()">
                 @if (t.path === 'weather' && skyIcon()) { <app-sky [icon]="skyIcon()" class="-z-10" /> }
+              @if (t.path === 'stock-market-today') { @defer (on idle) { <app-market-art /> } }
               <a [routerLink]="'/' + t.path" class="absolute inset-0 rounded-2xl" [attr.aria-label]="t.name"></a>
               <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-brand/10 text-brand"><svg [lucideIcon]="t.icon" [size]="20" /></span>
               <span class="min-w-0">
