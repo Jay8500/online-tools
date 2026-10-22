@@ -1,5 +1,9 @@
 import { isPlatformBrowser } from '@angular/common';
 import { Component, ElementRef, PLATFORM_ID, afterNextRender, inject, signal, viewChild } from '@angular/core';
+import { Icon } from '../../shared/icon';
+
+/** US market tab + US symbols in the ticker; hidden for now (owner decision 22 Oct 2026) — set true to show again. */
+const SHOW_US = false;
 
 type Tab = 'india' | 'us' | 'world';
 
@@ -10,23 +14,58 @@ type Tab = 'india' | 'us' | 'world';
  */
 @Component({
   selector: 'app-markets-tool',
+  imports: [Icon],
   template: `
     <!-- Bull / bear explainer -->
     <div class="grid grid-cols-2 gap-2">
-      <div class="mood rounded-2xl bg-green-500/10 p-3 text-center">
-        <span class="bull text-4xl" aria-hidden="true">🐂</span>
-        <p class="mt-1 text-sm font-bold text-green-700 dark:text-green-300">Bull market ▲</p>
+      <div class="flex flex-col items-center rounded-2xl border border-green-500/25 bg-green-500/10 p-3 text-center">
+        <span class="relative inline-block text-green-600 dark:text-green-400" aria-hidden="true">
+          <!-- Bull head: horns up -->
+          <svg class="bull" viewBox="0 0 64 64" width="64" height="64">
+            <path fill="currentColor" d="M5 9c0 11 8 18 17 16v-5c-6 1-11-3-12-11z" />
+            <path fill="currentColor" d="M59 9c0 11-8 18-17 16v-5c6 1 11-3 12-11z" />
+            <ellipse fill="currentColor" cx="13" cy="29" rx="6" ry="3.2" transform="rotate(-20 13 29)" />
+            <ellipse fill="currentColor" cx="51" cy="29" rx="6" ry="3.2" transform="rotate(20 51 29)" />
+            <path fill="currentColor" d="M20 21q12-6 24 0l2 19q0 11-7 15H25q-7-4-7-15z" />
+            <ellipse fill="#fff" fill-opacity=".28" cx="32" cy="47" rx="10" ry="7" />
+            <circle fill="#000" fill-opacity=".35" cx="28" cy="48" r="1.8" />
+            <circle fill="#000" fill-opacity=".35" cx="36" cy="48" r="1.8" />
+            <circle fill="#fff" cx="26" cy="32" r="2.2" /><circle fill="#000" fill-opacity=".7" cx="26.4" cy="32.3" r="1" />
+            <circle fill="#fff" cx="38" cy="32" r="2.2" /><circle fill="#000" fill-opacity=".7" cx="38.4" cy="32.3" r="1" />
+          </svg>
+          <span class="absolute -right-2 -bottom-1 grid size-7 place-items-center rounded-full bg-surface text-green-600 shadow ring-1 ring-green-500/30 dark:text-green-400">
+            <svg lucideIcon="trending-up" [size]="16" />
+          </span>
+        </span>
+        <p class="mt-2 text-sm font-bold text-green-700 dark:text-green-300">Bull market ▲</p>
         <p class="text-xs text-muted">Prices going up, people buying</p>
       </div>
-      <div class="mood rounded-2xl bg-rose-500/10 p-3 text-center">
-        <span class="bear text-4xl" aria-hidden="true">🐻</span>
-        <p class="mt-1 text-sm font-bold text-rose-700 dark:text-rose-300">Bear market ▼</p>
+      <div class="flex flex-col items-center rounded-2xl border border-rose-500/25 bg-rose-500/10 p-3 text-center">
+        <span class="relative inline-block text-rose-600 dark:text-rose-400" aria-hidden="true">
+          <!-- Bear head: round ears -->
+          <svg class="bear" viewBox="0 0 64 64" width="64" height="64">
+            <circle fill="currentColor" cx="17" cy="17" r="8" />
+            <circle fill="currentColor" cx="47" cy="17" r="8" />
+            <circle fill="#fff" fill-opacity=".28" cx="17" cy="17" r="4" />
+            <circle fill="#fff" fill-opacity=".28" cx="47" cy="17" r="4" />
+            <circle fill="currentColor" cx="32" cy="36" r="21" />
+            <ellipse fill="#fff" fill-opacity=".28" cx="32" cy="45" rx="10" ry="8" />
+            <ellipse fill="#000" fill-opacity=".45" cx="32" cy="41" rx="4" ry="2.8" />
+            <path d="M28 48q4 3 8 0" fill="none" stroke="#000" stroke-opacity=".35" stroke-width="1.6" stroke-linecap="round" />
+            <circle fill="#fff" cx="24.5" cy="32" r="2.2" /><circle fill="#000" fill-opacity=".7" cx="24.9" cy="32.3" r="1" />
+            <circle fill="#fff" cx="39.5" cy="32" r="2.2" /><circle fill="#000" fill-opacity=".7" cx="39.9" cy="32.3" r="1" />
+          </svg>
+          <span class="absolute -right-2 -bottom-1 grid size-7 place-items-center rounded-full bg-surface text-rose-600 shadow ring-1 ring-rose-500/30 dark:text-rose-400">
+            <svg lucideIcon="trending-down" [size]="16" />
+          </span>
+        </span>
+        <p class="mt-2 text-sm font-bold text-rose-700 dark:text-rose-300">Bear market ▼</p>
         <p class="text-xs text-muted">Prices going down, people selling</p>
       </div>
     </div>
 
     <!-- Ticker -->
-    <div class="mt-3 overflow-hidden rounded-2xl border border-line" #ticker aria-label="Live market ticker"></div>
+    <div class="mt-3 overflow-hidden rounded-2xl border border-line" #ticker aria-label="Live market ticker" style="color-scheme: light"></div>
 
     <!-- Tabs -->
     <div class="mt-4 flex gap-1.5" role="tablist" aria-label="Market">
@@ -35,8 +74,8 @@ type Tab = 'india' | 'us' | 'world';
       }
     </div>
     <p class="mt-2 text-xs text-muted">{{ hint() }} Tap or hover a chart to see the value on that day.</p>
-    <div class="mt-2 min-h-[460px] overflow-hidden rounded-2xl border border-line" #chart></div>
-    <p class="mt-1 text-[11px] text-muted">Indian prices are BSE closing prices (marked E — end of day); NSE/Nifty can't be shown on free websites. US prices (marked D) are about 15 minutes delayed. Charts & prices by <a href="https://www.tradingview.com/" target="_blank" rel="noopener" class="underline">TradingView</a>.</p>
+    <div class="mt-2 min-h-[460px] overflow-hidden rounded-2xl border border-line" #chart style="color-scheme: light"></div>
+    <p class="mt-1 text-[11px] text-muted">Indian prices are BSE closing prices (marked E — end of day); NSE/Nifty can't be shown on free websites. Other prices (marked D) are about 15 minutes delayed. Charts & prices by <a href="https://www.tradingview.com/" target="_blank" rel="noopener" class="underline">TradingView</a>.</p>
 
     <!-- Words in simple language -->
     <h2 class="mt-6 mb-2 text-base font-bold">Market words, in simple language</h2>
@@ -68,8 +107,8 @@ type Tab = 'india' | 'us' | 'world';
     </div>
   `,
   styles: `
-    .bull { display: inline-block; animation: charge 2.2s ease-in-out infinite; }
-    .bear { display: inline-block; animation: sway 2.6s ease-in-out infinite; }
+    .bull { display: block; animation: charge 2.2s ease-in-out infinite; }
+    .bear { display: block; animation: sway 2.6s ease-in-out infinite; }
     @keyframes charge { 0%, 100% { transform: translateX(-4px) rotate(-3deg); } 50% { transform: translateX(4px) rotate(3deg) translateY(-3px); } }
     @keyframes sway { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg) translateY(2px); } }
     @media (prefers-reduced-motion: reduce) { .bull, .bear { animation: none; } }
@@ -81,14 +120,13 @@ export class MarketsTool {
   private readonly chart = viewChild<ElementRef<HTMLElement>>('chart');
   protected readonly tab = signal<Tab>('india');
   protected readonly tabs: { id: Tab; label: string }[] = [
-    { id: 'india', label: '🇮🇳 India' },
-    { id: 'us', label: '🇺🇸 US' },
-    { id: 'world', label: '🌍 World' },
-  ];
+    { id: 'india' as Tab, label: '🇮🇳 India' },
+    { id: 'us' as Tab, label: '🇺🇸 US' },
+    { id: 'world' as Tab, label: '🌍 World' },
+  ].filter((t) => SHOW_US || t.id !== 'us');
   protected readonly words = [
     { t: 'Nifty 50', d: 'The 50 biggest companies on the National Stock Exchange (NSE). If Nifty is up, most big Indian companies went up today.' },
     { t: 'Sensex', d: 'The 30 biggest companies on the Bombay Stock Exchange (BSE). India’s oldest market index.' },
-    { t: 'S&P 500 / Nasdaq / Dow', d: 'The main US market indices. They often move Indian markets the next morning.' },
     { t: '▲ 1.2% / ▼ 0.8%', d: 'How much the price went up (green ▲) or down (red ▼) compared with the last close.' },
     { t: 'Bull vs Bear', d: 'Bull = prices rising for a while. Bear = prices falling for a while (usually 20% or more from the top).' },
     { t: 'IPO, lot, price band', d: 'IPO is a company’s first share sale. A lot is the minimum number of shares you can apply for. Price band is the price range.' },
@@ -135,7 +173,7 @@ export class MarketsTool {
   }
 
   private mountTicker() {
-    const all = [...this.sets.india.symbols.slice(0, 3), ...this.sets.us.symbols.slice(0, 3), ['FX_IDC:USDINR', 'USD → ₹'], ['OANDA:XAUUSD', 'Gold']];
+    const all = [...this.sets.india.symbols.slice(0, 4), ...(SHOW_US ? this.sets.us.symbols.slice(0, 3) : this.sets.world.symbols.slice(0, 2)), ['FX_IDC:USDINR', 'USD → ₹'], ['OANDA:XAUUSD', 'Gold']];
     this.embed(this.ticker()?.nativeElement, 'embed-widget-ticker-tape.js', {
       symbols: all.map(([proName, title]) => ({ proName, title })),
       showSymbolLogo: true,

@@ -79,7 +79,7 @@ export const TOOL_LINKS: ToolLinkLite[] = [
   { id: 'police', path: 'police-station-near-me', name: 'Police station near me', group: 'Daily tools', icon: 'shield-check', blurb: 'Nearest stations + 112 / 100 call' },
   { id: 'bunks', path: 'petrol-bunk-near-me', name: 'Petrol bunk near me', group: 'Daily tools', icon: 'gauge', blurb: 'Nearest pumps by brand & distance' },
   { id: 'recharge', path: 'mobile-recharge-plans', name: 'Mobile recharge plans', group: 'Daily tools', icon: 'smartphone', blurb: 'Jio, Airtel, Vi, BSNL — cost per day' },
-  { id: 'markets', path: 'stock-market-today', name: 'Stock market today', group: 'Daily tools', icon: 'trending-up', blurb: 'Sensex, US & world markets, IPOs explained' },
+  { id: 'markets', path: 'stock-market-today', name: 'Stock market today', group: 'Daily tools', icon: 'trending-up', blurb: 'Sensex, world markets, IPOs explained' },
   { id: 'ott', path: 'ott-subscription-prices', name: 'OTT subscription prices', group: 'Daily tools', icon: 'tv', blurb: 'Netflix, Prime, JioHotstar, aha & more' },
   { id: 'cinema', path: 'cinemas-near-me', name: 'Cinemas near me', group: 'Daily tools', icon: 'clapperboard', blurb: 'Theatres by distance, shows & tickets' },
   { id: 'travel', path: 'travel-planner', name: 'Travel planner', group: 'Daily tools', icon: 'map-pin', blurb: 'Route, stops & time by road, rail, air' },

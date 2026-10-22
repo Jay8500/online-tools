@@ -1,5 +1,6 @@
 import {
   TrendingUp,
+  TrendingDown,
   Heart,
   Pin,
   ChevronUp,
@@ -82,6 +83,7 @@ import {
 /** Every icon used in templates (`<svg lucideIcon="name">`). Only these are bundled. */
 export const ICONS: Record<string, IconNode> = {
   'trending-up': TrendingUp,
+  'trending-down': TrendingDown,
   heart: Heart,
   pin: Pin,
   'chevron-up': ChevronUp,
