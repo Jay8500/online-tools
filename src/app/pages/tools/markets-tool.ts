@@ -18,10 +18,15 @@ type Tab = 'india' | 'us' | 'world';
   template: `
     <!-- Bull / bear explainer -->
     <div class="grid grid-cols-2 gap-2">
-      <div class="flex flex-col items-center rounded-2xl border border-green-500/25 bg-green-500/10 p-3 text-center">
-        <span class="relative inline-block text-green-600 dark:text-green-400" aria-hidden="true">
+      <div class="relative isolate min-h-36 overflow-hidden rounded-2xl border border-green-500/25 bg-gradient-to-br from-green-50 to-emerald-100/70 p-3 dark:from-green-950/70 dark:to-emerald-900/30">
+        <!-- Background: rising graph + big bull, see-through -->
+        <svg class="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-16 w-full text-green-500/20 dark:text-green-400/15" viewBox="0 0 200 60" preserveAspectRatio="none" aria-hidden="true">
+          <path fill="currentColor" d="M0 56 30 46l25 5 30-18 25 6 30-20 30 4 30-19v62H0z" />
+          <path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" d="M0 56 30 46l25 5 30-18 25 6 30-20 30 4 30-19" />
+        </svg>
+        <span class="pointer-events-none absolute -top-1 -right-4 -z-10 text-green-600 opacity-25 dark:text-green-400 dark:opacity-30" aria-hidden="true">
           <!-- Bull head: horns up -->
-          <svg class="bull" viewBox="0 0 64 64" width="64" height="64">
+          <svg class="bull" viewBox="0 0 64 64" width="112" height="112">
             <path fill="currentColor" d="M5 9c0 11 8 18 17 16v-5c-6 1-11-3-12-11z" />
             <path fill="currentColor" d="M59 9c0 11-8 18-17 16v-5c6 1 11-3 12-11z" />
             <ellipse fill="currentColor" cx="13" cy="29" rx="6" ry="3.2" transform="rotate(-20 13 29)" />
@@ -33,17 +38,22 @@ type Tab = 'india' | 'us' | 'world';
             <circle fill="#fff" cx="26" cy="32" r="2.2" /><circle fill="#000" fill-opacity=".7" cx="26.4" cy="32.3" r="1" />
             <circle fill="#fff" cx="38" cy="32" r="2.2" /><circle fill="#000" fill-opacity=".7" cx="38.4" cy="32.3" r="1" />
           </svg>
-          <span class="absolute -right-2 -bottom-1 grid size-7 place-items-center rounded-full bg-surface text-green-600 shadow ring-1 ring-green-500/30 dark:text-green-400">
-            <svg lucideIcon="trending-up" [size]="16" />
-          </span>
         </span>
-        <p class="mt-2 text-sm font-bold text-green-700 dark:text-green-300">Bull market ▲</p>
-        <p class="text-xs text-muted">Prices going up, people buying</p>
+        <span class="grid size-9 place-items-center rounded-full bg-white/80 text-green-700 shadow-sm ring-1 ring-green-500/30 dark:bg-white/10 dark:text-green-300" aria-hidden="true">
+          <svg lucideIcon="trending-up" [size]="18" />
+        </span>
+        <p class="mt-2 text-base font-extrabold text-green-800 dark:text-green-200">Bull market ▲</p>
+        <p class="mt-0.5 max-w-44 text-xs leading-snug text-green-900/75 dark:text-green-100/75">Prices going up, people buying</p>
       </div>
-      <div class="flex flex-col items-center rounded-2xl border border-rose-500/25 bg-rose-500/10 p-3 text-center">
-        <span class="relative inline-block text-rose-600 dark:text-rose-400" aria-hidden="true">
+      <div class="relative isolate min-h-36 overflow-hidden rounded-2xl border border-rose-500/25 bg-gradient-to-br from-rose-50 to-pink-100/70 p-3 dark:from-rose-950/70 dark:to-pink-900/30">
+        <!-- Background: falling graph + big bear, see-through -->
+        <svg class="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-16 w-full text-rose-500/20 dark:text-rose-400/15" viewBox="0 0 200 60" preserveAspectRatio="none" aria-hidden="true">
+          <path fill="currentColor" d="M0 6 30 14l25-4 30 18 25-5 30 20 30-3 30 18v16H0z" />
+          <path fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" d="M0 6 30 14l25-4 30 18 25-5 30 20 30-3 30 18" />
+        </svg>
+        <span class="pointer-events-none absolute -top-1 -right-4 -z-10 text-rose-600 opacity-25 dark:text-rose-400 dark:opacity-30" aria-hidden="true">
           <!-- Bear head: round ears -->
-          <svg class="bear" viewBox="0 0 64 64" width="64" height="64">
+          <svg class="bear" viewBox="0 0 64 64" width="112" height="112">
             <circle fill="currentColor" cx="17" cy="17" r="8" />
             <circle fill="currentColor" cx="47" cy="17" r="8" />
             <circle fill="#fff" fill-opacity=".28" cx="17" cy="17" r="4" />
@@ -55,12 +65,12 @@ type Tab = 'india' | 'us' | 'world';
             <circle fill="#fff" cx="24.5" cy="32" r="2.2" /><circle fill="#000" fill-opacity=".7" cx="24.9" cy="32.3" r="1" />
             <circle fill="#fff" cx="39.5" cy="32" r="2.2" /><circle fill="#000" fill-opacity=".7" cx="39.9" cy="32.3" r="1" />
           </svg>
-          <span class="absolute -right-2 -bottom-1 grid size-7 place-items-center rounded-full bg-surface text-rose-600 shadow ring-1 ring-rose-500/30 dark:text-rose-400">
-            <svg lucideIcon="trending-down" [size]="16" />
-          </span>
         </span>
-        <p class="mt-2 text-sm font-bold text-rose-700 dark:text-rose-300">Bear market ▼</p>
-        <p class="text-xs text-muted">Prices going down, people selling</p>
+        <span class="grid size-9 place-items-center rounded-full bg-white/80 text-rose-700 shadow-sm ring-1 ring-rose-500/30 dark:bg-white/10 dark:text-rose-300" aria-hidden="true">
+          <svg lucideIcon="trending-down" [size]="18" />
+        </span>
+        <p class="mt-2 text-base font-extrabold text-rose-800 dark:text-rose-200">Bear market ▼</p>
+        <p class="mt-0.5 max-w-44 text-xs leading-snug text-rose-900/75 dark:text-rose-100/75">Prices going down, people selling</p>
       </div>
     </div>
 
