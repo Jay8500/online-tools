@@ -93,6 +93,8 @@
     background: linear-gradient(135deg, color-mix(in oklab, var(--brand) 24%, transparent), color-mix(in oklab, var(--brand) 7%, transparent));
     backdrop-filter: blur(10px) saturate(1.5);
     box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.6), 0 6px 18px -8px color-mix(in oklab, var(--brand) 70%, transparent);
+    transform: scale(1.08);
+    z-index: 1;
     animation: chip-pop 0.35s ease-out;
   }
   .dark .chip.active,
@@ -256,8 +258,35 @@
 }
 
 /* Selected chip feedback (see .chip[aria-pressed='true']) */
-@keyframes chip-pop { 0% { transform: scale(0.94); } 60% { transform: scale(1.05); } 100% { transform: scale(1); } }
+@keyframes chip-pop { 0% { transform: scale(0.94); } 60% { transform: scale(1.14); } 100% { transform: scale(1.08); } }
+
+/* Home: frosted-glass panel (.glass-zone) with soft brand-colour glows (.glass-glow) blurred behind it */
+.glass-zone {
+  position: relative;
+  margin-inline: -0.75rem;
+  padding: 1rem 0.75rem;
+  background: color-mix(in oklab, var(--surface) 55%, transparent);
+  backdrop-filter: blur(22px) saturate(1.5);
+  -webkit-backdrop-filter: blur(22px) saturate(1.5);
+  border-block: 1px solid color-mix(in oklab, var(--line) 70%, transparent);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.55), 0 24px 60px -36px color-mix(in oklab, var(--brand) 55%, transparent);
+}
+@media (min-width: 640px) {
+  .glass-zone { margin-inline: 0; padding: 1.5rem; border: 1px solid color-mix(in oklab, var(--line) 70%, transparent); border-radius: 2rem; }
+}
+.dark .glass-zone {
+  background: color-mix(in oklab, var(--surface) 45%, transparent);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06), 0 24px 60px -30px rgb(0 0 0 / 0.65);
+}
+.glass-glow { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+.glass-glow span { position: absolute; border-radius: 9999px; filter: blur(60px); opacity: 0.45; animation: glow-drift 18s ease-in-out infinite alternate; }
+.glass-glow span:nth-child(1) { width: 45%; height: 60%; left: -5%; top: -10%; background: var(--brand); }
+.glass-glow span:nth-child(2) { width: 40%; height: 55%; right: -5%; top: 20%; background: #38bdf8; animation-delay: -6s; }
+.glass-glow span:nth-child(3) { width: 35%; height: 45%; left: 35%; bottom: -15%; background: #fbbf24; opacity: 0.3; animation-delay: -12s; }
+.dark .glass-glow span { opacity: 0.22; }
+.dark .glass-glow span:nth-child(3) { opacity: 0.12; }
+@keyframes glow-drift { from { transform: translate(0, 0) scale(1); } to { transform: translate(6%, 8%) scale(1.15); } }
 @keyframes chip-shine { to { transform: translateX(120%); } }
 @media (prefers-reduced-motion: reduce) {
-  .chip, .chip::after { animation: none !important; }
+  .chip, .chip::after, .glass-glow span { animation: none !important; }
 }
