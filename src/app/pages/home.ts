@@ -16,6 +16,7 @@ import { MarketArt } from '../shared/market-art';
 import { Benefits } from '../shared/benefits';
 import { FestivalCard } from '../shared/festival-card';
 import { PinButton } from '../shared/pin-button';
+import { ExamPicker } from '../shared/exam-picker';
 import { UserTools } from '../core/user-tools';
 import { SOURCES } from '../core/sources';
 
@@ -114,7 +115,7 @@ const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-p
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink, FormsModule, Icon, AdSlot, LiveBadge, Sky, MarketArt, Benefits, FestivalCard, PinButton],
+  imports: [RouterLink, FormsModule, Icon, AdSlot, LiveBadge, Sky, MarketArt, Benefits, FestivalCard, PinButton, ExamPicker],
   template: `
     <app-festival-card />
     <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
@@ -224,23 +225,7 @@ const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-p
         </h2>
         <a routerLink="/exam-photo-signature-resize" class="shrink-0 text-xs font-semibold text-brand hover:underline">See all {{ examTotal }} exams + size table →</a>
       </div>
-      <div class="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-5">
-        @for (e of exams(); track e.slug) {
-          <div class="card flex min-w-0 flex-col gap-2 p-2.5 sm:p-3">
-            <a [routerLink]="'/' + path(e, 'photo')" class="group">
-              <p class="font-bold group-hover:text-brand">{{ e.name }}</p>
-              <p class="hidden text-xs text-muted sm:line-clamp-1">{{ e.full }}</p>
-            </a>
-            <div class="flex flex-wrap gap-1.5">
-              @for (d of e.docs; track d.kind) {
-                <a class="chip min-h-8 px-2 text-xs" [routerLink]="'/' + path(e, d.kind)">{{ short(d.kind) }}</a>
-              }
-            </div>
-          </div>
-        } @empty {
-          <p class="text-sm text-muted">No exam matches “{{ q() }}”. Try the <a routerLink="/resize-image-to-kb" class="text-brand underline">resize to KB</a> tool.</p>
-        }
-      </div>
+      <app-exam-picker [preset]="examPick()" />
     </section>
     }
 
@@ -316,6 +301,12 @@ export class Home {
     ...c,
     count: c.key === EXAM_KEY ? EXAMS.length : (TOPICS.find((t) => t.key === c.key)?.paths.length ?? TOOL_GROUPS.find((g) => g.title === c.key)?.tools.length ?? 0),
   }));
+  /** Exam to pre-select in the picker while searching: exact name ("rrb") first, then the first match. */
+  protected readonly examPick = computed(() => {
+    if (!this.searching()) return null;
+    const q = this.q().trim().toLowerCase();
+    return this.exams().find((e) => e.slug === q || e.name.toLowerCase() === q) ?? this.exams()[0] ?? null;
+  });
   protected readonly exams = computed(() => {
     const q = this.q().trim().toLowerCase();
     if (!q) return this.picked().length ? EXAMS : EXAMS.slice(0, HOME_EXAMS);
