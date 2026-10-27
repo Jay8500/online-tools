@@ -1,7 +1,7 @@
 import { Faq } from './seo.service';
 import { TOOL_LINKS, ToolKind, ToolLinkLite } from './tool-links';
 
-export type Disclaimer = 'files' | 'health' | 'invoice' | 'upi' | 'language' | 'land' | 'units' | 'gold' | 'weather' | 'travel' | 'metro' | 'fuel' | 'grocery' | 'cinema' | 'holidays' | 'traffic' | 'nearby' | 'currency' | 'plans' | 'panchangam' | 'markets' | 'everyday';
+export type Disclaimer = 'files' | 'health' | 'invoice' | 'upi' | 'language' | 'land' | 'units' | 'gold' | 'weather' | 'travel' | 'metro' | 'fuel' | 'grocery' | 'cinema' | 'holidays' | 'traffic' | 'nearby' | 'currency' | 'plans' | 'panchangam' | 'markets' | 'everyday' | 'pf';
 
 export interface ToolPageInfo extends ToolLinkLite {
   h1: string;
@@ -502,6 +502,19 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
     ],
     disclaimer: 'everyday',
   },
+  pf: {
+    h1: 'PF Balance Check & Monthly PF Calculator',
+    title: 'PF Balance Check — Missed Call, SMS (Telugu too), Passbook & PF Calculator',
+    description: 'Check your EPF balance free: missed call 9966044425, SMS EPFOHO UAN to 7738299899 (English, Telugu, Hindi…), EPFO passbook or UMANG. See how much goes to PF and pension each month.',
+    intro: 'Check your PF balance in a minute with EPFO’s own missed call, SMS or passbook — and see your monthly PF split.',
+    steps: ['Use the mobile number linked to your UAN.', 'Give a missed call, or tap “Send SMS” (pick Telugu if you like).', 'For month-by-month entries, open the EPFO passbook or UMANG.', 'Type your basic pay + DA to see what goes to PF and pension.'],
+    faqs: [
+      { q: 'Missed call or SMS didn’t work — why?', a: 'Your UAN must be activated and your mobile, Aadhaar and PAN or bank account must be linked (KYC). Activate UAN on the EPFO member portal, then try again.' },
+      { q: 'Why is my PF less than 24% of my salary?', a: 'Of the employer’s 12%, 8.33% of pay up to ₹15,000 (max ₹1,250) goes to the pension scheme (EPS), not your PF account.' },
+      { q: 'Is it safe to share my UAN here?', a: 'This page never asks for your UAN or password. Balance checks happen directly with EPFO by call, SMS, passbook or UMANG.' },
+    ],
+    disclaimer: 'pf',
+  },
   cgpa: {
     h1: 'CGPA to Percentage Calculator',
     title: 'CGPA to Percentage Converter — JNTUH, CBSE, AICTE, VTU, Anna University',
@@ -574,6 +587,7 @@ export function toolPage(id: string): ToolPageInfo | undefined {
 }
 
 export const DISCLAIMERS: Record<Disclaimer, string> = {
+  pf: 'Numbers and links are EPFO’s official channels (checked on the EPFO passbook page, Oct 2026). We are not EPFO and never ask for your UAN or password. Monthly figures use the standard 12% rules; your payslip and EPFO passbook are final.',
   everyday: 'Calculated on your device; nothing you type is uploaded. For official forms, follow the rules in the notification.',
   files: 'Files are processed on your device and never uploaded. Keep a copy of your original file.',
   health: 'Health tools are not medical advice. Talk to a doctor before changing your diet, exercise or treatment.',

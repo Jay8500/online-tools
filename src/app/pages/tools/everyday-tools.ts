@@ -234,6 +234,90 @@ export class SplitTool {
   }
 }
 
+// ---------------- PF balance check + contribution ----------------
+const PF_LANGS = [
+  { code: 'ENG', label: 'English' },
+  { code: 'TEL', label: 'తెలుగు' },
+  { code: 'HIN', label: 'हिन्दी' },
+  { code: 'TAM', label: 'தமிழ்' },
+  { code: 'KAN', label: 'ಕನ್ನಡ' },
+  { code: 'MAL', label: 'മലയാളം' },
+  { code: 'MAR', label: 'मराठी' },
+  { code: 'BEN', label: 'বাংলা' },
+  { code: 'GUJ', label: 'ગુજરાતી' },
+  { code: 'PUN', label: 'ਪੰਜਾਬੀ' },
+];
+
+@Component({
+  selector: 'app-pf-tool',
+  imports: [NumField],
+  template: `
+    <h2 class="text-sm font-bold">1. Check your PF balance — free, from EPFO</h2>
+    <p class="mt-1 text-xs text-muted">Works when your UAN is active and linked to your mobile and Aadhaar/PAN/bank. We never ask for your UAN or password.</p>
+    <div class="mt-3 grid gap-2 sm:grid-cols-2">
+      <a class="rounded-2xl border border-line bg-surface-2 p-3 transition hover:border-brand/60" href="tel:9966044425">
+        <p class="text-sm font-semibold">📞 Missed call</p>
+        <p class="text-lg font-bold text-brand">99660 44425</p>
+        <p class="text-xs text-muted">From your UAN mobile. The call cuts itself; balance comes by SMS.</p>
+      </a>
+      <div class="rounded-2xl border border-line bg-surface-2 p-3">
+        <p class="text-sm font-semibold">💬 SMS</p>
+        <p class="font-mono text-sm">EPFOHO UAN {{ lang() }} <span class="text-muted">→</span> <b class="text-brand">77382 99899</b></p>
+        <div class="mt-2 flex gap-2">
+          <select class="input min-h-9 flex-1 py-1 text-sm" aria-label="SMS language" (change)="lang.set(val($event))">
+            @for (l of langs; track l.code) { <option [value]="l.code" [selected]="lang() === l.code">{{ l.label }}</option> }
+          </select>
+          <a class="btn-primary min-h-9 px-3 text-sm" [href]="'sms:7738299899?body=EPFOHO%20UAN%20' + lang()">Send SMS</a>
+        </div>
+      </div>
+      <a class="rounded-2xl border border-line bg-surface-2 p-3 transition hover:border-brand/60" href="https://passbook.epfindia.gov.in/MemberPassBook/login" target="_blank" rel="noopener">
+        <p class="text-sm font-semibold">📒 EPFO passbook →</p>
+        <p class="text-xs text-muted">Month-by-month entries. Log in with UAN + password.</p>
+      </a>
+      <a class="rounded-2xl border border-line bg-surface-2 p-3 transition hover:border-brand/60" href="https://web.umang.gov.in/" target="_blank" rel="noopener">
+        <p class="text-sm font-semibold">📱 UMANG app →</p>
+        <p class="text-xs text-muted">Search “EPFO” → View passbook, claims, KYC.</p>
+      </a>
+    </div>
+    <p class="mt-2 text-xs text-muted">UAN not active? <a class="text-brand underline" href="https://unifiedportal-mem.epfindia.gov.in/memberinterface/" target="_blank" rel="noopener">Activate it on the EPFO member portal</a> · Helpline <a class="text-brand underline" href="tel:1800118005">1800 118 005</a></p>
+
+    <h2 class="mt-6 border-t border-line pt-4 text-sm font-bold">2. How much goes to PF every month?</h2>
+    <div class="mt-3 grid gap-4 md:grid-cols-2">
+      <app-num-field label="Basic pay + DA (per month)" prefix="₹" [(value)]="wage" [min]="0" [max]="10000000" hint="From your payslip — not your CTC." />
+      <div class="rounded-2xl border border-line bg-surface-2 p-4" aria-live="polite">
+        @let r = pf();
+        <p class="text-xs font-semibold text-muted">Into your PF account each month</p>
+        <p class="text-2xl font-bold text-brand">₹{{ n(r.toPf) }}</p>
+        <ul class="mt-3 space-y-1 border-t border-line pt-2 text-sm">
+          <li class="flex justify-between gap-2"><span class="text-muted">You (12%)</span><span class="tabular-nums">₹{{ n(r.employee) }}</span></li>
+          <li class="flex justify-between gap-2"><span class="text-muted">Employer to PF</span><span class="tabular-nums">₹{{ n(r.employerPf) }}</span></li>
+          <li class="flex justify-between gap-2"><span class="text-muted">Employer to pension (EPS)</span><span class="tabular-nums">₹{{ n(r.eps) }}</span></li>
+          <li class="flex justify-between gap-2 border-t border-line pt-1"><span class="text-muted">PF in a year (before interest)</span><span class="font-semibold tabular-nums">₹{{ n(r.toPf * 12) }}</span></li>
+        </ul>
+        <p class="mt-2 text-xs text-muted">Pension (EPS) is 8.33% of pay up to ₹15,000, so at most ₹1,250 a month; the rest of the employer’s 12% goes to your PF.</p>
+      </div>
+    </div>
+  `,
+})
+export class PfTool {
+  protected readonly langs = PF_LANGS;
+  protected readonly lang = signal('ENG');
+  protected readonly wage = signal(25000);
+  protected readonly pf = computed(() => {
+    const w = this.wage();
+    const employee = Math.round(w * 0.12);
+    const eps = Math.round(Math.min(w, 15000) * 0.0833);
+    const employerPf = Math.round(w * 0.12) - eps;
+    return { employee, eps, employerPf, toPf: employee + employerPf };
+  });
+  protected val(e: Event) {
+    return (e.target as HTMLSelectElement).value;
+  }
+  protected n(v: number) {
+    return NUM.format(v);
+  }
+}
+
 // ---------------- Percentage calculator ----------------
 type Mode = 'of' | 'what' | 'change';
 

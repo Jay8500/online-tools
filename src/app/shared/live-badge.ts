@@ -104,7 +104,8 @@ export class LiveBadge {
     }
     if (this.kind() === 'gold') {
       const m = await metals();
-      if (m) {
+      // A failed or empty reply must not show “₹NaN” — keep the badge hidden instead
+      if (m && Number.isFinite(m.gold24PerG) && m.gold24PerG > 0) {
         this.text.set(`₹${INR.format(m.gold24PerG * 10)}`);
         this.sub.set('24K · 10 g');
       }

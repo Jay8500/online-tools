@@ -13,7 +13,6 @@ import { AdSlot } from '../shared/ad-slot';
 import { LiveBadge, WEATHER_ICON } from '../shared/live-badge';
 import { Sky } from '../shared/sky';
 import { MarketArt } from '../shared/market-art';
-import { Benefits } from '../shared/benefits';
 import { FestivalCard } from '../shared/festival-card';
 import { PinButton } from '../shared/pin-button';
 import { ExamPicker } from '../shared/exam-picker';
@@ -73,6 +72,7 @@ const HINTS = [
 /** Everyday words people type, per tool path. */
 const KEYWORDS: Record<string, string> = {
   'age-calculator': 'age calculator date of birth dob birthday years old exam cut-off',
+  'pf-balance-check': 'pf epf provident fund balance check uan passbook missed call sms epfo umang pension eps',
   'cgpa-to-percentage-calculator': 'cgpa sgpa gpa percentage convert marks jntu jntuh cbse aicte vtu btech degree',
   'split-bill-calculator': 'split bill expense trip party friends share who pays owe rent hisaab',
   'days-calculator': 'days counter calculator between dates countdown left exam emi date difference working days',
@@ -115,19 +115,16 @@ const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-p
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink, FormsModule, Icon, AdSlot, LiveBadge, Sky, MarketArt, Benefits, FestivalCard, PinButton, ExamPicker],
+  imports: [RouterLink, FormsModule, Icon, AdSlot, LiveBadge, Sky, MarketArt, FestivalCard, PinButton, ExamPicker],
   template: `
     <app-festival-card />
-    <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-      <div>
-        <h1 class="text-lg font-bold sm:text-2xl">Free online tools for India</h1>
-        <p class="text-sm text-muted">Exam photo resizer, image to KB, EMI, SIP, income tax & more — fast, free, private.</p>
-        <div class="mt-2"><app-benefits /></div>
-      </div>
-      <label class="relative block sm:w-72">
+    <div class="mx-auto mt-1 max-w-2xl text-center">
+      <h1 class="text-xl font-bold sm:text-3xl">Free online tools for India</h1>
+      <p class="mt-1 text-xs text-muted sm:text-sm">Free · Private · No signup · Works offline</p>
+      <label class="relative mt-3 block">
         <span class="sr-only">Search tools</span>
         <svg lucideIcon="search" [size]="16" class="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted" />
-        <input class="input pl-9" type="search" aria-label="Search tools" [ngModel]="q()" (ngModelChange)="q.set($event)" (focus)="focused.set(true)" (blur)="focused.set(false)" />
+        <input class="input min-h-12 rounded-2xl pl-9 text-base shadow-sm" type="search" aria-label="Search tools" [ngModel]="q()" (ngModelChange)="q.set($event)" (focus)="focused.set(true)" (blur)="focused.set(false)" />
         @if (!q() && !focused()) {
           <!-- Rotating hint (like quick-commerce apps): changes every 2.5 s, sits behind the input text -->
           <span class="pointer-events-none absolute inset-y-0 left-9 right-3 flex items-center overflow-hidden text-sm text-muted" aria-hidden="true">
@@ -141,33 +138,25 @@ const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-p
       </label>
     </div>
 
-    <!-- Tabs: Popular (default, short) · All · one type at a time -->
-    <div id="tool-tabs" class="-mx-3 mt-3 flex scroll-mt-16 gap-1.5 overflow-x-auto px-3 py-1.5 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0" role="group" aria-label="Show tools by type">
-      <button type="button" class="chip min-h-8 shrink-0 text-xs" [attr.aria-pressed]="tab() === 'popular'" (click)="tab.set('popular')"><svg lucideIcon="sparkles" [size]="14" /> Popular</button>
+    <!-- Tabs appear once a type or All is open; the default Popular home stays minimal -->
+    <span id="tool-tabs" class="block scroll-mt-16"></span>
+    @if (tab() !== 'popular') {
+    <div class="-mx-3 mt-4 flex gap-1.5 overflow-x-auto px-3 py-1.5 [scrollbar-width:none]" role="group" aria-label="Show tools by type">
+      <button type="button" class="chip min-h-8 shrink-0 text-xs" (click)="tab.set('popular')">← Home</button>
       <button type="button" class="chip min-h-8 shrink-0 text-xs" [attr.aria-pressed]="tab() === 'all'" (click)="tab.set('all')">All</button>
       @for (c of chips; track c.key) {
         <button type="button" class="chip min-h-8 shrink-0 text-xs" [attr.aria-pressed]="tab() === c.key" (click)="tab.set(c.key)"><svg [lucideIcon]="c.icon" [size]="14" /> {{ c.label }}</button>
       }
     </div>
+    }
 
     @if (!searching() && tab() === 'popular' && (pins().length || recents().length)) {
-      <section class="mt-3 space-y-2" aria-label="Your tools">
-        @if (pins().length) {
-          <div class="flex items-center gap-2">
-            <span class="shrink-0 text-xs font-bold text-muted">📌 Pinned</span>
-            <div class="flex gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none]">
-              @for (t of pins(); track t.path) { <a class="chip min-h-8 shrink-0 border-brand/40 bg-brand/5 text-xs" [routerLink]="'/' + t.path"><svg [lucideIcon]="t.icon" [size]="14" class="text-brand" /> {{ t.name }}</a> }
-            </div>
-          </div>
-        }
-        @if (recents().length) {
-          <div class="flex items-center gap-2">
-            <span class="shrink-0 text-xs font-bold text-muted">🕘 Recent</span>
-            <div class="flex gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none]">
-              @for (t of recents(); track t.path) { <a class="chip min-h-8 shrink-0 text-xs" [routerLink]="'/' + t.path"><svg [lucideIcon]="t.icon" [size]="14" /> {{ t.name }}</a> }
-            </div>
-          </div>
-        }
+      <section class="mt-5 flex items-center gap-2" aria-label="Your tools">
+        <span class="shrink-0 text-xs font-bold text-muted">Your tools</span>
+        <div class="flex gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none]">
+          @for (t of pins(); track t.path) { <a class="chip min-h-8 shrink-0 border-brand/40 bg-brand/5 text-xs" [routerLink]="'/' + t.path"><span aria-hidden="true">📌</span> {{ t.name }}</a> }
+          @for (t of recents(); track t.path) { <a class="chip min-h-8 shrink-0 text-xs" [routerLink]="'/' + t.path"><svg [lucideIcon]="t.icon" [size]="14" /> {{ t.name }}</a> }
+        </div>
       </section>
     }
 
@@ -184,8 +173,8 @@ const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-p
     }
 
     @if (popularMode()) {
-      <section class="mt-4" aria-labelledby="h-popular">
-        <h2 id="h-popular" class="mb-2 text-sm font-bold tracking-wide text-muted uppercase">Popular tools</h2>
+      <section class="mt-5" aria-labelledby="h-popular">
+        <h2 id="h-popular" class="mb-2 text-xs font-bold tracking-wide text-muted uppercase">Popular</h2>
         <div class="grid grid-cols-1 gap-2 min-[400px]:grid-cols-2 md:grid-cols-4">
           @for (t of popular; track t.path) {
             <div class="card group relative isolate flex items-center gap-3 overflow-hidden p-3 transition hover:border-brand/50" [class.sky-card]="t.path === 'weather' && !!skyIcon()">
@@ -193,7 +182,7 @@ const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-p
               @if (t.path === 'stock-market-today') { @defer (on idle) { <app-market-art /> } }
               <a [routerLink]="'/' + t.path" class="absolute inset-0 rounded-2xl" [attr.aria-label]="t.name"></a>
               <span class="grid size-9 shrink-0 place-items-center rounded-xl bg-brand/10 text-brand"><svg [lucideIcon]="t.icon" [size]="18" /></span>
-              <span class="min-w-0"><span class="block text-sm font-semibold group-hover:text-brand">{{ t.name }}</span><span class="block text-xs text-muted">{{ t.blurb }}</span></span>
+              <span class="min-w-0"><span class="block text-sm font-semibold group-hover:text-brand">{{ t.name }}</span><span class="hidden text-xs text-muted sm:block">{{ t.blurb }}</span></span>
               <span class="-my-1.5 -mr-1.5 ml-auto flex shrink-0 flex-col items-end gap-0.5 self-start">
                 <app-pin-button [path]="t.path!" [name]="t.name" />
                 @if (live(t.path); as k) { <app-live-badge [kind]="k" class="mr-1.5" /> }
@@ -204,15 +193,20 @@ const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-p
       </section>
 
       <section class="mt-6" aria-labelledby="h-browse">
-        <h2 id="h-browse" class="mb-2 text-sm font-bold tracking-wide text-muted uppercase">Browse by type</h2>
-        <div class="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
+        <h2 id="h-browse" class="mb-2 text-xs font-bold tracking-wide text-muted uppercase">Browse by type</h2>
+        <div class="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-7">
           @for (c of browse; track c.key) {
-            <button type="button" class="card group flex items-center gap-3 p-3 text-left transition hover:border-brand/50" (click)="openTab(c.key)">
-              <span class="grid size-9 shrink-0 place-items-center rounded-xl bg-brand/10 text-brand"><svg [lucideIcon]="c.icon" [size]="18" /></span>
-              <span class="min-w-0"><span class="block text-sm font-semibold group-hover:text-brand">{{ c.label }}</span><span class="block text-xs text-muted">{{ c.count }} tools</span></span>
-              <svg lucideIcon="chevron-right" [size]="16" class="ml-auto shrink-0 text-muted" />
+            <button type="button" class="card group flex flex-col items-center gap-1 px-1 py-3 text-center transition hover:border-brand/50" (click)="openTab(c.key)">
+              <svg [lucideIcon]="c.icon" [size]="20" class="text-brand" />
+              <span class="text-xs font-semibold leading-tight group-hover:text-brand">{{ c.label }}</span>
+              <span class="text-[10px] text-muted">{{ c.count }}</span>
             </button>
           }
+          <button type="button" class="card group flex flex-col items-center gap-1 px-1 py-3 text-center transition hover:border-brand/50" (click)="openTab('all')">
+            <svg lucideIcon="layout-grid" [size]="20" class="text-brand" />
+            <span class="text-xs font-semibold leading-tight group-hover:text-brand">All tools</span>
+            <span class="text-[10px] text-muted">{{ toolTotal }}</span>
+          </button>
         </div>
       </section>
     }
@@ -283,6 +277,7 @@ export class Home {
   /** Home is a quick menu: top picks per group; the group pages ("See all") have everything + guides. Search shows all matches. */
   protected readonly searching = computed(() => this.q().trim().length > 0);
   protected readonly examTotal = EXAMS.length;
+  protected readonly toolTotal = TOOL_GROUPS.reduce((n, g) => n + g.tools.length, 0) + EXAMS.length;
   private readonly userTools = inject(UserTools);
   /** Pinned tools, then recently opened ones (not already pinned) — this browser only */
   protected readonly pins = computed(() => this.userTools.pinned().map((p) => this.userTools.ref(p)).filter((t) => !!t));
