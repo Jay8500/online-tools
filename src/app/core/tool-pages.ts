@@ -1,7 +1,7 @@
 import { Faq } from './seo.service';
 import { TOOL_LINKS, ToolKind, ToolLinkLite } from './tool-links';
 
-export type Disclaimer = 'files' | 'health' | 'invoice' | 'upi' | 'language' | 'land' | 'units' | 'gold' | 'weather' | 'travel' | 'metro' | 'fuel' | 'grocery' | 'cinema' | 'holidays' | 'traffic' | 'nearby' | 'currency' | 'plans' | 'panchangam' | 'markets' | 'everyday' | 'pf';
+export type Disclaimer = 'files' | 'health' | 'invoice' | 'upi' | 'language' | 'land' | 'units' | 'gold' | 'weather' | 'travel' | 'metro' | 'fuel' | 'grocery' | 'cinema' | 'holidays' | 'traffic' | 'nearby' | 'currency' | 'plans' | 'panchangam' | 'markets' | 'everyday' | 'pf' | 'rent' | 'ifsc';
 
 export interface ToolPageInfo extends ToolLinkLite {
   h1: string;
@@ -502,6 +502,31 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
     ],
     disclaimer: 'everyday',
   },
+  'rent-receipt': {
+    h1: 'Rent Receipt Generator',
+    title: 'Rent Receipt Generator — Free Monthly Rent Receipts for HRA (Print / PDF)',
+    description: 'Make rent receipts for every month in one go for your HRA claim: tenant, owner, address, rent in words, payment mode, owner PAN and revenue stamp box. Free, print or save as PDF.',
+    intro: 'All your monthly rent receipts in one go — ready to print or save as PDF for your HRA claim.',
+    steps: ['Type tenant name, owner name and the house address.', 'Enter the monthly rent and the months (April to now is filled in).', 'Add the owner’s PAN if yearly rent is over ₹1 lakh.', 'Tap Print / Save PDF, then get each receipt signed by the owner.'],
+    faqs: [
+      { q: 'When is the owner’s PAN needed?', a: 'Employers usually ask for the landlord’s PAN when the rent you pay in a year is more than ₹1 lakh.' },
+      { q: 'Do I need a revenue stamp?', a: 'A ₹1 revenue stamp is usually put on receipts for cash payments above ₹5,000. The box appears automatically for cash.' },
+      { q: 'Is anything saved or uploaded?', a: 'No. The receipts are made on your device; nothing you type leaves it.' },
+    ],
+    disclaimer: 'rent',
+  },
+  ifsc: {
+    h1: 'IFSC Code Details — Bank & Branch',
+    title: 'IFSC Code Finder — Check Bank, Branch, Address & MICR from IFSC',
+    description: 'Type an IFSC code to see the bank, branch, full address, MICR code and whether NEFT, RTGS, IMPS and UPI work. Free and quick, for all Indian banks.',
+    intro: 'Type an IFSC to check the bank and branch before you send money.',
+    steps: ['Type the 11-character IFSC (from cheque book, passbook or the payee).', 'Tap Check.', 'Confirm the bank, branch and address, then copy the details if needed.'],
+    faqs: [
+      { q: 'Where do I find my IFSC?', a: 'It is printed on your cheque leaf and passbook, and shown in your bank app under account details.' },
+      { q: 'What does MICR mean?', a: 'MICR is a 9-digit code printed at the bottom of cheques, used for cheque clearing.' },
+    ],
+    disclaimer: 'ifsc',
+  },
   pf: {
     h1: 'PF Balance Check & Monthly PF Calculator',
     title: 'PF Balance Check — Missed Call, SMS (Telugu too), Passbook & PF Calculator',
@@ -587,6 +612,8 @@ export function toolPage(id: string): ToolPageInfo | undefined {
 }
 
 export const DISCLAIMERS: Record<Disclaimer, string> = {
+  rent: 'A format commonly accepted by employers for HRA — check with your HR or CA. Receipts must be signed by the owner; we don’t store anything you type.',
+  ifsc: 'Branch data from the open Razorpay IFSC dataset (sourced from RBI). Always confirm the account details with the person you pay.',
   pf: 'Numbers and links are EPFO’s official channels (checked on the EPFO passbook page, Oct 2026). We are not EPFO and never ask for your UAN or password. Monthly figures use the standard 12% rules; your payslip and EPFO passbook are final.',
   everyday: 'Calculated on your device; nothing you type is uploaded. For official forms, follow the rules in the notification.',
   files: 'Files are processed on your device and never uploaded. Keep a copy of your original file.',

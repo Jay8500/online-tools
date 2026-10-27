@@ -36,6 +36,7 @@ import { PanchangamTool } from './tools/panchangam-tool';
 import { MetroTool } from './tools/metro-tool';
 import { FuelTool } from './tools/fuel-tool';
 import { GroceryTool } from './tools/grocery-tool';
+import { IfscTool, RentReceiptTool } from './tools/bank-tools';
 import { AgeTool, CgpaTool, DaysTool, PercentTool, PfTool, SplitTool } from './tools/everyday-tools';
 
 /** Pages for PDF, business, health and language tools (route data `tool` = id from core/tool-links.ts). */
@@ -80,6 +81,8 @@ import { AgeTool, CgpaTool, DaysTool, PercentTool, PfTool, SplitTool } from './t
     GroceryTool,
     AgeTool,
     PfTool,
+    RentReceiptTool,
+    IfscTool,
     CgpaTool,
     SplitTool,
     DaysTool,
@@ -140,6 +143,8 @@ import { AgeTool, CgpaTool, DaysTool, PercentTool, PfTool, SplitTool } from './t
             @case ('data') { @defer (on immediate; hydrate on immediate) { <app-unit-tool category="data" /> } @placeholder { <div class="h-96"></div> } }
             @case ('count') { @defer (on immediate; hydrate on immediate) { <app-unit-tool category="count" /> } @placeholder { <div class="h-96"></div> } }
             @case ('age') { @defer (on immediate; hydrate on immediate) { <app-age-tool /> } @placeholder { <div class="h-80"></div> } }
+            @case ('rent-receipt') { @defer (on immediate; hydrate on immediate) { <app-rent-receipt-tool /> } @placeholder { <div class="h-[40rem]"></div> } }
+            @case ('ifsc') { @defer (on immediate; hydrate on immediate) { <app-ifsc-tool /> } @placeholder { <div class="h-48"></div> } }
             @case ('pf') { @defer (on immediate; hydrate on immediate) { <app-pf-tool /> } @placeholder { <div class="h-[40rem]"></div> } }
             @case ('cgpa') { @defer (on immediate; hydrate on immediate) { <app-cgpa-tool /> } @placeholder { <div class="h-80"></div> } }
             @case ('split') { @defer (on immediate; hydrate on immediate) { <app-split-tool /> } @placeholder { <div class="h-96"></div> } }

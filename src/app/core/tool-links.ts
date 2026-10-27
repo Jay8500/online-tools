@@ -43,7 +43,9 @@ export type ToolKind =
   | 'days'
   | 'cgpa'
   | 'split'
-  | 'pf';
+  | 'pf'
+  | 'rent-receipt'
+  | 'ifsc';
 
 export type ToolGroupName = 'PDF tools' | 'Business tools' | 'Health calculators' | 'Language tools' | 'Converters' | 'Daily tools';
 
@@ -63,6 +65,7 @@ export const TOOL_LINKS: ToolLinkLite[] = [
   { id: 'image-to-pdf', path: 'jpg-to-pdf', name: 'JPG to PDF', group: 'PDF tools', icon: 'file-image', blurb: 'Photos/scans into one PDF' },
   { id: 'pdf-to-image', path: 'pdf-to-jpg', name: 'PDF to JPG', group: 'PDF tools', icon: 'image-up', blurb: 'Each page as an image' },
   { id: 'upi-qr', path: 'upi-qr-code-generator', name: 'UPI QR generator', group: 'Business tools', icon: 'qr-code', blurb: 'Payment QR + shop poster' },
+  { id: 'rent-receipt', path: 'rent-receipt-generator', name: 'Rent receipt maker', group: 'Business tools', icon: 'receipt', blurb: 'Monthly receipts for HRA, print / PDF' },
   { id: 'gst-invoice', path: 'gst-invoice-generator', name: 'GST invoice maker', group: 'Business tools', icon: 'file-text', blurb: 'Print-ready tax invoice' },
   { id: 'bmi', path: 'bmi-calculator', name: 'BMI calculator', group: 'Health calculators', icon: 'heart-pulse', blurb: 'Indian (Asian) BMI ranges' },
   { id: 'calorie', path: 'calorie-calculator', name: 'Calorie calculator', group: 'Health calculators', icon: 'flame', blurb: 'BMR & daily calories' },
@@ -85,6 +88,7 @@ export const TOOL_LINKS: ToolLinkLite[] = [
   { id: 'cinema', path: 'cinemas-near-me', name: 'Cinemas near me', group: 'Daily tools', icon: 'clapperboard', blurb: 'Theatres by distance, shows & tickets' },
   { id: 'travel', path: 'travel-planner', name: 'Travel planner', group: 'Daily tools', icon: 'map-pin', blurb: 'Route, stops & time by road, rail, air' },
   { id: 'age', path: 'age-calculator', name: 'Age calculator', group: 'Daily tools', icon: 'cake', blurb: 'Exact age in years, months, days' },
+  { id: 'ifsc', path: 'ifsc-code-finder', name: 'IFSC code details', group: 'Daily tools', icon: 'banknote', blurb: 'Bank, branch, address & MICR' },
   { id: 'pf', path: 'pf-balance-check', name: 'PF balance check', group: 'Daily tools', icon: 'banknote', blurb: 'Missed call, SMS, passbook + monthly PF' },
   { id: 'cgpa', path: 'cgpa-to-percentage-calculator', name: 'CGPA to percentage', group: 'Daily tools', icon: 'graduation-cap', blurb: 'JNTU, CBSE, AICTE formulas' },
   { id: 'split', path: 'split-bill-calculator', name: 'Split bill', group: 'Daily tools', icon: 'users', blurb: 'Trip & party: who pays whom' },

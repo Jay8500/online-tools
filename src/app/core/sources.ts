@@ -5,6 +5,10 @@ export interface Source {
 }
 
 export const SOURCES: Record<string, Source[]> = {
+  'ifsc-code-finder': [
+    { name: 'Razorpay IFSC', url: 'https://ifsc.razorpay.com/' },
+    { name: 'RBI', url: 'https://www.rbi.org.in/' },
+  ],
   'gold-price-calculator': [
     { name: 'gold-api.com', url: 'https://gold-api.com/' },
     { name: 'ExchangeRate-API', url: 'https://www.exchangerate-api.com/' },

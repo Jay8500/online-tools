@@ -72,6 +72,8 @@ const HINTS = [
 /** Everyday words people type, per tool path. */
 const KEYWORDS: Record<string, string> = {
   'age-calculator': 'age calculator date of birth dob birthday years old exam cut-off',
+  'rent-receipt-generator': 'rent receipt hra house rent landlord owner tenant pdf print format',
+  'ifsc-code-finder': 'ifsc code bank branch micr neft rtgs imps sbi hdfc icici address finder',
   'pf-balance-check': 'pf epf provident fund balance check uan passbook missed call sms epfo umang pension eps',
   'cgpa-to-percentage-calculator': 'cgpa sgpa gpa percentage convert marks jntu jntuh cbse aicte vtu btech degree',
   'split-bill-calculator': 'split bill expense trip party friends share who pays owe rent hisaab',
