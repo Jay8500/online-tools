@@ -519,7 +519,7 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
     h1: 'IFSC Code Details — Bank & Branch',
     title: 'IFSC Code Finder — Check Bank, Branch, Address & MICR from IFSC',
     description: 'Type an IFSC code to see the bank, branch, full address, MICR code and whether NEFT, RTGS, IMPS and UPI work. Free and quick, for all Indian banks.',
-    intro: 'Type an IFSC to check the bank and branch before you send money.',
+    intro: 'Find any branch’s IFSC by bank, state and area — or type an IFSC to check its branch.',
     steps: ['Type the 11-character IFSC (from cheque book, passbook or the payee).', 'Tap Check.', 'Confirm the bank, branch and address, then copy the details if needed.'],
     faqs: [
       { q: 'Where do I find my IFSC?', a: 'It is printed on your cheque leaf and passbook, and shown in your bank app under account details.' },

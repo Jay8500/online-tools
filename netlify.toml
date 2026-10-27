@@ -61,3 +61,9 @@
   for = "/pdfjs/wasm/*.wasm"
   [headers.values]
     Content-Type = "application/wasm"
+
+# IFSC branch search data: changes only when the dataset version changes
+[[headers]]
+  for = "/data/ifsc/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"

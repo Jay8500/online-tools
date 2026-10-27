@@ -47,3 +47,6 @@ Thumbs.db
 .netlify
 scripts/cinemas/*.json
 scripts/nearby/*.json
+
+# IFSC branch search data (built by scripts/update-ifsc.mjs before every build)
+public/data/ifsc/
