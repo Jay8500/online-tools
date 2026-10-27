@@ -162,6 +162,31 @@ interface Branch {
 type Row = [string, string, string, string, string, string, number];
 type StateIdx = [string, string, number, string[]];
 const DATA = '/data/ifsc';
+/**
+ * RBI lists branches by official name and street, so locality names people search for may not appear.
+ * Each area also matches its PIN code and main road (Hyderabad first — most of our visitors).
+ */
+const AREA_ALIASES: Record<string, string[]> = {
+  somajiguda: ['raj bhavan', 'rajbhavan', '500082'],
+  punjagutta: ['panjagutta', '500082'],
+  panjagutta: ['punjagutta', '500082'],
+  'banjara hills': ['banjara', '500034'],
+  'jubilee hills': ['jubilee', '500033'],
+  madhapur: ['hitec', 'hitech', '500081'],
+  'hitech city': ['hitec', 'madhapur', '500081'],
+  'hitec city': ['hitech', 'madhapur', '500081'],
+  gachibowli: ['500032'],
+  kondapur: ['500084'],
+  kukatpally: ['kphb', '500072'],
+  ameerpet: ['500016'],
+  begumpet: ['500016'],
+  khairatabad: ['500004'],
+  himayatnagar: ['himayat nagar', '500029'],
+  abids: ['500001'],
+  dilsukhnagar: ['dilsukh nagar', '500060'],
+  'lb nagar': ['l b nagar', '500074'],
+  secunderabad: ['500003'],
+};
 const PAGE = 30;
 
 @Component({
@@ -217,7 +242,7 @@ const PAGE = 30;
         <div class="relative mt-3">
           <label class="label" for="ifsc-q">Branch or area</label>
           <svg lucideIcon="search" [size]="16" class="pointer-events-none absolute bottom-3.5 left-3 text-muted" />
-          <input id="ifsc-q" class="input pl-9" type="search" placeholder="e.g. Kukatpally, Ameerpet, main branch" [value]="q()" (input)="q.set(val($event)); shown.set(PAGE)" />
+          <input id="ifsc-q" class="input pl-9" type="search" placeholder="Area, road or PIN — e.g. Somajiguda, 500082" [value]="q()" (input)="q.set(val($event)); shown.set(PAGE)" />
         </div>
 
         <!-- Results -->
@@ -225,6 +250,9 @@ const PAGE = 30;
           @if (loading()) {
             <p class="text-sm text-muted">Loading branches…</p>
           } @else if (rows()) {
+            @if (widened()) {
+              <p class="mb-2 rounded-lg bg-amber-500/10 px-3 py-2 text-xs font-medium text-amber-700 dark:text-amber-300">No match in {{ district() }} — showing all of {{ state()?.[0] }}.</p>
+            }
             <p class="mb-2 text-xs font-semibold text-muted">{{ n(results().length) }} {{ results().length === 1 ? 'branch' : 'branches' }}{{ q().trim() ? ' match “' + q().trim() + '”' : '' }}</p>
             <ul class="space-y-1.5">
               @for (r of results().slice(0, shown()); track r[0]) {
@@ -250,7 +278,11 @@ const PAGE = 30;
                   }
                 </li>
               } @empty {
-                <li class="text-sm text-muted">No branch found. Try a shorter word, or choose “All districts”.</li>
+                <li class="rounded-2xl border border-dashed border-line p-4 text-sm">
+                  <p class="font-semibold">No branch named “{{ q().trim() }}” here.</p>
+                  <p class="mt-1 text-muted">RBI lists branches by their official name and road, so an area name may not appear. Try a road or landmark, the PIN code, or a shorter word.</p>
+                  <button type="button" class="btn-ghost mt-3 min-h-9 text-xs" (click)="q.set(''); district.set(''); shown.set(PAGE)">Show all {{ n(rows()?.length ?? 0) }} {{ bank()?.[1] }} branches in {{ state()?.[0] }}</button>
+                </li>
               }
             </ul>
             @if (results().length > shown()) {
@@ -326,12 +358,24 @@ export class IfscTool {
     if (!t) return list.slice(0, 40);
     return list.filter((b) => b[1].toLowerCase().includes(t) || b[0].toLowerCase().startsWith(t)).slice(0, 40);
   });
-  protected readonly results = computed(() => {
+  /** Branches matching the typed words (or a known area alias / PIN), in the chosen district — or, if none there, the whole state. */
+  private readonly search = computed(() => {
     const rows = this.rows() ?? [];
     const d = this.district();
-    const words = this.q().trim().toLowerCase().split(/\s+/).filter(Boolean);
-    return rows.filter((r) => (!d || r[2] === d) && words.every((w) => `${r[1]} ${r[3]} ${r[4]} ${r[0]}`.toLowerCase().includes(w)));
+    const q = this.q().trim().toLowerCase().replace(/\s+/g, ' ');
+    const words = q.split(' ').filter(Boolean);
+    const alias = AREA_ALIASES[q] ?? [];
+    const hit = (r: Row) => {
+      const text = `${r[1]} ${r[3]} ${r[4]} ${r[0]}`.toLowerCase();
+      return words.every((w) => text.includes(w)) || alias.some((a) => text.includes(a));
+    };
+    const inDistrict = rows.filter((r) => (!d || r[2] === d) && (!q || hit(r)));
+    if (inDistrict.length || !d || !q) return { list: inDistrict, widened: false };
+    const all = rows.filter(hit);
+    return { list: all, widened: all.length > 0 };
   });
+  protected readonly results = computed(() => this.search().list);
+  protected readonly widened = computed(() => this.search().widened);
 
   constructor() {
     afterNextRender(() =>
