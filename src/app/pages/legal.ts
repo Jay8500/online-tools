@@ -71,8 +71,9 @@ const UPDATED = '19 October 2026';
         Your browser remembers that you liked a page, so you can like each page once.
       </p>
       <p>
-        The “Suggest” box sends only the page name and the words you type, by email to us, so we can fix or add tools. We don’t ask for your
-        name, phone or email there — please don’t type personal details. “Share on WhatsApp” simply opens WhatsApp with the page link; we see nothing you share.
+        The “Suggest” box sends the page name and the words you type, by email to us, so we can fix or add tools. Email is optional: if you
+        type it and tick the consent box, we use it only to reply to that suggestion and delete it from our inbox within 6 months — ask us any
+        time to delete it sooner. We don’t ask for your name or phone — please don’t type personal details in the message. “Share on WhatsApp” simply opens WhatsApp with the page link; we see nothing you share.
       </p>
 
       <h2>4. Contact form</h2>

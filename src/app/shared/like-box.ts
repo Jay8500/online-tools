@@ -1,5 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
+import { NavigationEnd, Router, RouterLink } from '@angular/router';
 import { filter } from 'rxjs';
 import { ConsentService } from '../core/consent.service';
 import { ToastService } from '../core/toast.service';
@@ -16,7 +16,7 @@ const SKIP = new Set(['about', 'privacy', 'terms', 'contact', 'stats', '404', 'b
  */
 @Component({
   selector: 'app-like-box',
-  imports: [Icon],
+  imports: [Icon, RouterLink],
   template: `
     @if (page(); as p) {
       <div class="mx-auto mb-8 flex max-w-6xl flex-wrap items-center justify-center gap-x-3 gap-y-1 px-3 text-sm">
@@ -44,9 +44,19 @@ const SKIP = new Set(['about', 'privacy', 'terms', 'contact', 'stats', '404', 'b
           <textarea id="fb-text" class="input min-h-24 py-2" maxlength="400" placeholder="e.g. Add TSPSC Group 4 photo size" [value]="text()" (input)="text.set(val($event))"></textarea>
           <!-- Hidden from people; bots fill it -->
           <input class="absolute -left-[9999px] size-px opacity-0" tabindex="-1" autocomplete="off" aria-hidden="true" [value]="honey()" (input)="honey.set(val($event))" />
-          <p class="mt-1 text-xs text-muted">No name, phone or email needed — please don’t type personal details.</p>
+          <label class="label mt-3" for="fb-email">Your email <span class="font-normal text-muted">(optional — only if you want a reply)</span></label>
+          <input id="fb-email" class="input" type="email" inputmode="email" autocomplete="email" maxlength="120" placeholder="you@example.com" [value]="email()" (input)="email.set(val($event))" />
+          @if (email().trim()) {
+            <label class="mt-2 flex items-start gap-2 text-xs text-muted">
+              <input type="checkbox" class="mt-0.5 size-4 accent-brand" [checked]="agree()" (change)="agree.set(!agree())" />
+              <span>Spread Apps may email me about this suggestion. Used only to reply, deleted after 6 months (<a routerLink="/privacy" class="text-brand underline">privacy</a>).</span>
+            </label>
+            @if (emailBad()) { <p class="mt-1 text-xs font-medium text-rose-600" role="alert">Please check the email address.</p> }
+          } @else {
+            <p class="mt-1 text-xs text-muted">No name or phone needed. Leave email empty to stay anonymous.</p>
+          }
           <div class="mt-2 flex gap-2">
-            <button type="submit" class="btn-primary min-h-10 flex-1" [disabled]="sending() || text().trim().length < 3">{{ sending() ? 'Sending…' : 'Send' }}</button>
+            <button type="submit" class="btn-primary min-h-10 flex-1" [disabled]="sending() || text().trim().length < 3 || (!!email().trim() && (emailBad() || !agree()))">{{ sending() ? 'Sending…' : 'Send' }}</button>
             <button type="button" class="btn-ghost min-h-10" (click)="open.set(false)">Cancel</button>
           </div>
         </form>
@@ -71,6 +81,9 @@ export class LikeBox {
   protected readonly open = signal(false);
   protected readonly text = signal('');
   protected readonly honey = signal('');
+  protected readonly email = signal('');
+  protected readonly agree = signal(false);
+  protected readonly emailBad = computed(() => !!this.email().trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(this.email().trim()));
   protected readonly sending = signal(false);
   private readonly url = signal('https://tools.spreadapps.in/');
   protected readonly shareUrl = computed(() => {
@@ -126,9 +139,11 @@ export class LikeBox {
     this.sending.set(true);
     const name = this.tools.ref(p)?.name ?? (p === 'home' ? 'Home page' : document.querySelector('h1')?.textContent?.trim() || p);
     try {
-      const r = await fetch('/api/feedback', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ page: p, name, text, website: this.honey() }) });
+      const r = await fetch('/api/feedback', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ page: p, name, text, email: this.agree() ? this.email().trim() : '', consent: this.agree(), website: this.honey() }) });
       if (!r.ok) throw new Error(String(r.status));
       this.text.set('');
+      this.email.set('');
+      this.agree.set(false);
       this.open.set(false);
       this.toast.show('🙏 Thanks! We read every suggestion.', 'success', 2600);
     } catch {

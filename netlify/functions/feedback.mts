@@ -27,6 +27,9 @@ export default async (req: Request, context: Context) => {
   const name = String(b['name'] ?? '').replace(/\s+/g, ' ').trim().slice(0, 80);
   const text = String(b['text'] ?? '').replace(/\r/g, '').trim().slice(0, 400);
   if (!PAGE_RE.test(page) || text.length < 3) return json({ error: 'Please write a few words.' }, 400);
+  // Optional reply address — only with the visitor's tick (consent); never stored, only put in the owner's email
+  const email = b['consent'] === true ? String(b['email'] ?? '').trim().toLowerCase().slice(0, 120) : '';
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return json({ error: 'Please check the email address.' }, 400);
 
   const day = new Date(Date.now() + 5.5 * 3600_000).toISOString().slice(0, 10); // India date
   const ip = context.ip || req.headers.get('x-nf-client-connection-ip') || 'unknown';
@@ -50,12 +53,12 @@ export default async (req: Request, context: Context) => {
     <p>New suggestion on <b>${esc(name || page)}</b>:</p>
     <blockquote style="margin:0;padding:8px 12px;border-left:4px solid #0d9488;background:#f0fdfa;white-space:pre-wrap">${esc(text)}</blockquote>
     <p><a href="${link}">${esc(link)}</a><br>${day} IST</p>
-    <p style="color:#888;font-size:12px">Anonymous — no name, phone or email is collected.</p></div>`;
+    ${email ? `<p>Reply to: <a href="mailto:${esc(email)}">${esc(email)}</a> (they agreed to be emailed about this suggestion — just press Reply)</p>` : '<p style="color:#888;font-size:12px">Anonymous — no email given.</p>'}</div>`;
   try {
     const r = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { Authorization: `Bearer ${resend}`, 'content-type': 'application/json' },
-      body: JSON.stringify({ from: 'Spread Apps Tools <tools@mail.spreadapps.in>', to: [to], subject: `💬 Suggestion: ${name || page}`, html }),
+      body: JSON.stringify({ from: 'Spread Apps Tools <tools@mail.spreadapps.in>', to: [to], subject: `💬 Suggestion: ${name || page}${email ? ' (reply wanted)' : ''}`, html, ...(email ? { reply_to: email } : {}) }),
       signal: AbortSignal.timeout(8000),
     });
     if (!r.ok) console.error('resend', r.status, (await r.text()).slice(0, 200));
