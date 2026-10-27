@@ -20,6 +20,7 @@ import { InstallHint } from './shared/install-hint';
 import { InstallFooter } from './shared/install-footer';
 import { MoreFrom } from './shared/more-from';
 import { LikeBox } from './shared/like-box';
+import { APP_VERSION } from './core/version';
 
 @Component({
   selector: 'app-root',
@@ -106,6 +107,7 @@ import { LikeBox } from './shared/like-box';
       <div class="border-t border-line px-4 py-3"><app-benefits [center]="true" /></div>
       <p class="border-t border-line px-4 py-3 text-center text-xs text-muted">
         © {{ year }} <a href="https://spreadapps.in" class="font-semibold hover:text-brand">Spread Apps™</a> · Lakkoju Jaya Krishna · All rights reserved · Made in India
+        <span class="mt-1 block font-mono text-[11px] opacity-80" [title]="'Build ' + ver.commit">v{{ ver.version }} · {{ ver.built }}</span>
       </p>
     </footer>
 
@@ -127,6 +129,7 @@ export class App {
   protected readonly tools = TOOL_LINKS;
   protected readonly calcs = CALC_LINKS.filter((c) => !/-loan-emi$/.test(c.id));
   protected readonly year = new Date().getFullYear();
+  protected readonly ver = APP_VERSION;
   /** Footer sections folded on phones/tablets (all open on large screens) */
   protected readonly open = signal<Record<string, boolean>>({});
   protected toggle(k: string) {

@@ -1,5 +1,6 @@
 import { Component, ElementRef, afterNextRender, inject, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { APP_VERSION } from '../core/version';
 import { Icon } from './icon';
 
 /** Bottom sheet listing recently added tools. Loaded only when opened (@defer in home). */
@@ -15,7 +16,7 @@ import { Icon } from './icon';
         <div class="flex items-start justify-between gap-3">
           <div>
             <h2 id="wn-title" class="text-lg font-bold">✨ New on Spread Apps Tools</h2>
-            <p class="text-xs text-muted">{{ tools().length }} tools added recently — tap to try.</p>
+            <p class="text-xs text-muted">{{ tools().length }} tools added recently — tap to try. <span class="font-mono">v{{ ver.version }}</span></p>
           </div>
           <button type="button" class="close grid size-9 shrink-0 place-items-center rounded-full hover:bg-surface-2" aria-label="Close" (click)="closed.emit()">
             <svg lucideIcon="x" [size]="18" />
@@ -48,6 +49,7 @@ import { Icon } from './icon';
 export class WhatsNew {
   readonly tools = input.required<{ path: string; name: string; icon: string; blurb: string }[]>();
   readonly closed = output<void>();
+  protected readonly ver = APP_VERSION;
 
   constructor() {
     const host = inject(ElementRef<HTMLElement>).nativeElement;

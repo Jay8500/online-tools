@@ -50,3 +50,6 @@ scripts/nearby/*.json
 
 # IFSC branch search data (built by scripts/update-ifsc.mjs before every build)
 public/data/ifsc/
+
+# Generated before start/build by scripts/write-version.mjs
+src/app/core/version.ts

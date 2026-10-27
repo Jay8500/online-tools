@@ -1,10 +1,11 @@
 {
   "name": "tools",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "scripts": {
     "ng": "ng",
+    "prestart": "node scripts/write-version.mjs",
     "start": "ng serve",
-    "prebuild": "node scripts/update-ifsc.mjs",
+    "prebuild": "node scripts/write-version.mjs && node scripts/update-ifsc.mjs",
     "build": "ng build && node scripts/postbuild.mjs",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
