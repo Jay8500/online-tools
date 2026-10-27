@@ -8,6 +8,7 @@ import { SITE } from '../core/site.config';
 import { TOOL_LINKS } from '../core/tool-links';
 import { SOURCES } from '../core/sources';
 import { HUB_PATHS } from '../core/hub-paths';
+import { freshPaths } from '../core/new-tools';
 import { DISCLAIMERS, ToolPageInfo, toolPage } from '../core/tool-pages';
 import { AdSlot } from '../shared/ad-slot';
 import { FaqList } from '../shared/faq-list';
@@ -97,7 +98,7 @@ import { AgeTool, CgpaTool, DaysTool, PercentTool, PfTool, SplitTool } from './t
           <a [routerLink]="'/' + hubPath()" class="hover:text-brand hover:underline">{{ t.group }}</a><svg lucideIcon="chevron-right" [size]="12" />
           <span aria-current="page" class="font-medium text-ink">{{ t.name }}</span>
         </nav>
-        <h1 class="text-lg leading-snug font-bold sm:text-2xl">{{ t.h1 }}</h1>
+        <h1 class="text-lg leading-snug font-bold sm:text-2xl">{{ t.h1 }}@if (isNew()) { <span class="ml-2 inline-block rounded-full bg-brand px-2 align-middle text-[10px] leading-5 font-bold text-white">NEW</span> }</h1>
         <p class="mt-0.5 mb-3 text-sm text-muted">
           {{ t.intro }}
           @if (uses(); as n) { <span class="font-medium text-ink">Used {{ n | number }} times.</span> }
@@ -215,6 +216,7 @@ export class ToolPageView {
   protected readonly hubPath = computed(() => HUB_PATHS[this.info().group]);
   protected readonly sources = computed(() => SOURCES[this.info().path] ?? null);
   protected readonly disclaimer = computed(() => DISCLAIMERS[this.info().disclaimer]);
+  protected readonly isNew = computed(() => freshPaths().includes(this.info().path));
   protected readonly priceTool = computed(() => ['gold', 'fuel', 'grocery', 'recharge', 'ott', 'metro', 'currency'].includes(this.info().id));
 
   /** Opens the Suggest box (like-box) with a ready "wrong price" note. */

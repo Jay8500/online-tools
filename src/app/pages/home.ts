@@ -16,6 +16,9 @@ import { MarketArt } from '../shared/market-art';
 import { FestivalCard } from '../shared/festival-card';
 import { PinButton } from '../shared/pin-button';
 import { ExamPicker } from '../shared/exam-picker';
+import { ToolTicker } from '../shared/tool-ticker';
+import { WhatsNew } from '../shared/whats-new';
+import { LATEST_ADDED, NEW_TOOLS, freshPaths } from '../core/new-tools';
 import { UserTools } from '../core/user-tools';
 import { SOURCES } from '../core/sources';
 
@@ -112,17 +115,28 @@ function matches(q: string, hay: string): boolean {
 }
 
 const HOME_EXAMS = 5;
+const ALL_TOOLS = TOOL_GROUPS.flatMap((g) => g.tools).filter((t) => !!t.path);
 /** Default "Popular" tab: the few tools most people open first (keeps the first screen simple). */
 const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-price', 'weather', 'emi-calculator', 'merge-pdf', 'telugu-panchangam', 'holiday-calendar'];
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink, FormsModule, Icon, AdSlot, LiveBadge, Sky, MarketArt, FestivalCard, PinButton, ExamPicker],
+  imports: [RouterLink, FormsModule, Icon, AdSlot, LiveBadge, Sky, MarketArt, FestivalCard, PinButton, ExamPicker, ToolTicker, WhatsNew],
   template: `
     <app-festival-card />
+    @if (sheetOpen()) {
+      @defer { <app-whats-new [tools]="freshTools" (closed)="sheetOpen.set(false)" /> }
+    }
     <div class="mx-auto mt-1 max-w-2xl text-center">
       <h1 class="text-xl font-bold sm:text-3xl">Free online tools for India</h1>
       <p class="mt-1 text-xs text-muted sm:text-sm">Free · Private · No signup · Works offline</p>
+      @if (freshTools.length) {
+        <button type="button" class="mt-2 inline-flex items-center gap-1.5 rounded-full border border-brand/30 bg-brand/10 px-3 py-1 text-xs font-semibold text-brand transition hover:-translate-y-0.5 hover:bg-brand/15 active:scale-95"
+                (click)="openNew()" aria-haspopup="dialog">
+          @if (!seen()) { <span class="relative flex size-2" aria-hidden="true"><span class="absolute inline-flex size-full animate-ping rounded-full bg-brand opacity-60"></span><span class="relative inline-flex size-2 rounded-full bg-brand"></span></span> }
+          ✨ {{ freshTools.length }} new tools <svg lucideIcon="chevron-right" [size]="14" />
+        </button>
+      }
       <label class="relative mt-3 block">
         <span class="sr-only">Search tools</span>
         <svg lucideIcon="search" [size]="16" class="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted" />
@@ -139,6 +153,10 @@ const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-p
         }
       </label>
     </div>
+
+    @if (popularMode()) {
+      @defer (on idle) { <app-tool-ticker [items]="tickerItems" /> } @placeholder { <div class="mt-3 h-11" aria-hidden="true"></div> }
+    }
 
     <!-- Tabs appear once a type or All is open; the default Popular home stays minimal -->
     <span id="tool-tabs" class="block scroll-mt-16"></span>
@@ -184,7 +202,7 @@ const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-p
               @if (t.path === 'stock-market-today') { @defer (on idle) { <app-market-art /> } }
               <a [routerLink]="'/' + t.path" class="absolute inset-0 rounded-2xl" [attr.aria-label]="t.name"></a>
               <span class="grid size-9 shrink-0 place-items-center rounded-xl bg-brand/10 text-brand"><svg [lucideIcon]="t.icon" [size]="18" /></span>
-              <span class="min-w-0"><span class="block text-sm font-semibold group-hover:text-brand">{{ t.name }}</span><span class="hidden text-xs text-muted sm:block">{{ t.blurb }}</span></span>
+              <span class="min-w-0"><span class="block text-sm font-semibold group-hover:text-brand">{{ t.name }}@if (fresh.has(t.path!)) { <span class="ml-1 inline-block rounded-full bg-brand px-1.5 align-middle text-[9px] leading-4 font-bold text-white">NEW</span> }</span><span class="hidden text-xs text-muted sm:block">{{ t.blurb }}</span></span>
               <span class="-my-1.5 -mr-1.5 ml-auto flex shrink-0 flex-col items-end gap-0.5 self-start">
                 <app-pin-button [path]="t.path!" [name]="t.name" />
                 @if (live(t.path); as k) { <app-live-badge [kind]="k" class="mr-1.5" /> }
@@ -239,7 +257,7 @@ const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-p
               @if (t.path === 'stock-market-today') { @defer (on idle) { <app-market-art /> } }
                 <a [routerLink]="'/' + t.path" class="absolute inset-0 rounded-2xl" [attr.aria-label]="t.name"></a>
                 <span class="grid size-9 shrink-0 place-items-center rounded-xl bg-brand/10 text-brand"><svg [lucideIcon]="t.icon" [size]="18" /></span>
-                <span class="min-w-0"><span class="block text-sm font-semibold group-hover:text-brand">{{ t.name }}</span><span class="block text-xs text-muted">{{ t.blurb }}</span>
+                <span class="min-w-0"><span class="block text-sm font-semibold group-hover:text-brand">{{ t.name }}@if (fresh.has(t.path!)) { <span class="ml-1 inline-block rounded-full bg-brand px-1.5 align-middle text-[9px] leading-4 font-bold text-white">NEW</span> }</span><span class="block text-xs text-muted">{{ t.blurb }}</span>
                 @if (src(t.path); as ss) {
                   <span class="relative z-10 mt-0.5 block text-[10px] text-muted">Data: @for (s of ss; track s.url; let last = $last) {<a [href]="s.url" target="_blank" rel="noopener" class="underline decoration-dotted hover:text-brand">{{ s.name }}</a>@if (!last) {, }}</span>
                 }</span>
@@ -279,6 +297,26 @@ export class Home {
   /** Home is a quick menu: top picks per group; the group pages ("See all") have everything + guides. Search shows all matches. */
   protected readonly searching = computed(() => this.q().trim().length > 0);
   protected readonly examTotal = EXAMS.length;
+  /** Recently added tools: NEW badges, the What's-new sheet and the front of the ticker. */
+  protected readonly fresh = new Set(freshPaths());
+  protected readonly freshTools = NEW_TOOLS.filter((n) => this.fresh.has(n.path)).map((n) => ALL_TOOLS.find((t) => t.path === n.path)).filter((t) => !!t).map((t) => ({ path: t.path!, name: t.name, icon: t.icon, blurb: t.blurb }));
+  protected readonly tickerItems = [...new Set([...this.freshTools.map((t) => t.path), ...POPULAR, ...ALL_TOOLS.map((t) => t.path!)])]
+    .slice(0, 18)
+    .map((p) => ALL_TOOLS.find((t) => t.path === p))
+    .filter((t) => !!t)
+    .map((t) => ({ path: t.path!, name: t.name, icon: t.icon, fresh: this.fresh.has(t.path!) }));
+  /** Pill pulses until this visitor has opened the latest What's new (checked after hydration). */
+  protected readonly seen = signal(true);
+  protected readonly sheetOpen = signal(false);
+  protected openNew() {
+    this.sheetOpen.set(true);
+    this.seen.set(true);
+    try {
+      localStorage.setItem('whatsnew-seen', LATEST_ADDED);
+    } catch {
+      /* not remembered */
+    }
+  }
   protected readonly toolTotal = TOOL_GROUPS.reduce((n, g) => n + g.tools.length, 0) + EXAMS.length;
   private readonly userTools = inject(UserTools);
   /** Pinned tools, then recently opened ones (not already pinned) — this browser only */
@@ -334,6 +372,11 @@ export class Home {
     const destroy = inject(DestroyRef);
     afterNextRender(() => {
       this.userTools.load();
+      try {
+        this.seen.set(localStorage.getItem('whatsnew-seen') === LATEST_ADDED);
+      } catch {
+        /* storage blocked — keep the quiet pill */
+      }
       if (!browser || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       const t = setInterval(() => this.hintIndex.update((i) => i + 1), 2500);
       destroy.onDestroy(() => clearInterval(t));
