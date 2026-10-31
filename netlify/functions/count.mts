@@ -10,6 +10,7 @@ import type { Config, Context } from '@netlify/functions';
  * Keys: c/<tool> = uses, v/<tool> = views, d/<YYYY-MM-DD> = { v: {tool: n}, u: {tool: n} }
  */
 const TOOL_RE = /^[a-z0-9-]{2,40}$/;
+const BOT_RE = /bot\b|bot\/|crawl|spider|slurp|mediapartners|adsbot|google-inspectiontool|apis-google|feedfetcher|headlesschrome|lighthouse|pagespeed|chrome-lighthouse|facebookexternalhit|whatsapp|telegram|preview|python-requests|curl\/|wget/i;
 type Day = { v: Record<string, number>; u: Record<string, number> };
 
 export default async (req: Request, context: Context) => {
@@ -43,6 +44,8 @@ export default async (req: Request, context: Context) => {
 
   const day = new Date(Date.now() + 5.5 * 3600_000).toISOString().slice(0, 10); // India date
   const ip = context.ip || req.headers.get('x-nf-client-connection-ip') || 'unknown';
+  // Search-engine, ad and preview crawlers (and headless test browsers) run our JavaScript too — don't count them
+  if (BOT_RE.test(req.headers.get('user-agent') ?? '')) return json({ ok: true, counted: false });
   const hash = await sha256(`${ip}|${tool}|${kind}|${day}`);
   const seen = getStore({ name: 'seen', consistency: 'strong' });
   if (await seen.get(`${day}/${hash}`)) return json({ ok: true, counted: false });

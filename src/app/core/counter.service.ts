@@ -9,7 +9,8 @@ const NO_COUNT = 'no-count';
 
 @Injectable({ providedIn: 'root' })
 export class CounterService {
-  private readonly on = isPlatformBrowser(inject(PLATFORM_ID)) && !isDevMode();
+  // Automated browsers (tests, crawlers) set navigator.webdriver — never count them
+  private readonly on = isPlatformBrowser(inject(PLATFORM_ID)) && !isDevMode() && !(typeof navigator !== 'undefined' && navigator.webdriver);
   private readonly counted = new Set<string>();
 
   async get(tool: string): Promise<number | null> {
