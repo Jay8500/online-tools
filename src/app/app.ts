@@ -21,10 +21,11 @@ import { InstallFooter } from './shared/install-footer';
 import { MoreFrom } from './shared/more-from';
 import { LikeBox } from './shared/like-box';
 import { APP_VERSION } from './core/version';
+import { NewsPanel } from './shared/news-panel';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, Icon, Brand, Benefits, ToastHost, DialogHost, UpdateBanner, ConsentBanner, ScrollTop, InstallHint, InstallFooter, MoreFrom, LikeBox],
+  imports: [RouterOutlet, RouterLink, Icon, Brand, Benefits, ToastHost, DialogHost, UpdateBanner, ConsentBanner, ScrollTop, InstallHint, InstallFooter, MoreFrom, LikeBox, NewsPanel],
   template: `
     <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[200] focus:rounded-lg focus:bg-brand focus:px-3 focus:py-2 focus:text-brand-ink">Skip to tool</a>
     <!-- Soft colour lights behind the whole site; header, cards, chips and footer are see-through glass over them -->
@@ -36,6 +37,10 @@ import { APP_VERSION } from './core/version';
           <a routerLink="/exam-photo-signature-resize" class="hidden rounded-lg px-2.5 py-1.5 text-muted hover:bg-surface-2 hover:text-ink sm:block">Exam photos</a>
           <a routerLink="/resize-image-to-kb" class="hidden rounded-lg px-2.5 py-1.5 text-muted hover:bg-surface-2 hover:text-ink sm:block">Resize to KB</a>
           <a routerLink="/money-calculators" class="hidden rounded-lg px-2.5 py-1.5 text-muted hover:bg-surface-2 hover:text-ink sm:block">Calculators</a>
+          <button type="button" class="btn-icon relative size-9 border-transparent bg-transparent" (click)="newsOpen.set(true)" aria-label="Latest news" title="Latest news" aria-haspopup="dialog">
+            <svg lucideIcon="newspaper" [size]="18" />
+            <span class="absolute top-1.5 right-1.5 size-1.5 rounded-full bg-rose-500" aria-hidden="true"></span>
+          </button>
           <button class="btn-icon size-9 border-transparent bg-transparent" (click)="theme.toggle()"
                   [attr.aria-label]="theme.dark() ? 'Switch to light theme' : 'Switch to dark theme'">
             <svg [lucideIcon]="theme.dark() ? 'sun' : 'moon'" [size]="18" />
@@ -111,6 +116,9 @@ import { APP_VERSION } from './core/version';
       </p>
     </footer>
 
+    @if (newsOpen()) {
+      @defer { <app-news-panel (closed)="newsOpen.set(false)" /> }
+    }
     <app-consent-banner />
     <app-update-banner />
     @defer (on idle) {
@@ -130,6 +138,8 @@ export class App {
   protected readonly calcs = CALC_LINKS.filter((c) => !/-loan-emi$/.test(c.id));
   protected readonly year = new Date().getFullYear();
   protected readonly ver = APP_VERSION;
+  /** 📰 header button → news panel (its code loads only when opened) */
+  protected readonly newsOpen = signal(false);
   /** Footer sections folded on phones/tablets (all open on large screens) */
   protected readonly open = signal<Record<string, boolean>>({});
   protected toggle(k: string) {
