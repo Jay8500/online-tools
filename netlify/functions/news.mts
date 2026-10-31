@@ -2,14 +2,31 @@ import type { Config } from '@netlify/functions';
 
 /**
  * News headlines for the 📰 panel, from publishers' public RSS feeds.
- *  GET /api/news?cat=telangana|andhra|india|top|telugu → { items: [{ title, summary, link, source, at }] }
+ *  GET /api/news?cat=telangana|andhra|india|top|business|sports|tech|education|telugu → { items: [{ title, summary, link, source, at }] }
  * Only the headline, a short summary (max ~220 chars) and a link back to the publisher are shown — never the full article
  * or images. Cached on Netlify's CDN for 15 minutes, so publishers get at most a few requests an hour from us.
  */
 const FEEDS: Record<string, { source: string; url: string }[]> = {
   telangana: [
     { source: 'The Hindu', url: 'https://www.thehindu.com/news/national/telangana/feeder/default.rss' },
+    { source: 'The Hindu', url: 'https://www.thehindu.com/news/cities/Hyderabad/feeder/default.rss' },
     { source: 'Times of India', url: 'https://timesofindia.indiatimes.com/rssfeeds/-2128816011.cms' },
+  ],
+  business: [
+    { source: 'The Hindu', url: 'https://www.thehindu.com/business/feeder/default.rss' },
+    { source: 'NDTV Profit', url: 'https://feeds.feedburner.com/ndtvprofit-latest' },
+  ],
+  sports: [
+    { source: 'The Hindu', url: 'https://www.thehindu.com/sport/feeder/default.rss' },
+    { source: 'NDTV Sports', url: 'https://feeds.feedburner.com/ndtvsports-latest' },
+  ],
+  tech: [
+    { source: 'The Hindu', url: 'https://www.thehindu.com/sci-tech/technology/feeder/default.rss' },
+    { source: 'Times of India', url: 'https://timesofindia.indiatimes.com/rssfeeds/66949542.cms' },
+  ],
+  education: [
+    { source: 'The Hindu', url: 'https://www.thehindu.com/education/feeder/default.rss' },
+    { source: 'Times of India', url: 'https://timesofindia.indiatimes.com/rssfeeds/913168846.cms' },
   ],
   andhra: [{ source: 'The Hindu', url: 'https://www.thehindu.com/news/national/andhra-pradesh/feeder/default.rss' }],
   india: [{ source: 'The Hindu', url: 'https://www.thehindu.com/news/national/feeder/default.rss' }],

@@ -14,8 +14,14 @@ const CATS = [
   { id: 'andhra', label: 'Andhra Pradesh' },
   { id: 'india', label: 'India' },
   { id: 'top', label: 'Top stories' },
+  { id: 'business', label: 'Business' },
+  { id: 'sports', label: 'Sports' },
+  { id: 'tech', label: 'Tech' },
+  { id: 'education', label: 'Education & jobs' },
   { id: 'telugu', label: 'తెలుగు' },
 ];
+/** Andhra Pradesh cities — a visitor whose weather city is one of these starts on AP news. */
+const AP_CITIES = /vijayawada|visakhapatnam|vizag|guntur|tirupati|nellore|kurnool|kakinada|rajahmundry|rajamahendravaram|anantapur|kadapa|eluru|ongole|srikakulam|vizianagaram|machilipatnam|chittoor|amaravati/i;
 const KEY = 'news-cat';
 
 /**
@@ -54,7 +60,10 @@ const KEY = 'news-cat';
                 <p class="text-xs font-semibold text-brand">{{ n.source }}{{ n.at ? ' · ' + ago(n.at) : '' }}</p>
                 <h3 class="text-xl leading-snug font-bold sm:text-2xl">{{ n.title }}</h3>
                 @if (n.summary && n.summary !== n.title) { <p class="text-base leading-relaxed text-muted">{{ n.summary }}</p> }
-                <a [href]="n.link" target="_blank" rel="noopener noreferrer" class="btn-ghost mt-1 min-h-10 self-start text-sm">Read full story <svg lucideIcon="chevron-right" [size]="16" /></a>
+                <div class="mt-1 flex flex-wrap gap-2">
+                  <a [href]="n.link" target="_blank" rel="noopener noreferrer" class="btn-ghost min-h-10 text-sm">Read full story <svg lucideIcon="chevron-right" [size]="16" /></a>
+                  <a [href]="share(n)" target="_blank" rel="noopener" class="btn-ghost min-h-10 text-sm hover:border-emerald-400 hover:text-emerald-600" aria-label="Share this story on WhatsApp"><svg lucideIcon="share-2" [size]="16" /> WhatsApp</a>
+                </div>
                 @if (i === 0 && items().length > 1) { <p class="hint mt-6 text-center text-xs text-muted">Swipe up for the next story ↑</p> }
               </article>
             }
@@ -87,9 +96,10 @@ export class NewsPanel {
     const host = inject(ElementRef).nativeElement as HTMLElement;
     afterNextRender(() => {
       host.querySelector<HTMLButtonElement>('button.close')?.focus();
+      // Last category the visitor read; first time, their state from the weather city (default Telangana)
       let start = 'telangana';
       try {
-        start = localStorage.getItem(KEY) || start;
+        start = localStorage.getItem(KEY) || (AP_CITIES.test(localStorage.getItem('weather-city') ?? '') ? 'andhra' : 'telangana');
       } catch {
         /* default */
       }
@@ -129,6 +139,10 @@ export class NewsPanel {
     if (!el || (e.key !== 'ArrowDown' && e.key !== 'ArrowUp')) return;
     e.preventDefault();
     el.scrollBy({ top: (e.key === 'ArrowDown' ? 1 : -1) * el.clientHeight, behavior: 'smooth' });
+  }
+
+  protected share(n: News) {
+    return `https://wa.me/?text=${encodeURIComponent(`${n.title}\n${n.link}\n\n📰 More news: tools.spreadapps.in`)}`;
   }
 
   protected ago(iso: string) {
