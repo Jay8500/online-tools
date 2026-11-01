@@ -20,6 +20,7 @@ import { PinButton } from '../shared/pin-button';
 import { ExamPicker } from '../shared/exam-picker';
 import { ToolTicker } from '../shared/tool-ticker';
 import { WhatsNew } from '../shared/whats-new';
+import { TodayCard } from '../shared/today-card';
 import { LATEST_ADDED, NEW_TOOLS, freshPaths } from '../core/new-tools';
 import { UserTools } from '../core/user-tools';
 import { SOURCES } from '../core/sources';
@@ -137,7 +138,7 @@ const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-p
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink, FormsModule, Icon, AdSlot, LiveBadge, Sky, MarketArt, FestivalCard, PinButton, ExamPicker, ToolTicker, WhatsNew],
+  imports: [RouterLink, FormsModule, Icon, AdSlot, LiveBadge, Sky, MarketArt, FestivalCard, PinButton, ExamPicker, ToolTicker, WhatsNew, TodayCard],
   template: `
     <app-festival-card />
     @if (sheetOpen()) {
@@ -209,6 +210,7 @@ const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-p
     }
 
     @if (popularMode()) {
+      @defer (on idle) { <app-today-card /> } @placeholder { <div class="mt-5 h-[7.5rem] sm:h-24" aria-hidden="true"></div> }
       <section class="mt-5" aria-labelledby="h-popular">
         <h2 id="h-popular" class="mb-2 text-xs font-bold tracking-wide text-muted uppercase">Popular</h2>
         <div class="grid grid-cols-1 gap-2 min-[400px]:grid-cols-2 md:grid-cols-4">
