@@ -77,6 +77,7 @@ const HINTS = [
 /** Everyday words people type, per tool path. */
 const KEYWORDS: Record<string, string> = {
   'age-calculator': 'age calculator date of birth dob birthday years old exam cut-off',
+  'festival-wishes-card': 'diwali deepavali wishes greeting card image happy sankranti pongal ugadi christmas new year ramzan eid dasara dussehra birthday shubhakankshalu telugu whatsapp status photo name',
   'rent-receipt-generator': 'rent receipt hra house rent landlord owner tenant pdf print format',
   'ifsc-code-finder': 'ifsc code bank branch micr neft rtgs imps sbi hdfc icici address finder',
   'pf-balance-check': 'pf epf provident fund balance check uan passbook missed call sms epfo umang pension eps',
@@ -111,9 +112,22 @@ const KEYWORDS: Record<string, string> = {
   'resize-image-to-kb': 'photo kb compress image',
 };
 /** Every typed word must appear somewhere (so "acre to gunta" and "gold rate" work). */
+/** Words people add that don't help find a tool ("how to check pf online" → "pf"). */
+const FILLER = new Set(['to', 'how', 'the', 'a', 'an', 'for', 'of', 'in', 'my', 'me', 'online', 'free', 'tool', 'tools', 'app', 'check', 'find', 'get', 'make', 'maker', 'calculate', 'calculator', 'today', 'ela', 'enti', 'cheyali', 'please']);
+const words = (q: string) => {
+  const all = q.toLowerCase().split(/[^a-z0-9\u0C00-\u0C7F]+/).filter(Boolean);
+  const kept = all.filter((w) => !FILLER.has(w));
+  return kept.length ? kept : all;
+};
+/** Every typed word must appear (so "acre to gunta" and "gold rate" work); plurals like "wishes"/"cards" also match their singular. */
 function matches(q: string, hay: string): boolean {
   const h = hay.toLowerCase();
-  return q.split(/\s+/).filter((w) => w && w !== 'to').every((w) => h.includes(w));
+  return words(q).every((w) => h.includes(w) || (w.length > 3 && w.endsWith('s') && h.includes(w.slice(0, -1))));
+}
+/** Looser fallback when nothing matches all words: any meaningful word (4+ letters) is enough. */
+function matchesAny(q: string, hay: string): boolean {
+  const h = hay.toLowerCase();
+  return words(q).some((w) => w.length >= 4 && h.includes(w.length > 4 && w.endsWith('s') ? w.slice(0, -1) : w));
 }
 
 const HOME_EXAMS = 5;
@@ -389,7 +403,11 @@ export class Home {
     const inPick = [...topics, ...TOOL_GROUPS.filter((g) => !p.length || p.includes(g.title))];
     // A picked group shows all its tools; the default menu shows the top few per group
     if (!q) return inPick.map((g) => ({ ...g, total: g.tools.length, tools: p.length ? g.tools : g.tools.slice(0, HOME_PER_GROUP) }));
-    return inPick.map((g) => ({ ...g, total: g.tools.length, tools: g.tools.filter((t) => matches(q, `${t.name} ${t.blurb} ${t.path ?? ''} ${KEYWORDS[t.path ?? ''] ?? ''}`)) })).filter((g) => g.tools.length);
+    const hay = (t: { name: string; blurb: string; path: string | null }) => `${t.name} ${t.blurb} ${t.path ?? ''} ${KEYWORDS[t.path ?? ''] ?? ''}`;
+    const strict = inPick.map((g) => ({ ...g, total: g.tools.length, tools: g.tools.filter((t) => matches(q, hay(t))) })).filter((g) => g.tools.length);
+    if (strict.length) return strict;
+    // Nothing matched every word ("diwali greeting photo") — show tools matching any meaningful word instead
+    return inPick.map((g) => ({ ...g, total: g.tools.length, tools: g.tools.filter((t) => matchesAny(q, hay(t))) })).filter((g) => g.tools.length);
   });
   protected readonly nothing = computed(() => this.searching() && !this.showExams() && !this.groups().length);
 

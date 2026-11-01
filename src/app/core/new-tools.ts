@@ -3,6 +3,7 @@
  * NEW_FOR_DAYS days after `added`, then drops off by itself. Add a line here when a tool goes live.
  */
 export const NEW_TOOLS: { path: string; added: string }[] = [
+  { path: 'festival-wishes-card', added: '2026-11-01' },
   { path: 'rent-receipt-generator', added: '2026-10-27' },
   { path: 'ifsc-code-finder', added: '2026-10-27' },
   { path: 'pf-balance-check', added: '2026-10-27' },

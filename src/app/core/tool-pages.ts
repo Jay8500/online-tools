@@ -1,7 +1,7 @@
 import { Faq } from './seo.service';
 import { TOOL_LINKS, ToolKind, ToolLinkLite } from './tool-links';
 
-export type Disclaimer = 'files' | 'health' | 'invoice' | 'upi' | 'language' | 'land' | 'units' | 'gold' | 'weather' | 'travel' | 'metro' | 'fuel' | 'grocery' | 'cinema' | 'holidays' | 'traffic' | 'nearby' | 'currency' | 'plans' | 'panchangam' | 'markets' | 'everyday' | 'pf' | 'rent' | 'ifsc';
+export type Disclaimer = 'files' | 'health' | 'invoice' | 'upi' | 'language' | 'land' | 'units' | 'gold' | 'weather' | 'travel' | 'metro' | 'fuel' | 'grocery' | 'cinema' | 'holidays' | 'traffic' | 'nearby' | 'currency' | 'plans' | 'panchangam' | 'markets' | 'everyday' | 'pf' | 'rent' | 'ifsc' | 'wishes';
 
 export interface ToolPageInfo extends ToolLinkLite {
   h1: string;
@@ -515,6 +515,18 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
     ],
     disclaimer: 'rent',
   },
+  wishes: {
+    h1: 'Festival Wishes Card Maker — Telugu & English',
+    title: 'Diwali Wishes Card Maker in Telugu & English — Free Greeting Image with Name & Photo',
+    description: 'Make a Diwali, Sankranti, Ugadi, Christmas, New Year, Ramzan, Dasara or birthday greeting card in Telugu or English with your name and photo. Free, ready to share on WhatsApp.',
+    intro: 'Pick a festival, add your name and photo — get a greeting card to share on WhatsApp in seconds.',
+    steps: ['Choose the festival (or Birthday).', 'Pick తెలుగు or English.', 'Type your name and add a photo if you like.', 'Tap “Share on WhatsApp” or Download.'],
+    faqs: [
+      { q: 'Is my photo uploaded?', a: 'No. The card is drawn on your phone and your photo never leaves it.' },
+      { q: 'Can I share it on WhatsApp status?', a: 'Yes. Tap Download, then add the image as your WhatsApp status from the gallery.' },
+    ],
+    disclaimer: 'wishes',
+  },
   ifsc: {
     h1: 'IFSC Code Details — Bank & Branch',
     title: 'IFSC Code Finder — Check Bank, Branch, Address & MICR from IFSC',
@@ -612,6 +624,7 @@ export function toolPage(id: string): ToolPageInfo | undefined {
 }
 
 export const DISCLAIMERS: Record<Disclaimer, string> = {
+  wishes: 'Your name and photo stay on your device; nothing is uploaded. Share the card freely.',
   rent: 'A format commonly accepted by employers for HRA — check with your HR or CA. Receipts must be signed by the owner; we don’t store anything you type.',
   ifsc: 'Branch data from the open Razorpay IFSC dataset (sourced from RBI). Always confirm the account details with the person you pay.',
   pf: 'Numbers and links are EPFO’s official channels (checked on the EPFO passbook page, Oct 2026). We are not EPFO and never ask for your UAN or password. Monthly figures use the standard 12% rules; your payslip and EPFO passbook are final.',
