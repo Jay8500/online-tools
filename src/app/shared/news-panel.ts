@@ -58,11 +58,11 @@ const KEY = 'news-cat';
             @for (n of items(); track n.link; let i = $index) {
               <article class="flex h-full snap-start flex-col justify-center gap-3 border-b border-line px-5 py-6">
                 <p class="text-xs font-semibold text-brand">{{ n.source }}{{ n.at ? ' · ' + ago(n.at) : '' }}</p>
-                <h3 class="text-xl leading-snug font-bold sm:text-2xl">{{ n.title }}</h3>
-                @if (n.summary && n.summary !== n.title) { <p class="text-base leading-relaxed text-muted">{{ n.summary }}</p> }
-                <div class="mt-1 flex flex-wrap gap-2">
-                  <a [href]="n.link" target="_blank" rel="noopener noreferrer" class="btn-ghost min-h-10 text-sm">Read full story <svg lucideIcon="chevron-right" [size]="16" /></a>
-                  <a [href]="share(n)" target="_blank" rel="noopener" class="btn-ghost min-h-10 text-sm hover:border-emerald-400 hover:text-emerald-600" aria-label="Share this story on WhatsApp"><svg lucideIcon="share-2" [size]="16" /> WhatsApp</a>
+                <h3 class="text-[1.35rem] leading-snug font-extrabold tracking-tight sm:text-2xl">{{ n.title }}</h3>
+                @if (n.summary && n.summary !== n.title) { <p class="text-[15px] leading-relaxed text-ink/75">{{ n.summary }}</p> }
+                <div class="mt-1 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm font-normal text-muted">
+                  <a [href]="n.link" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 hover:text-brand">Read full story <svg lucideIcon="chevron-right" [size]="14" /></a>
+                  <a [href]="share(n)" target="_blank" rel="noopener" class="inline-flex items-center gap-1 hover:text-emerald-600" aria-label="Share this story on WhatsApp"><svg lucideIcon="share-2" [size]="14" /> Share on WhatsApp</a>
                 </div>
                 @if (i === 0 && items().length > 1) { <p class="hint mt-6 text-center text-xs text-muted">Swipe up for the next story ↑</p> }
               </article>

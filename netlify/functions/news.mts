@@ -34,6 +34,7 @@ const FEEDS: Record<string, { source: string; url: string }[]> = {
   telugu: [{ source: 'Sakshi', url: 'https://www.sakshi.com/rss.xml' }],
 };
 const MAX = 25;
+const UA = 'Mozilla/5.0 (compatible; SpreadAppsTools/1.0; +https://tools.spreadapps.in)';
 
 interface Item {
   title: string;
@@ -56,11 +57,40 @@ export default async (req: Request) => {
     .sort((a, b) => (b.at || '').localeCompare(a.at || ''))
     .slice(0, MAX);
   if (!items.length) return json({ items: [], error: 'News is not available right now.' }, 200, 60);
+  // Stories without a summary get the publisher's own share description (og:description) — a short, simple explanation
+  await Promise.all(items.filter((i) => !i.summary).slice(0, 15).map(async (i) => (i.summary = await shareDescription(i.link, i.title))));
   return json({ items }, 200, 900);
 };
 
+/** Reads only the <head> of the article page and returns its og:description / meta description (max ~220 chars). */
+async function shareDescription(url: string, title: string): Promise<string> {
+  try {
+    const r = await fetch(url, { headers: { 'User-Agent': UA }, signal: AbortSignal.timeout(4000) });
+    if (!r.ok || !r.body) return '';
+    const reader = r.body.getReader();
+    const dec = new TextDecoder();
+    let head = '';
+    while (head.length < 300_000 && !head.includes('</head>')) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      head += dec.decode(value, { stream: true });
+    }
+    reader.cancel().catch(() => undefined);
+    const meta = (attr: string) =>
+      head.match(new RegExp(`<meta[^>]+(?:property|name)=["']${attr}["'][^>]*content=["']([^"']+)["']`, 'i'))?.[1] ??
+      head.match(new RegExp(`<meta[^>]+content=["']([^"']+)["'][^>]*(?:property|name)=["']${attr}["']`, 'i'))?.[1] ??
+      '';
+    let d = text(meta('og:description') || meta('description'));
+    if (!d || d.toLowerCase() === title.toLowerCase()) return '';
+    if (d.length > 220) d = d.slice(0, 217).replace(/\s+\S*$/, '') + '…';
+    return d;
+  } catch {
+    return '';
+  }
+}
+
 async function read(url: string, source: string): Promise<Item[]> {
-  const r = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 (compatible; SpreadAppsTools/1.0; +https://tools.spreadapps.in)' }, signal: AbortSignal.timeout(8000) });
+  const r = await fetch(url, { headers: { 'User-Agent': UA }, signal: AbortSignal.timeout(8000) });
   if (!r.ok) return [];
   const xml = await r.text();
   return [...xml.matchAll(/<item\b[\s\S]*?<\/item>/g)].map(([it]) => {

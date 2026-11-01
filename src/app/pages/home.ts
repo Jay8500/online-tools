@@ -9,6 +9,8 @@ import { SeoService } from '../core/seo.service';
 import { SITE } from '../core/site.config';
 import { HUB_PATHS } from '../core/hub-paths';
 import { TOOL_GROUPS, groupAnchor } from '../core/tools';
+import { TOOL_LINKS } from '../core/tool-links';
+import { CALC_LINKS } from '../core/calc-links';
 import { AdSlot } from '../shared/ad-slot';
 import { LiveBadge, WEATHER_ICON } from '../shared/live-badge';
 import { Sky } from '../shared/sky';
@@ -196,7 +198,7 @@ const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-p
       <section class="mt-5" aria-labelledby="h-popular">
         <h2 id="h-popular" class="mb-2 text-xs font-bold tracking-wide text-muted uppercase">Popular</h2>
         <div class="grid grid-cols-1 gap-2 min-[400px]:grid-cols-2 md:grid-cols-4">
-          @for (t of popular; track t.path) {
+          @for (t of popular(); track t.path) {
             <div class="card group relative isolate flex items-center gap-3 overflow-hidden p-3 transition hover:border-brand/50" [class.sky-card]="t.path === 'weather' && !!skyIcon()">
               @if (t.path === 'weather' && skyIcon()) { <app-sky [icon]="skyIcon()" class="-z-10" /> }
               @if (t.path === 'stock-market-today') { @defer (on idle) { <app-market-art /> } }
@@ -308,6 +310,35 @@ export class Home {
   /** Pill pulses until this visitor has opened the latest What's new (checked after hydration). */
   protected readonly seen = signal(true);
   protected readonly sheetOpen = signal(false);
+  /** Counter ids (e.g. "ssc-photo", "emi", "resize-kb") → tool paths. */
+  private idToPath(id: string): string | null {
+    const link = TOOL_LINKS.find((t) => t.id === id) ?? CALC_LINKS.find((t) => t.id === id);
+    if (link) return link.path;
+    if (id === 'resize-kb') return 'resize-image-to-kb';
+    const kb = id.match(/^resize-(\d+)kb$/);
+    if (kb) return `resize-image-to-${kb[1]}kb`;
+    for (const e of EXAMS) for (const d of e.docs) if (id === `${e.slug}-${d.kind}`) return examPath(e, d.kind);
+    return null;
+  }
+
+  private async loadPopular() {
+    try {
+      const r = await fetch('/api/count?popular=1');
+      if (!r.ok) return;
+      const { top } = (await r.json()) as { top?: [string, number][] };
+      const picked = (top ?? [])
+        .filter(([, n]) => n >= 3) // ignore one-off visits
+        .map(([id]) => this.idToPath(id))
+        .map((p) => (p ? ALL_TOOLS.find((t) => t.path === p) : undefined))
+        .filter((t) => !!t);
+      if (picked.length < 3) return; // not enough real data yet — keep the hand-picked list
+      const list = [...new Map([...picked, ...this.popular()].map((t) => [t.path, t])).values()].slice(0, POPULAR.length);
+      this.popular.set(list);
+    } catch {
+      /* keep the hand-picked list */
+    }
+  }
+
   protected openNew() {
     this.sheetOpen.set(true);
     this.seen.set(true);
@@ -330,7 +361,8 @@ export class Home {
   /** Groups the visitor picked; empty = everything (the normal quick menu). */
   protected readonly picked = computed(() => (this.tab() === 'popular' || this.tab() === 'all' ? [] : [this.tab()]));
   protected readonly popularMode = computed(() => this.tab() === 'popular' && !this.searching());
-  protected readonly popular = POPULAR.map((p) => TOOL_GROUPS.flatMap((g) => g.tools).find((t) => t.path === p)).filter((t) => !!t);
+  /** Hand-picked at first; after load, the most-viewed tools of the last 14 days (topped up from the hand-picked list). */
+  protected readonly popular = signal(POPULAR.map((p) => ALL_TOOLS.find((t) => t.path === p)).filter((t) => !!t));
   /** "Browse by type" tiles: topics first, then every group, with tool counts. */
   protected readonly browse = this.chips.map((c) => ({
     ...c,
@@ -372,6 +404,7 @@ export class Home {
     const destroy = inject(DestroyRef);
     afterNextRender(() => {
       this.userTools.load();
+      this.loadPopular();
       try {
         this.seen.set(localStorage.getItem('whatsnew-seen') === LATEST_ADDED);
       } catch {

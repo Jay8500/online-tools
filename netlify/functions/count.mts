@@ -18,6 +18,7 @@ export default async (req: Request, context: Context) => {
   const url = new URL(req.url);
 
   if (req.method === 'GET' && url.searchParams.has('stats')) return stats(url, store);
+  if (req.method === 'GET' && url.searchParams.has('popular')) return popular(store);
 
   if (req.method === 'GET') {
     const tool = url.searchParams.get('tool') ?? '';
@@ -64,6 +65,19 @@ export default async (req: Request, context: Context) => {
   await store.setJSON(`d/${day}`, d);
   return json({ ok: true, counted: true });
 };
+
+/** Public: tool ids by views over the last 14 days (no personal data — only totals), for the home "Popular" row. */
+async function popular(store: ReturnType<typeof getStore>) {
+  const views: Record<string, number> = {};
+  const now = Date.now() + 5.5 * 3600_000;
+  for (let i = 0; i < 14; i++) {
+    const date = new Date(now - i * 86400_000).toISOString().slice(0, 10);
+    const d = (await store.get(`d/${date}`, { type: 'json' })) as Day | null;
+    for (const [t, n] of Object.entries(d?.v ?? {})) if (t !== 'home') views[t] = (views[t] ?? 0) + n;
+  }
+  const top = Object.entries(views).sort((a, b) => b[1] - a[1]).slice(0, 16);
+  return json({ top }, 200, { 'Netlify-CDN-Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400', 'Cache-Control': 'public, max-age=600' });
+}
 
 async function stats(url: URL, store: ReturnType<typeof getStore>) {
   const secret = Netlify.env.get('STATS_KEY') ?? '';
