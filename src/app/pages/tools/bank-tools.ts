@@ -188,301 +188,259 @@ const AREA_ALIASES: Record<string, string[]> = {
   secunderabad: ['500003'],
 };
 const PAGE = 30;
+/** Short names people type → bank code (the full names in banks.json also match). */
+const BANK_ALIASES: Record<string, string> = {
+  sbi: 'SBIN', 'state bank': 'SBIN', hdfc: 'HDFC', icici: 'ICIC', axis: 'UTIB', canara: 'CNRB', union: 'UBIN', pnb: 'PUNB',
+  kotak: 'KKBK', bob: 'BARB', baroda: 'BARB', 'indian bank': 'IDIB', iob: 'IOBA', boi: 'BKID', 'bank of india': 'BKID',
+  central: 'CBIN', yes: 'YESB', idbi: 'IBKL', federal: 'FDRL', 'standard chartered': 'SCBL', 'karnataka bank': 'KARB',
+  kvb: 'KVBL', 'karur vysya': 'KVBL', citi: 'CITI', hsbc: 'HSBC', au: 'AUBL', idfc: 'IDFB', bandhan: 'BDBL', uco: 'UCBA',
+  indusind: 'INDB', 'south indian': 'SIBL', tmb: 'TMBL', 'city union': 'CIUB', rbl: 'RATN', dcb: 'DCBL',
+  'bank of maharashtra': 'MAHB', 'punjab sind': 'PSIB', 'telangana grameena': 'TGRB', tgb: 'TGRB',
+  'telangana cooperative': 'TSAB', tscab: 'TSAB', 'ap cooperative': 'APBL', apcob: 'APBL',
+};
+const TS_AP = ['telangana', 'andhra-pradesh'];
 
 @Component({
   selector: 'app-ifsc-tool',
   imports: [Icon],
   template: `
-    <div class="flex rounded-xl border border-line bg-surface-2 p-1 text-sm font-semibold" role="tablist" aria-label="IFSC tool">
-      <button type="button" role="tab" class="flex-1 rounded-lg px-3 py-1.5 transition" [class]="mode() === 'find' ? 'bg-surface text-brand shadow-sm' : 'text-muted'" [attr.aria-selected]="mode() === 'find'" (click)="mode.set('find')">Find IFSC by branch</button>
-      <button type="button" role="tab" class="flex-1 rounded-lg px-3 py-1.5 transition" [class]="mode() === 'check' ? 'bg-surface text-brand shadow-sm' : 'text-muted'" [attr.aria-selected]="mode() === 'check'" (click)="mode.set('check')">Check an IFSC</button>
+    <div class="relative">
+      <label class="sr-only" for="ifsc-q">Bank and area, or IFSC code</label>
+      <svg lucideIcon="search" [size]="18" class="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted" />
+      <input id="ifsc-q" class="input min-h-12 rounded-2xl pl-10 text-base" type="search" autocomplete="off" spellcheck="false"
+             placeholder="sbi ameerpet  ·  hdfc kukatpally  ·  SBIN0001234" [value]="q()" (input)="onInput(val($event))" />
+    </div>
+    <div class="mt-2 flex flex-wrap items-center gap-1.5 text-xs">
+      <span class="text-muted">Try:</span>
+      @for (ex of examples; track ex) { <button type="button" class="chip min-h-7 text-xs" (click)="onInput(ex)">{{ ex }}</button> }
+      <label class="ml-auto flex items-center gap-1 text-muted">
+        In
+        <select class="rounded-lg border border-line bg-surface px-1.5 py-1 text-xs text-ink" aria-label="State" (change)="setState(val($event))">
+          <option value="ts-ap" [selected]="where() === 'ts-ap'">Telangana & AP</option>
+          @for (s of allStates(); track s) { <option [value]="s" [selected]="where() === s">{{ title(s) }}</option> }
+        </select>
+      </label>
     </div>
 
-    @if (mode() === 'find') {
-      <!-- 1. Bank (searchable) -->
-      <div class="relative mt-4">
-        <label class="label" for="ifsc-bank">Bank</label>
-        <input id="ifsc-bank" class="input" role="combobox" autocomplete="off" [attr.aria-expanded]="bankOpen()" aria-controls="ifsc-bank-list"
-               [placeholder]="bank()?.[1] ?? 'Type your bank — SBI, HDFC, Canara…'" [value]="bankText()"
-               (focus)="bankOpen.set(true)" (input)="bankText.set(val($event)); bankOpen.set(true); active.set(0)" (keydown)="bankKey($event)" (blur)="closeBankSoon()" />
-        @if (bankOpen()) {
-          <ul id="ifsc-bank-list" role="listbox" class="absolute z-30 mt-1 max-h-72 w-full overflow-y-auto rounded-xl border border-line bg-surface p-1 shadow-xl">
-            @if (!banks()) { <li class="px-3 py-2 text-sm text-muted">{{ banksError() ? 'Bank list is not available right now. Use “Check an IFSC”.' : 'Loading banks…' }}</li> }
-            @for (b of bankMatches(); track b[0]; let i = $index) {
-              <li role="option" [attr.aria-selected]="i === active()" class="flex cursor-pointer items-baseline justify-between gap-2 rounded-lg px-3 py-2 text-sm"
-                  [class.bg-brand]="i === active()" [class.text-white]="i === active()" (mousedown)="$event.preventDefault(); pickBank(b)" (mouseenter)="active.set(i)">
-                <span class="font-semibold">{{ b[1] }}</span><span class="shrink-0 text-xs" [class.text-muted]="i !== active()">{{ n(b[2]) }} branches</span>
-              </li>
-            } @empty {
-              @if (banks()) { <li class="px-3 py-2 text-sm text-muted">No bank matches “{{ bankText() }}”.</li> }
-            }
-          </ul>
-        }
-      </div>
-
-      @if (bank()) {
-        <!-- 2. State + district -->
-        <div class="mt-3 grid grid-cols-2 gap-3">
-          <div>
-            <label class="label" for="ifsc-state">State</label>
-            <select id="ifsc-state" class="input" (change)="pickState(val($event))" [disabled]="!states().length">
-              @for (s of states(); track s[1]) { <option [value]="s[1]" [selected]="state()?.[1] === s[1]">{{ s[0] }} ({{ n(s[2]) }})</option> }
-            </select>
-          </div>
-          <div>
-            <label class="label" for="ifsc-district">District</label>
-            <select id="ifsc-district" class="input" (change)="district.set(val($event)); shown.set(PAGE)" [disabled]="!state()">
-              <option value="">All districts</option>
-              @for (d of state()?.[3] ?? []; track d) { <option [value]="d" [selected]="district() === d">{{ d }}</option> }
-            </select>
-          </div>
-        </div>
-
-        <!-- 3. Branch / area -->
-        <div class="relative mt-3">
-          <label class="label" for="ifsc-q">Branch or area</label>
-          <svg lucideIcon="search" [size]="16" class="pointer-events-none absolute bottom-3.5 left-3 text-muted" />
-          <input id="ifsc-q" class="input pl-9" type="search" placeholder="Area, road or PIN — e.g. Somajiguda, 500082" [value]="q()" (input)="q.set(val($event)); shown.set(PAGE)" />
-        </div>
-
-        <!-- Results -->
-        <div class="mt-4" aria-live="polite">
-          @if (loading()) {
-            <p class="text-sm text-muted">Loading branches…</p>
-          } @else if (rows()) {
-            @if (widened()) {
-              <p class="mb-2 rounded-lg bg-amber-500/10 px-3 py-2 text-xs font-medium text-amber-700 dark:text-amber-300">No match in {{ district() }} — showing all of {{ state()?.[0] }}.</p>
-            }
-            <p class="mb-2 text-xs font-semibold text-muted">{{ n(results().length) }} {{ results().length === 1 ? 'branch' : 'branches' }}{{ q().trim() ? ' match “' + q().trim() + '”' : '' }}</p>
-            <ul class="space-y-1.5">
-              @for (r of results().slice(0, shown()); track r[0]) {
-                <li class="rounded-2xl border border-line bg-surface-2 transition" [class.!border-brand/60]="open() === r[0]">
-                  <button type="button" class="flex w-full items-center gap-3 p-3 text-left" [attr.aria-expanded]="open() === r[0]" (click)="open.set(open() === r[0] ? null : r[0])">
-                    <span class="min-w-0 flex-1">
-                      <span class="block truncate text-sm font-semibold">{{ r[1] }}</span>
-                      <span class="block text-xs text-muted">{{ r[2] }}{{ r[3] && r[3] !== r[2] ? ' · ' + r[3] : '' }}</span>
-                    </span>
-                    <span class="shrink-0 font-mono text-sm font-bold text-brand">{{ r[0] }}</span>
-                  </button>
-                  @if (open() === r[0]) {
-                    <div class="border-t border-line px-3 pt-2 pb-3 text-sm">
-                      <p>{{ r[4] }}</p>
-                      <p class="mt-1 text-xs text-muted">MICR {{ r[5] || '—' }}</p>
-                      <div class="mt-2 flex flex-wrap items-center gap-1.5">
-                        @for (p of payFlags(r[6]); track p.name) {
-                          <span class="rounded-full px-2 py-0.5 text-xs font-semibold" [class]="p.ok ? 'bg-emerald-500/10 text-emerald-700' : 'bg-rose-500/10 text-rose-600'">{{ p.ok ? '✓' : '✗' }} {{ p.name }}</span>
-                        }
-                        <button type="button" class="btn-ghost ml-auto min-h-8 px-3 text-xs" (click)="copy(fromRow(r))"><svg lucideIcon="copy" [size]="14" /> Copy</button>
-                      </div>
-                    </div>
-                  }
-                </li>
-              } @empty {
-                <li class="rounded-2xl border border-dashed border-line p-4 text-sm">
-                  <p class="font-semibold">No branch named “{{ q().trim() }}” here.</p>
-                  <p class="mt-1 text-muted">RBI lists branches by their official name and road, so an area name may not appear. Try a road or landmark, the PIN code, or a shorter word.</p>
-                  <button type="button" class="btn-ghost mt-3 min-h-9 text-xs" (click)="q.set(''); district.set(''); shown.set(PAGE)">Show all {{ n(rows()?.length ?? 0) }} {{ bank()?.[1] }} branches in {{ state()?.[0] }}</button>
-                </li>
-              }
-            </ul>
-            @if (results().length > shown()) {
-              <button type="button" class="btn-ghost mt-2 min-h-10 w-full text-sm" (click)="shown.set(shown() + PAGE)">Show more ({{ n(results().length - shown()) }} left)</button>
-            }
-          } @else if (rowsError()) {
-            <p class="text-sm text-rose-600" role="alert">Couldn’t load branches right now. Please try again in a minute.</p>
-          }
-        </div>
-      }
-    } @else {
-      <form class="mt-4 flex gap-2" (submit)="$event.preventDefault(); find()">
-        <label class="sr-only" for="ifsc">IFSC code</label>
-        <input id="ifsc" class="input flex-1 font-mono uppercase tracking-wider" maxlength="11" placeholder="SBIN0001234" autocomplete="off"
-               [value]="code()" (input)="code.set(val($event))" />
-        <button type="submit" class="btn-primary shrink-0" [disabled]="state2() === 'loading'">{{ state2() === 'loading' ? 'Checking…' : 'Check' }}</button>
-      </form>
-      <p class="mt-1 text-xs" [class.text-rose-600]="state2() === 'error'" [class.text-muted]="state2() !== 'error'" role="status">
-        {{ state2() === 'error' ? msg() : 'IFSC is 11 characters: 4 letters, 0, then 6 letters/numbers. It is on your cheque book and passbook.' }}
-      </p>
-      @if (b(); as x) {
-        <div class="mt-4 rounded-2xl border border-line bg-surface-2 p-4" aria-live="polite">
-          <div class="flex items-start justify-between gap-2">
-            <div>
-              <p class="text-lg font-bold">{{ x.bank }}</p>
-              <p class="text-sm font-semibold text-brand">{{ x.branch }}</p>
+    <div class="mt-4" aria-live="polite">
+      @if (code(); as x) {
+        <!-- IFSC typed: show that branch -->
+        @if (codeState() === 'loading') { <p class="text-sm text-muted">Checking {{ q().trim().toUpperCase() }}…</p> }
+        @else if (codeState() === 'error') { <p class="text-sm text-rose-600" role="alert">{{ codeMsg() }}</p> }
+        @else if (x.ifsc) {
+          <div class="rounded-2xl border border-line bg-surface-2 p-4">
+            <div class="flex items-start justify-between gap-2">
+              <div><p class="text-lg font-bold">{{ x.bank }}</p><p class="text-sm font-semibold text-brand">{{ x.branch }}</p></div>
+              <button type="button" class="btn-ghost min-h-9 shrink-0 px-3 text-xs" (click)="copy(x)"><svg lucideIcon="copy" [size]="14" /> Copy</button>
             </div>
-            <button type="button" class="btn-ghost min-h-9 shrink-0 px-3 text-xs" (click)="copy(x)"><svg lucideIcon="copy" [size]="14" /> Copy</button>
+            <p class="mt-2 text-sm">{{ x.address }}</p>
+            <p class="mt-2 text-xs text-muted">IFSC <b class="font-mono text-ink">{{ x.ifsc }}</b> · MICR <b class="font-mono text-ink">{{ x.micr || '—' }}</b> · {{ x.city }}, {{ x.state }}</p>
+            <div class="mt-2 flex flex-wrap gap-1.5">
+              @for (p of flags(x); track p.name) { <span class="rounded-full px-2 py-0.5 text-xs font-semibold" [class]="p.ok ? 'bg-emerald-500/10 text-emerald-700' : 'bg-rose-500/10 text-rose-600'">{{ p.ok ? '✓' : '✗' }} {{ p.name }}</span> }
+            </div>
           </div>
-          <p class="mt-2 text-sm">{{ x.address }}</p>
-          <ul class="mt-3 grid grid-cols-2 gap-x-4 gap-y-1 border-t border-line pt-2 text-sm">
-            <li><span class="text-muted">IFSC</span> <b class="font-mono">{{ x.ifsc }}</b></li>
-            <li><span class="text-muted">MICR</span> <b class="font-mono">{{ x.micr || '—' }}</b></li>
-            <li><span class="text-muted">City</span> {{ x.city }}</li>
-            <li><span class="text-muted">State</span> {{ x.state }}</li>
-          </ul>
-          <div class="mt-3 flex flex-wrap gap-1.5">
-            @for (p of [{ name: 'NEFT', ok: x.neft }, { name: 'RTGS', ok: x.rtgs }, { name: 'IMPS', ok: x.imps }, { name: 'UPI', ok: x.upi }]; track p.name) {
-              <span class="rounded-full px-2 py-0.5 text-xs font-semibold" [class]="p.ok ? 'bg-emerald-500/10 text-emerald-700' : 'bg-rose-500/10 text-rose-600'">{{ p.ok ? '✓' : '✗' }} {{ p.name }}</span>
-            }
+        }
+      } @else if (!q().trim()) {
+        <p class="text-sm text-muted">Type the <b>bank name and the area</b> together — like <i>sbi ameerpet</i> — or paste an IFSC code to check it.</p>
+      } @else if (!bank()) {
+        <p class="text-sm text-muted">Start with the bank name, e.g. <i>sbi</i>, <i>hdfc</i>, <i>canara</i>, then the area.</p>
+        @if (bankHints().length) {
+          <div class="mt-2 flex flex-wrap gap-1.5">
+            @for (b of bankHints(); track b[0]) { <button type="button" class="chip min-h-8 text-xs" (click)="onInput(b[1] + ' ')">{{ b[1] }}</button> }
           </div>
-        </div>
+        }
+      } @else if (loading()) {
+        <p class="text-sm text-muted">Loading {{ bank()![1] }} branches…</p>
+      } @else {
+        <p class="mb-2 text-xs font-semibold text-muted">
+          {{ bank()![1] }} · {{ n(results().length) }} {{ results().length === 1 ? 'branch' : 'branches' }}{{ area() ? ' matching “' + area() + '”' : '' }} · {{ whereLabel() }}
+        </p>
+        <ul class="space-y-1.5">
+          @for (r of results().slice(0, shown()); track r.row[0]) {
+            <li class="rounded-2xl border border-line bg-surface-2 transition" [class.!border-brand/60]="open() === r.row[0]">
+              <button type="button" class="flex w-full items-center gap-3 p-3 text-left" [attr.aria-expanded]="open() === r.row[0]" (click)="open.set(open() === r.row[0] ? null : r.row[0])">
+                <span class="min-w-0 flex-1">
+                  <span class="block truncate text-sm font-semibold">{{ r.row[1] }}</span>
+                  <span class="block truncate text-xs text-muted">{{ r.row[2] }}{{ r.row[3] && r.row[3] !== r.row[2] ? ' · ' + r.row[3] : '' }}</span>
+                </span>
+                <span class="shrink-0 font-mono text-sm font-bold text-brand">{{ r.row[0] }}</span>
+              </button>
+              @if (open() === r.row[0]) {
+                <div class="border-t border-line px-3 pt-2 pb-3 text-sm">
+                  <p>{{ r.row[4] }}</p>
+                  <div class="mt-2 flex flex-wrap items-center gap-1.5">
+                    <span class="text-xs text-muted">MICR {{ r.row[5] || '—' }}</span>
+                    @for (p of flags(rowToBranch(r)); track p.name) { <span class="rounded-full px-2 py-0.5 text-xs font-semibold" [class]="p.ok ? 'bg-emerald-500/10 text-emerald-700' : 'bg-rose-500/10 text-rose-600'">{{ p.ok ? '✓' : '✗' }} {{ p.name }}</span> }
+                    <button type="button" class="btn-ghost ml-auto min-h-8 px-3 text-xs" (click)="copy(rowToBranch(r))"><svg lucideIcon="copy" [size]="14" /> Copy</button>
+                  </div>
+                </div>
+              }
+            </li>
+          } @empty {
+            <li class="rounded-2xl border border-dashed border-line p-4 text-sm">
+              <p class="font-semibold">No {{ bank()![1] }} branch matches “{{ area() }}” in {{ whereLabel() }}.</p>
+              <p class="mt-1 text-muted">RBI lists branches by their official name and road. Try a nearby area, the road name or PIN code — or change the state above.</p>
+            </li>
+          }
+        </ul>
+        @if (results().length > shown()) {
+          <button type="button" class="btn-ghost mt-2 min-h-10 w-full text-sm" (click)="shown.set(shown() + PAGE)">Show more ({{ n(results().length - shown()) }} left)</button>
+        }
       }
-    }
+    </div>
   `,
 })
 export class IfscTool {
   private readonly toast = inject(ToastService);
   protected readonly PAGE = PAGE;
-  protected readonly mode = signal<'find' | 'check'>('find');
-
-  // ---- find by branch ----
-  protected readonly banks = signal<[string, string, number][] | null>(null);
-  protected readonly banksError = signal(false);
-  protected readonly bank = signal<[string, string, number] | null>(null);
-  protected readonly bankText = signal('');
-  protected readonly bankOpen = signal(false);
-  protected readonly active = signal(0);
-  protected readonly states = signal<StateIdx[]>([]);
-  protected readonly state = signal<StateIdx | null>(null);
-  protected readonly district = signal('');
+  protected readonly examples = ['sbi ameerpet', 'hdfc kukatpally', 'icici gachibowli'];
   protected readonly q = signal('');
-  protected readonly rows = signal<Row[] | null>(null);
-  protected readonly rowsError = signal(false);
+  protected readonly where = signal('ts-ap');
+  protected readonly banks = signal<[string, string, number][]>([]);
+  protected readonly allStates = signal<string[]>([]);
+  protected readonly bank = signal<[string, string, number] | null>(null);
+  protected readonly area = signal('');
+  protected readonly rows = signal<{ row: Row; state: string }[]>([]);
   protected readonly loading = signal(false);
   protected readonly shown = signal(PAGE);
   protected readonly open = signal<string | null>(null);
-  private bankTimer: ReturnType<typeof setTimeout> | undefined;
+  // IFSC-code path
+  protected readonly code = signal<Branch | null>(null);
+  protected readonly codeState = signal<'idle' | 'loading' | 'error'>('idle');
+  protected readonly codeMsg = signal('');
+  private readonly cache = new Map<string, Row[]>();
+  private timer: ReturnType<typeof setTimeout> | undefined;
 
-  protected readonly bankMatches = computed(() => {
-    const list = this.banks() ?? [];
-    const t = this.bankText().trim().toLowerCase();
-    if (!t) return list.slice(0, 40);
-    return list.filter((b) => b[1].toLowerCase().includes(t) || b[0].toLowerCase().startsWith(t)).slice(0, 40);
+  protected readonly bankHints = computed(() => {
+    const t = this.q().trim().toLowerCase();
+    return t.length < 2 ? [] : this.banks().filter((b) => b[1].toLowerCase().includes(t)).slice(0, 6);
   });
-  /** Branches matching the typed words (or a known area alias / PIN), in the chosen district — or, if none there, the whole state. */
-  private readonly search = computed(() => {
-    const rows = this.rows() ?? [];
-    const d = this.district();
-    const q = this.q().trim().toLowerCase().replace(/\s+/g, ' ');
-    const words = q.split(' ').filter(Boolean);
-    const alias = AREA_ALIASES[q] ?? [];
-    const hit = (r: Row) => {
-      const text = `${r[1]} ${r[3]} ${r[4]} ${r[0]}`.toLowerCase();
+  protected readonly results = computed(() => {
+    const raw = this.area().toLowerCase();
+    const words = raw.split(/\s+/).filter(Boolean);
+    const alias = AREA_ALIASES[raw] ?? [];
+    return this.rows().filter(({ row }) => {
+      if (!words.length) return true;
+      const text = `${row[1]} ${row[2]} ${row[3]} ${row[4]}`.toLowerCase();
       return words.every((w) => text.includes(w)) || alias.some((a) => text.includes(a));
-    };
-    const inDistrict = rows.filter((r) => (!d || r[2] === d) && (!q || hit(r)));
-    if (inDistrict.length || !d || !q) return { list: inDistrict, widened: false };
-    const all = rows.filter(hit);
-    return { list: all, widened: all.length > 0 };
+    });
   });
-  protected readonly results = computed(() => this.search().list);
-  protected readonly widened = computed(() => this.search().widened);
+  protected readonly whereLabel = computed(() => (this.where() === 'ts-ap' ? 'Telangana & AP' : this.title(this.where())));
 
   constructor() {
     afterNextRender(() =>
       fetch(`${DATA}/banks.json`)
-        .then((r) => (r.ok ? r.json() : Promise.reject()))
-        .then((b) => this.banks.set(b))
-        .catch(() => this.banksError.set(true)),
+        .then((r) => r.json())
+        .then((b: [string, string, number][]) => this.banks.set(b))
+        .catch(() => undefined),
     );
   }
 
-  protected bankKey(e: KeyboardEvent) {
-    const n = this.bankMatches().length;
-    if (e.key === 'ArrowDown') (e.preventDefault(), this.bankOpen.set(true), this.active.update((i) => (n ? (i + 1) % n : 0)));
-    else if (e.key === 'ArrowUp') (e.preventDefault(), this.active.update((i) => (n ? (i - 1 + n) % n : 0)));
-    else if (e.key === 'Enter' && this.bankOpen() && n) (e.preventDefault(), this.pickBank(this.bankMatches()[this.active()]));
-    else if (e.key === 'Escape') this.bankOpen.set(false);
+  protected val(e: Event) {
+    return (e.target as HTMLInputElement | HTMLSelectElement).value;
   }
-  protected closeBankSoon() {
-    clearTimeout(this.bankTimer);
-    this.bankTimer = setTimeout(() => this.bankOpen.set(false), 120);
+  protected title(slug: string) {
+    return slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()).replace(/\b(And|Of)\b/g, (m) => m.toLowerCase());
   }
-  protected async pickBank(b: [string, string, number]) {
-    this.bank.set(b);
-    this.bankText.set('');
-    this.bankOpen.set(false);
-    this.states.set([]);
-    this.state.set(null);
-    this.rows.set(null);
-    try {
-      const r = await fetch(`${DATA}/${b[0]}/index.json`);
-      if (!r.ok) throw new Error();
-      const idx = (await r.json()) as StateIdx[];
-      this.states.set(idx);
-      // Most visitors are from Telangana / AP — start there when the bank has branches in it
-      const start = idx.find((s) => s[1] === 'telangana') ?? idx.find((s) => s[1] === 'andhra-pradesh') ?? [...idx].sort((a, z) => z[2] - a[2])[0];
-      if (start) await this.pickState(start[1]);
-    } catch {
-      this.rowsError.set(true);
-    }
+  protected n(v: number) {
+    return INR.format(v);
   }
-  protected async pickState(slug: string) {
-    const s = this.states().find((x) => x[1] === slug) ?? null;
-    const b = this.bank();
-    this.state.set(s);
-    this.district.set('');
-    this.shown.set(PAGE);
+
+  protected onInput(v: string) {
+    this.q.set(v);
+    clearTimeout(this.timer);
+    this.timer = setTimeout(() => this.run(), 220);
+  }
+  protected setState(s: string) {
+    this.where.set(s);
+    this.run();
+  }
+
+  /** IFSC code → live check; otherwise split "bank + area" and search that bank's branches in the chosen state(s). */
+  private async run() {
+    const text = this.q().trim();
     this.open.set(null);
-    if (!s || !b) return;
+    this.shown.set(PAGE);
+    const compact = text.toUpperCase().replace(/\s+/g, '');
+    if (/^[A-Z]{4}0[A-Z0-9]{6}$/.test(compact)) return this.check(compact);
+    this.code.set(null);
+    const found = this.matchBank(text.toLowerCase());
+    this.bank.set(found?.bank ?? null);
+    this.area.set(found?.rest ?? '');
+    if (!found) return this.rows.set([]);
+    await this.loadRows(found.bank[0]);
+  }
+
+  private matchBank(t: string): { bank: [string, string, number]; rest: string } | null {
+    const banks = this.banks();
+    if (!t || !banks.length) return null;
+    // Longest alias or bank name the text starts with
+    const cands: { code: string; len: number }[] = [];
+    for (const [a, c] of Object.entries(BANK_ALIASES)) if (t === a || t.startsWith(a + ' ')) cands.push({ code: c, len: a.length });
+    for (const b of banks) {
+      const name = b[1].toLowerCase();
+      if (t === name || t.startsWith(name + ' ')) cands.push({ code: b[0], len: name.length });
+      const c = b[0].toLowerCase();
+      if (t === c || t.startsWith(c + ' ')) cands.push({ code: b[0], len: c.length });
+    }
+    const best = cands.sort((x, y) => y.len - x.len)[0];
+    const bank = best && banks.find((b) => b[0] === best.code);
+    return bank ? { bank, rest: t.slice(best.len).trim() } : null;
+  }
+
+  private async loadRows(code: string) {
     this.loading.set(true);
-    this.rowsError.set(false);
     try {
-      const r = await fetch(`${DATA}/${b[0]}/${s[1]}.json`);
-      if (!r.ok) throw new Error();
-      if (this.state() === s) this.rows.set((await r.json()) as Row[]);
+      const idx = (await this.json(`${DATA}/${code}/index.json`)) as StateIdx[];
+      this.allStates.set([...new Set([...this.allStates(), ...idx.map((s) => s[1])])].sort());
+      const slugs = this.where() === 'ts-ap' ? TS_AP : [this.where()];
+      const lists = await Promise.all(
+        slugs.filter((s) => idx.some((i) => i[1] === s)).map(async (s) => ((await this.json(`${DATA}/${code}/${s}.json`)) as Row[]).map((row) => ({ row, state: s }))),
+      );
+      if (this.bank()?.[0] === code) this.rows.set(lists.flat());
     } catch {
-      this.rows.set(null);
-      this.rowsError.set(true);
+      this.rows.set([]);
     } finally {
       this.loading.set(false);
     }
   }
-  protected payFlags(f: number) {
-    return [
-      { name: 'NEFT', ok: !!(f & 1) },
-      { name: 'RTGS', ok: !!(f & 2) },
-      { name: 'IMPS', ok: !!(f & 4) },
-      { name: 'UPI', ok: !!(f & 8) },
-    ];
-  }
-  protected fromRow(r: Row): Branch {
-    return { bank: this.bank()?.[1] ?? '', ifsc: r[0], branch: r[1], district: r[2], city: r[3], address: r[4], micr: r[5], state: this.state()?.[0] ?? '', neft: !!(r[6] & 1), rtgs: !!(r[6] & 2), imps: !!(r[6] & 4), upi: !!(r[6] & 8) };
+
+  private async json(url: string) {
+    if (this.cache.has(url)) return this.cache.get(url)!;
+    const r = await fetch(url);
+    if (!r.ok) throw new Error(String(r.status));
+    const j = await r.json();
+    this.cache.set(url, j);
+    return j;
   }
 
-  // ---- check a code ----
-  protected readonly code = signal('');
-  protected readonly b = signal<Branch | null>(null);
-  protected readonly state2 = signal<'idle' | 'loading' | 'error'>('idle');
-  protected readonly msg = signal('');
-
-  protected async find() {
-    const c = this.code().trim().toUpperCase().replace(/\s+/g, '');
-    this.code.set(c);
-    if (!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(c)) {
-      this.b.set(null);
-      this.msg.set('That doesn’t look like an IFSC. Example: SBIN0001234 (5th character is always zero).');
-      return this.state2.set('error');
-    }
-    this.state2.set('loading');
+  private async check(c: string) {
+    this.code.set({ ifsc: '' } as Branch);
+    this.codeState.set('loading');
     try {
       const r = await fetch(`https://ifsc.razorpay.com/${c}`, { signal: AbortSignal.timeout(10000) });
       if (r.status === 404) throw new Error('notfound');
       if (!r.ok) throw new Error('server');
       const x = await r.json();
-      this.b.set({ bank: x.BANK, ifsc: x.IFSC, branch: x.BRANCH, address: x.ADDRESS, city: x.CITY, district: x.DISTRICT, state: x.STATE, micr: x.MICR ?? '', neft: x.NEFT, rtgs: x.RTGS, imps: x.IMPS, upi: x.UPI });
-      this.state2.set('idle');
+      this.code.set({ bank: x.BANK, ifsc: x.IFSC, branch: x.BRANCH, address: x.ADDRESS, city: x.CITY, district: x.DISTRICT, state: x.STATE, micr: x.MICR ?? '', neft: x.NEFT, rtgs: x.RTGS, imps: x.IMPS, upi: x.UPI });
+      this.codeState.set('idle');
     } catch (e) {
-      this.b.set(null);
-      this.msg.set((e as Error).message === 'notfound' ? `No branch found for ${c}. Check the code on your cheque or passbook.` : 'Couldn’t check right now. Please try again in a minute.');
-      this.state2.set('error');
+      this.codeMsg.set((e as Error).message === 'notfound' ? `No branch found for ${c}. Check the code on your cheque or passbook.` : 'Couldn’t check right now. Please try again in a minute.');
+      this.codeState.set('error');
     }
   }
 
-  protected val(e: Event) {
-    return (e.target as HTMLInputElement).value;
+  protected rowToBranch(r: { row: Row; state: string }): Branch {
+    const f = r.row[6];
+    return { bank: this.bank()?.[1] ?? '', ifsc: r.row[0], branch: r.row[1], district: r.row[2], city: r.row[3], address: r.row[4], micr: r.row[5], state: this.title(r.state), neft: !!(f & 1), rtgs: !!(f & 2), imps: !!(f & 4), upi: !!(f & 8) };
   }
-  protected n(v: number) {
-    return INR.format(v);
+  protected flags(x: Branch) {
+    return [
+      { name: 'NEFT', ok: x.neft },
+      { name: 'RTGS', ok: x.rtgs },
+      { name: 'IMPS', ok: x.imps },
+      { name: 'UPI', ok: x.upi },
+    ];
   }
   protected async copy(x: Branch) {
     try {

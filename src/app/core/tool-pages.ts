@@ -543,8 +543,8 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
     h1: 'IFSC Code Details — Bank & Branch',
     title: 'IFSC Code Finder — Check Bank, Branch, Address & MICR from IFSC',
     description: 'Type an IFSC code to see the bank, branch, full address, MICR code and whether NEFT, RTGS, IMPS and UPI work. Free and quick, for all Indian banks.',
-    intro: 'Find any branch’s IFSC by bank, state and area — or type an IFSC to check its branch.',
-    steps: ['Type the 11-character IFSC (from cheque book, passbook or the payee).', 'Tap Check.', 'Confirm the bank, branch and address, then copy the details if needed.'],
+    intro: 'Type the bank and area together — like “sbi ameerpet” — or paste an IFSC code to check it.',
+    steps: ['Type the bank and the area in one box — for example “sbi ameerpet” or “hdfc kukatpally”.', 'Tap the branch to see its full address, MICR and NEFT/RTGS/UPI, and Copy.', 'Have an IFSC already? Paste it in the same box to check the branch.', 'Not in Telangana or AP? Change the state next to the box.'],
     faqs: [
       { q: 'Where do I find my IFSC?', a: 'It is printed on your cheque leaf and passbook, and shown in your bank app under account details.' },
       { q: 'What does MICR mean?', a: 'MICR is a 9-digit code printed at the bottom of cheques, used for cheque clearing.' },

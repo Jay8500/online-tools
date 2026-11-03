@@ -1,7 +1,7 @@
 import { isPlatformBrowser } from '@angular/common';
 import { afterNextRender, Component, computed, DestroyRef, inject, PLATFORM_ID, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { Icon } from '../shared/icon';
 import { DOC_SHORT, DocKind, EXAMS, Exam, examPath } from '../core/exams';
 import { CounterService } from '../core/counter.service';
@@ -158,7 +158,7 @@ const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-p
       <label class="relative mt-3 block">
         <span class="sr-only">Search tools</span>
         <svg lucideIcon="search" [size]="16" class="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted" />
-        <input class="input min-h-12 rounded-2xl pl-9 text-base shadow-sm" type="search" aria-label="Search tools" [ngModel]="q()" (ngModelChange)="q.set($event)" (focus)="focused.set(true)" (blur)="focused.set(false)" />
+        <input class="input min-h-12 rounded-2xl pl-9 text-base shadow-sm" type="search" aria-label="Search tools" [ngModel]="q()" (ngModelChange)="q.set($event)" (keydown.enter)="openFirst()" enterkeyhint="go" (focus)="focused.set(true)" (blur)="focused.set(false)" />
         @if (!q() && !focused()) {
           <!-- Rotating hint (like quick-commerce apps): changes every 2.5 s, sits behind the input text -->
           <span class="pointer-events-none absolute inset-y-0 left-9 right-3 flex items-center overflow-hidden text-sm text-muted" aria-hidden="true">
@@ -367,6 +367,15 @@ export class Home {
   }
   protected readonly toolTotal = TOOL_GROUPS.reduce((n, g) => n + g.tools.length, 0) + EXAMS.length;
   private readonly userTools = inject(UserTools);
+  private readonly router = inject(Router);
+  /** Enter in the search box opens the best match straight away (one step less). */
+  protected openFirst() {
+    if (!this.searching()) return;
+    const tool = this.groups()[0]?.tools.find((t) => !!t.path);
+    const exam = this.showExams() ? this.examPick() : null;
+    const path = exam ? examPath(exam, 'photo') : tool?.path;
+    if (path) this.router.navigateByUrl('/' + path);
+  }
   /** Pinned tools, then recently opened ones (not already pinned) — this browser only */
   protected readonly pins = computed(() => this.userTools.pinned().map((p) => this.userTools.ref(p)).filter((t) => !!t));
   protected readonly recents = computed(() => this.userTools.recent().filter((p) => !this.userTools.pinned().includes(p)).slice(0, 6).map((p) => this.userTools.ref(p)).filter((t) => !!t));
