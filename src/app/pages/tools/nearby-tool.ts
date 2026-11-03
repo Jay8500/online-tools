@@ -32,7 +32,7 @@ const PAGE = 20;
     <form (submit)="$event.preventDefault(); setFrom()" novalidate>
       <label class="label" for="n-from">Your location</label>
       <div class="flex gap-2" [class.field-invalid]="!!fromErr()">
-        <input id="n-from" class="input" list="n-places" placeholder="Your area, e.g. Kukatpally" maxlength="80" autocomplete="off" [value]="fromText()" (input)="fromText.set(val($event))" />
+        <input id="n-from" class="input" list="n-places" placeholder="Your area, e.g. Kukatpally" maxlength="80" autocomplete="off" [value]="fromText()" (input)="typed(val($event))" />
         <datalist id="n-places">@for (p of places; track p[0]) { <option [value]="p[0]"></option> }</datalist>
         <button type="submit" class="btn-primary shrink-0" [disabled]="busy()">{{ busy() ? '…' : 'Go' }}</button>
         <button type="button" class="btn-ghost shrink-0" (click)="locate()" [disabled]="busy()" title="Use my location" aria-label="Use my location"><svg lucideIcon="locate-fixed" [size]="16" /></button>
@@ -128,6 +128,9 @@ export class NearbyTool {
     afterNextRender(async () => {
       const d = await loadNearby(this.kind());
       this.rows.set(d.rows);
+      // Open straight on the visitor's last location (no typing, no tap)
+      const o = savedOrigin();
+      if (o && !this.origin()) this.use(o);
       this.asOf.set(new Date(d.asOf + 'T00:00:00').toLocaleDateString('en-IN', { month: 'short', year: 'numeric' }));
     });
   }
@@ -183,7 +186,17 @@ export class NearbyTool {
   private use(o: Origin) {
     this.origin.set(o);
     this.shown.set(PAGE);
+    saveOrigin(o);
   }
+
+  /** Built-in areas apply the moment they're typed or picked from the list — no need to press Go. */
+  protected typed(v: string) {
+    this.fromText.set(v);
+    this.fromErr.set(null);
+    const p = localPlace(v);
+    if (p) this.use(p);
+  }
+
 
   protected directions(r: { lat: number; lon: number }) {
     const o = this.origin();
@@ -198,5 +211,33 @@ export class NearbyTool {
   }
   protected val(e: Event) {
     return (e.target as HTMLInputElement).value;
+  }
+}
+
+/** A typed name that matches one of our built-in areas/cities ("Dilsukh Nagar" = "Dilsukhnagar"). */
+function localPlace(text: string): { name: string; lat: number; lon: number } | null {
+  const key = (s: string) => s.toLowerCase().replace(/[\s.]/g, '');
+  const t = key(text.trim());
+  if (!t) return null;
+  const p = PLACES.find((x) => key(x[0]) === t);
+  if (p) return { name: p[0], lat: p[1], lon: p[2] };
+  const c = CITIES.find((x) => key(x.name) === t);
+  return c ? { name: c.name, lat: c.lat, lon: c.lon } : null;
+}
+/** Last location the visitor used in a near-me tool — kept only on this device. */
+const ORIGIN_KEY = 'near-origin';
+function savedOrigin(): { name: string; lat: number; lon: number } | null {
+  try {
+    const o = JSON.parse(localStorage.getItem(ORIGIN_KEY) ?? 'null');
+    return o && typeof o.lat === 'number' && typeof o.lon === 'number' ? o : null;
+  } catch {
+    return null;
+  }
+}
+function saveOrigin(o: { name: string; lat: number; lon: number }) {
+  try {
+    localStorage.setItem(ORIGIN_KEY, JSON.stringify(o));
+  } catch {
+    /* not remembered */
   }
 }
