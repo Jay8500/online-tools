@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { afterNextRender, Component, computed, signal } from '@angular/core';
 import { CITIES, MODES, TravelMode, estimate, findCity, fmtHours, haversineKm, travelLinks } from '../../core/places';
 import { Icon } from '../../shared/icon';
 
@@ -25,13 +25,13 @@ const ROAD: TravelMode[] = ['car', 'bike', 'bus', 'walk', 'cycle'];
       <div class="grid gap-3 sm:grid-cols-[1fr_auto_1fr] sm:items-end">
         <div [class.field-invalid]="!!fromErr()">
           <label class="label" for="t-from">From</label>
-          <input id="t-from" class="input" list="t-cities" placeholder="e.g. Hyderabad" maxlength="80" autocomplete="off" [value]="from()" (input)="from.set(val($event))" />
+          <input id="t-from" class="input" list="t-cities" placeholder="e.g. Hyderabad" maxlength="80" autocomplete="off" [value]="from()" (focus)="selectAll($event)" (input)="from.set(val($event)); autoGo()" />
           @if (fromErr()) { <p class="mt-1 text-xs font-medium text-rose-600" role="alert">{{ fromErr() }}</p> }
         </div>
         <button type="button" class="btn-icon justify-self-center" (click)="swap()" aria-label="Swap from and to"><svg lucideIcon="refresh-ccw" [size]="16" /></button>
         <div [class.field-invalid]="!!toErr()">
           <label class="label" for="t-to">To</label>
-          <input id="t-to" class="input" list="t-cities" placeholder="e.g. Vijayawada" maxlength="80" autocomplete="off" [value]="to()" (input)="to.set(val($event))" />
+          <input id="t-to" class="input" list="t-cities" placeholder="e.g. Vijayawada" maxlength="80" autocomplete="off" [value]="to()" (focus)="selectAll($event)" (input)="to.set(val($event)); autoGo()" />
           @if (toErr()) { <p class="mt-1 text-xs font-medium text-rose-600" role="alert">{{ toErr() }}</p> }
         </div>
         <datalist id="t-cities">@for (c of cities; track c.name) { <option [value]="c.name">{{ c.state }}</option> }</datalist>
@@ -103,6 +103,11 @@ export class TravelTool {
   protected readonly H = 200;
   protected readonly from = signal('Hyderabad');
   protected readonly to = signal('Vijayawada');
+
+  constructor() {
+    // Open with the example journey already shown — the visitor only changes what they need (route is CDN-cached)
+    afterNextRender(() => this.go());
+  }
   protected readonly mode = signal<TravelMode>('car');
   private readonly submitted = signal(false);
   protected readonly loading = signal(false);
@@ -165,6 +170,18 @@ export class TravelTool {
   protected val(e: Event) {
     return (e.target as HTMLInputElement).value;
   }
+  /** Tapping a box selects its text, so typing replaces the example city instead of adding to it. */
+  protected selectAll(e: Event) {
+    (e.target as HTMLInputElement).select();
+  }
+  private autoTimer: ReturnType<typeof setTimeout> | undefined;
+  /** Both places are known cities (typed or picked from the list) → show the journey straight away. */
+  protected autoGo() {
+    clearTimeout(this.autoTimer);
+    const known = (t: string) => this.cities.some((c) => c.name.toLowerCase() === t.trim().toLowerCase());
+    if (known(this.from()) && known(this.to()) && this.from().trim().toLowerCase() !== this.to().trim().toLowerCase()) this.autoTimer = setTimeout(() => this.go(), 350);
+  }
+
   protected setMode(m: TravelMode) {
     this.mode.set(m);
     if (this.asked()) this.go();

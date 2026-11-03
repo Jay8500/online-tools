@@ -1,3 +1,4 @@
+import { DocExample } from './doc-example';
 import { isPlatformBrowser } from '@angular/common';
 import { Component, DestroyRef, ElementRef, PLATFORM_ID, afterNextRender, computed, effect, inject, input, signal, untracked, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -50,7 +51,7 @@ const DATE_RE = /^(0[1-9]|[12]\d|3[01])[/.-](0[1-9]|1[0-2])[/.-](19|20)\d\d$/;
 
 @Component({
   selector: 'app-image-tool',
-  imports: [FormsModule, Icon, Cropper],
+  imports: [FormsModule, Icon, Cropper, DocExample],
   template: `
     <section class="card overflow-hidden" (dragover)="dragOver($event)" (dragleave)="dragging.set(false)" (drop)="drop($event)"
              [class.ring-4]="dragging()" [class.ring-brand]="dragging()" aria-label="Image resizer">
@@ -99,6 +100,7 @@ const DATE_RE = /^(0[1-9]|[12]\d|3[01])[/.-](0[1-9]|1[0-2])[/.-](19|20)\d\d$/;
           </p>
         </div>
       }
+      <app-doc-example [kind]="spec().kind" />
 
       @if (!source()) {
         <!-- Pick / take / paste / drop -->

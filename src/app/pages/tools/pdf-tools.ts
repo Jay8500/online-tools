@@ -1,3 +1,4 @@
+import { PdfHowto } from '../../shared/pdf-howto';
 import { isPlatformBrowser } from '@angular/common';
 import { Component, DestroyRef, PLATFORM_ID, computed, inject, input, output, signal } from '@angular/core';
 import {
@@ -124,8 +125,9 @@ const RESULT = 'mt-3 flex flex-wrap items-center gap-3 rounded-2xl border border
 // ---------------- Merge ----------------
 @Component({
   selector: 'app-pdf-merge',
-  imports: [FileDrop, FileList, Icon],
+  imports: [FileDrop, FileList, Icon, PdfHowto],
   template: `
+    <app-pdf-howto kind="merge" />
     <app-file-drop label="Choose PDFs" hint="pick 2 or more PDFs" (files)="add($event)" />
     @if (items().length) {
       <div class="mt-3"><app-file-list [items]="items()" (move)="move($event)" (remove)="remove($event)" /></div>
@@ -181,8 +183,9 @@ export class PdfMerge {
 // ---------------- Split ----------------
 @Component({
   selector: 'app-pdf-split',
-  imports: [FileDrop, Icon],
+  imports: [FileDrop, Icon, PdfHowto],
   template: `
+    <app-pdf-howto kind="split" />
     @if (!file()) {
       <app-file-drop label="Choose a PDF" hint="one PDF" [multiple]="false" (files)="open($event[0])" />
     } @else {
@@ -298,8 +301,9 @@ export class PdfSplit {
 // ---------------- Compress ----------------
 @Component({
   selector: 'app-pdf-compress',
-  imports: [FileDrop, Icon],
+  imports: [FileDrop, Icon, PdfHowto],
   template: `
+    <app-pdf-howto kind="compress" />
     @if (!file()) {
       <app-file-drop label="Choose a PDF" hint="one PDF" [multiple]="false" (files)="pick($event[0])" />
     } @else {
@@ -375,8 +379,9 @@ export class PdfCompress {
 // ---------------- Images → PDF ----------------
 @Component({
   selector: 'app-image-to-pdf',
-  imports: [FileDrop, FileList, Icon],
+  imports: [FileDrop, FileList, Icon, PdfHowto],
   template: `
+    <app-pdf-howto kind="image-to-pdf" />
     <app-file-drop label="Choose images" hint="JPG, PNG, WebP" accept="image/*" kind="image" (files)="add($event)" />
     @if (items().length) {
       <div class="mt-3"><app-file-list [items]="items()" (move)="move($event)" (remove)="remove($event)" /></div>
@@ -444,8 +449,9 @@ export class ImageToPdf {
 // ---------------- PDF → images ----------------
 @Component({
   selector: 'app-pdf-to-image',
-  imports: [FileDrop, Icon],
+  imports: [FileDrop, Icon, PdfHowto],
   template: `
+    <app-pdf-howto kind="pdf-to-image" />
     @if (!file()) {
       <app-file-drop label="Choose a PDF" hint="one PDF" [multiple]="false" (files)="pick($event[0])" />
     } @else {
