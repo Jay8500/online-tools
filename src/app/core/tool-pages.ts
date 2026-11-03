@@ -1,7 +1,7 @@
 import { Faq } from './seo.service';
 import { TOOL_LINKS, ToolKind, ToolLinkLite } from './tool-links';
 
-export type Disclaimer = 'files' | 'health' | 'invoice' | 'upi' | 'language' | 'land' | 'units' | 'gold' | 'weather' | 'travel' | 'metro' | 'fuel' | 'grocery' | 'cinema' | 'holidays' | 'traffic' | 'nearby' | 'currency' | 'plans' | 'panchangam' | 'markets' | 'everyday' | 'pf' | 'rent' | 'ifsc' | 'wishes';
+export type Disclaimer = 'files' | 'health' | 'invoice' | 'upi' | 'language' | 'land' | 'units' | 'gold' | 'weather' | 'travel' | 'metro' | 'fuel' | 'grocery' | 'cinema' | 'holidays' | 'traffic' | 'nearby' | 'currency' | 'plans' | 'panchangam' | 'markets' | 'everyday' | 'pf' | 'rent' | 'ifsc' | 'wishes' | 'jobs';
 
 export interface ToolPageInfo extends ToolLinkLite {
   h1: string;
@@ -515,6 +515,18 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
     ],
     disclaimer: 'rent',
   },
+  jobs: {
+    h1: 'Govt Job Notifications — TGPSC & Official Recruitment Sites',
+    title: 'TGPSC Latest Notifications Today + UPSC, APPSC, SSC, IBPS, RRB Official Links',
+    description: 'Latest TGPSC notices (recruitment, hall tickets, keys, results) straight from the official website, plus official links for UPSC, APPSC, SSC, IBPS, RRB and Telangana police — with the right photo size tool for each.',
+    intro: 'The newest TGPSC notices from the official site, and quick links to every major recruitment website.',
+    steps: ['Read the latest TGPSC notices at the top — they refresh every few hours.', 'Tap “Open official notice” to read the full PDF on the TGPSC website.', 'For UPSC, APPSC, SSC, IBPS or RRB, open the official site from the list.', 'Applying? Use the photo size link to resize your photo and signature.'],
+    faqs: [
+      { q: 'Are these the official notices?', a: 'Yes — the titles and links come straight from the TGPSC website. Always check the last date and eligibility in the official notice PDF.' },
+      { q: 'Why only links for UPSC, SSC and others?', a: 'Those websites don’t allow automatic reading, so we link to them directly instead of copying.' },
+    ],
+    disclaimer: 'jobs',
+  },
   wishes: {
     h1: 'Festival Wishes Card Maker — Telugu & English',
     title: 'Diwali Wishes Card Maker in Telugu & English — Free Greeting Image with Name & Photo',
@@ -624,6 +636,7 @@ export function toolPage(id: string): ToolPageInfo | undefined {
 }
 
 export const DISCLAIMERS: Record<Disclaimer, string> = {
+  jobs: 'Titles and links come from the official commission websites and refresh every few hours. Always confirm dates, fees and eligibility in the official notice before applying. We are not connected to any commission.',
   wishes: 'Your name and photo stay on your device; nothing is uploaded. Share the card freely.',
   rent: 'A format commonly accepted by employers for HRA — check with your HR or CA. Receipts must be signed by the owner; we don’t store anything you type.',
   ifsc: 'Branch data from the open Razorpay IFSC dataset (sourced from RBI). Always confirm the account details with the person you pay.',

@@ -78,6 +78,7 @@ const HINTS = [
 /** Everyday words people type, per tool path. */
 const KEYWORDS: Record<string, string> = {
   'age-calculator': 'age calculator date of birth dob birthday years old exam cut-off',
+  'govt-job-notifications': 'job jobs notification notifications recruitment vacancy govt government tgpsc tspsc appsc upsc ssc ibps rrb railway police exam hall ticket result key',
   'festival-wishes-card': 'diwali deepavali wishes greeting card image happy sankranti pongal ugadi christmas new year ramzan eid dasara dussehra birthday shubhakankshalu telugu whatsapp status photo name',
   'rent-receipt-generator': 'rent receipt hra house rent landlord owner tenant pdf print format',
   'ifsc-code-finder': 'ifsc code bank branch micr neft rtgs imps sbi hdfc icici address finder',
