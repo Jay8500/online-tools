@@ -5,7 +5,7 @@ import { Component, input } from '@angular/core';
   selector: 'app-brand',
   host: { class: 'inline-flex items-center gap-2 font-bold tracking-tight' },
   template: `
-    <img src="favicon.svg" alt="Spread Apps logo" [width]="size()" [height]="size()" [style.width.px]="size()" [style.height.px]="size()" />
+    <img src="favicon.svg" alt="Spread Apps Tools logo" [width]="size()" [height]="size()" [style.width.px]="size()" [style.height.px]="size()" />
     <span [class]="textClass()">Spread Apps</span>
     @if (tag()) {
       <span class="rounded-md bg-brand/10 px-1.5 py-0.5 text-[11px] leading-none font-bold text-brand uppercase">{{ tag() }}</span>
