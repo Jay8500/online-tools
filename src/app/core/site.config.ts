@@ -14,6 +14,11 @@ export const SITE = {
   ga4Id: 'G-DXSGQK0JV0',
   /** AdSense publisher ID, e.g. 'ca-pub-1234567890123456'. */
   adsenseClient: 'ca-pub-1803903263399664',
+  /**
+   * Switch for the manual ad boxes. Keep false until AdSense shows the site as "Ready", so visitors never see empty
+   * ad spaces. (The AdSense script still loads for the site review; Auto ads stay OFF in AdSense — ads only in our slots.)
+   */
+  adsLive: false,
   /** Ad unit slot IDs from AdSense → Ads → By ad unit. */
   adSlots: { top: '', inContent: '', sidebar: '' } as Record<string, string>,
   /**

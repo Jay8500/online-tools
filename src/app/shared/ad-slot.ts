@@ -29,7 +29,7 @@ export class AdSlot {
   protected readonly client = SITE.adsenseClient;
   protected readonly dev = isDevMode();
   protected get slotId() {
-    return SITE.adSlots[this.slot()] ?? '';
+    return SITE.adsLive ? (SITE.adSlots[this.slot()] ?? '') : '';
   }
 
   constructor() {
