@@ -108,7 +108,7 @@ import { AgeTool, CgpaTool, DaysTool, PercentTool, PfTool, SplitTool } from './t
           @if (uses(); as n) { <span class="font-medium text-ink">Used {{ n | number }} times.</span> }
         </p>
 
-        <section class="card p-3 sm:p-4" (input)="used()" (change)="used()" aria-label="Tool">
+        <section class="card p-3 sm:p-4" (input)="used()" (change)="used()" (click)="usedIfButton($event)" aria-label="Tool">
           @switch (t.id) {
             @case ('bmi') { @defer (on immediate; hydrate on immediate) { <app-bmi-tool /> } @placeholder { <div class="h-72"></div> } }
             @case ('calorie') { @defer (on immediate; hydrate on immediate) { <app-calorie-tool /> } @placeholder { <div class="h-96"></div> } }
@@ -262,5 +262,10 @@ export class ToolPageView {
     this.counted = true;
     this.counter.hit(this.info().id);
     this.consent.event('tool_use', { tool: this.info().id, how: 'use' });
+  }
+
+  /** Buttons count too (festival chips, Share, Download, Copy…) — not only typing. */
+  protected usedIfButton(e: Event) {
+    if ((e.target as HTMLElement).closest('button')) this.used();
   }
 }
