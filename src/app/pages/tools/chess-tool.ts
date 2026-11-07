@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnDestroy, afterNextRender, computed, signal, viewChild } from '@angular/core';
 import { Chess, Move, Square } from 'chess.js';
-import { COACH, CoachLang, PIECE_NAME, PIECE_SVG, PIECE_TIP, PIECE_VALUE, PieceType } from '../../core/chess';
+import { COACH, CoachLang, LANGS, PIECE_NAME, PIECE_SVG, PIECE_TIP, PIECE_VALUE, PieceType, phoneLang } from '../../core/chess';
 import { Icon } from '../../shared/icon';
 
 type Color = 'w' | 'b';
@@ -27,13 +27,13 @@ const MIN_THINK = 450;
 const xy = (sq: string) => [FILES.indexOf(sq[0]), 8 - +sq[1]] as const;
 const at = (x: number, y: number) => (FILES[x] + (8 - y)) as Square;
 
-/** Play chess against the computer with a coach that explains each piece (Telugu / English). */
+/** Play chess against the computer with a coach that explains each piece in 7 languages (Telugu, English, Hindi, Tamil, Kannada, Marathi, Odia). */
 @Component({
   selector: 'app-chess-tool',
   imports: [Icon],
   template: `
     <div class="chess">
-      <p class="coach" aria-live="polite">{{ coachText() }}</p>
+      <p class="coach" aria-live="polite" [attr.lang]="lang()">{{ coachText() }}</p>
 
       <div class="who top">
         <span><b>Computer</b> · {{ level().label }}</span>
@@ -111,10 +111,11 @@ const at = (x: number, y: number) => (FILES[x] + (8 - y)) as Square;
           }
         </div>
         <div class="row">
-          <div class="seg" role="group" aria-label="Coach language">
-            <button type="button" [attr.aria-pressed]="lang() === 'te'" (click)="setLang('te')">తెలుగు</button>
-            <button type="button" [attr.aria-pressed]="lang() === 'en'" (click)="setLang('en')">English</button>
-          </div>
+          <select class="input min-w-0 flex-1" aria-label="Coach language" (change)="setLang($any($event.target).value)">
+            @for (l of langs; track l.id) {
+              <option [value]="l.id" [selected]="lang() === l.id" [attr.lang]="l.id">{{ l.own }}</option>
+            }
+          </select>
           <button type="button" class="btn-icon" (click)="toggleSound()" [attr.aria-pressed]="sound()" [attr.aria-label]="sound() ? 'Sound on' : 'Sound off'" [title]="sound() ? 'Sound on' : 'Sound off'">
             {{ sound() ? '🔊' : '🔇' }}
           </button>
@@ -211,6 +212,7 @@ export class ChessTool implements OnDestroy {
   protected readonly busy = signal(false);
   protected readonly levelId = signal<LevelId>('easy');
   protected readonly lang = signal<CoachLang>('te');
+  protected readonly langs = LANGS;
   protected readonly sound = signal(true);
   protected readonly coach = signal<Coach>({ key: 'start' });
 
@@ -261,7 +263,7 @@ export class ChessTool implements OnDestroy {
       try {
         const p = JSON.parse(localStorage.getItem(PREFS) ?? '{}');
         if (LEVELS.some((l) => l.id === p.level)) this.levelId.set(p.level);
-        if (p.lang === 'en' || p.lang === 'te') this.lang.set(p.lang);
+        this.lang.set(LANGS.some((l) => l.id === p.lang) ? p.lang : phoneLang());
         if (p.sound === false) this.sound.set(false);
         const pgn = localStorage.getItem(SAVE);
         if (pgn) {

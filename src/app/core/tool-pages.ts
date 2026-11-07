@@ -541,8 +541,8 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
   },
   chess: {
     h1: 'Play Chess vs Computer — Learn as You Play',
-    title: 'Play Chess Online Free vs Computer — Learn Chess in Telugu & English with Hints',
-    description: 'Play chess against the computer for free — Easy, Medium and Hard levels, hints, undo and a coach that explains how every piece moves in Telugu or English. No signup, works on phone.',
+    title: 'Play Chess Online Free vs Computer — Learn Chess in Telugu, Hindi, Tamil & More with Hints',
+    description: 'Play chess against the computer for free — Easy, Medium and Hard levels, hints, undo and a coach that explains how every piece moves in Telugu, English, Hindi, Tamil, Kannada, Marathi or Odia. No signup, works on phone.',
     intro: 'New to chess? Tap a piece and the coach explains how it moves. Stuck? Tap Hint. Made a mistake? Undo.',
     steps: [
       'You play White. Tap one of your pieces — the squares it can go to light up with dots, and the coach explains how it moves.',
@@ -551,7 +551,7 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
       'Start on Easy. When you win, try Medium and Hard. Your game is saved if you close the page.',
     ],
     faqs: [
-      { q: 'I don’t know chess at all. Can I learn here?', a: 'Yes. Tap any piece and the coach tells you how it moves, in Telugu or English. Legal squares show as dots, so you can’t make a wrong move. Use Hint and Undo as much as you like.' },
+      { q: 'I don’t know chess at all. Can I learn here?', a: 'Yes. Tap any piece and the coach tells you how it moves — in Telugu, English, Hindi, Tamil, Kannada, Marathi or Odia (pick it under the board). Legal squares show as dots, so you can’t make a wrong move. Use Hint and Undo as much as you like.' },
       { q: 'How strong is the computer?', a: 'Easy makes beginner mistakes so you can win, Medium plays sensible moves, and Hard looks a few moves ahead. It is made for learning, not for masters.' },
       { q: 'How do I win?', a: 'Put the computer’s King in check so that it has no way out — that is checkmate. If a side has no legal move but is not in check, the game is a draw (stalemate).' },
       { q: 'What happens when my pawn reaches the last row?', a: 'It becomes a Queen automatically — the strongest piece.' },
