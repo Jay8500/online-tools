@@ -40,6 +40,7 @@ import { GroceryTool } from './tools/grocery-tool';
 import { IfscTool, RentReceiptTool } from './tools/bank-tools';
 import { WishesTool } from './tools/wishes-tool';
 import { JobsTool } from './tools/jobs-tool';
+import { ChessTool } from './tools/chess-tool';
 import { AgeTool, CgpaTool, DaysTool, PercentTool, PfTool, SplitTool } from './tools/everyday-tools';
 
 /** Pages for PDF, business, health and language tools (route data `tool` = id from core/tool-links.ts). */
@@ -88,6 +89,7 @@ import { AgeTool, CgpaTool, DaysTool, PercentTool, PfTool, SplitTool } from './t
     IfscTool,
     WishesTool,
     JobsTool,
+    ChessTool,
     CgpaTool,
     SplitTool,
     DaysTool,
@@ -149,6 +151,7 @@ import { AgeTool, CgpaTool, DaysTool, PercentTool, PfTool, SplitTool } from './t
             @case ('count') { @defer (on immediate; hydrate on immediate) { <app-unit-tool category="count" /> } @placeholder { <div class="h-96"></div> } }
             @case ('age') { @defer (on immediate; hydrate on immediate) { <app-age-tool /> } @placeholder { <div class="h-80"></div> } }
             @case ('jobs') { @defer (on immediate; hydrate on immediate) { <app-jobs-tool /> } @placeholder { <div class="h-[40rem]"></div> } }
+            @case ('chess') { @defer (on immediate; hydrate on immediate) { <app-chess-tool /> } @placeholder { <div class="aspect-square"></div> } }
             @case ('wishes') { @defer (on immediate; hydrate on immediate) { <app-wishes-tool /> } @placeholder { <div class="h-[36rem]"></div> } }
             @case ('rent-receipt') { @defer (on immediate; hydrate on immediate) { <app-rent-receipt-tool /> } @placeholder { <div class="h-[40rem]"></div> } }
             @case ('ifsc') { @defer (on immediate; hydrate on immediate) { <app-ifsc-tool /> } @placeholder { <div class="h-48"></div> } }

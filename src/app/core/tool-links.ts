@@ -47,9 +47,10 @@ export type ToolKind =
   | 'rent-receipt'
   | 'ifsc'
   | 'wishes'
-  | 'jobs';
+  | 'jobs'
+  | 'chess';
 
-export type ToolGroupName = 'PDF tools' | 'Business tools' | 'Health calculators' | 'Language tools' | 'Converters' | 'Daily tools';
+export type ToolGroupName = 'PDF tools' | 'Business tools' | 'Health calculators' | 'Language tools' | 'Converters' | 'Daily tools' | 'Games';
 
 export interface ToolLinkLite {
   id: ToolKind;
@@ -107,6 +108,7 @@ export const TOOL_LINKS: ToolLinkLite[] = [
   { id: 'volume', path: 'volume-converter', name: 'Volume converter', group: 'Converters', icon: 'cup-soda', blurb: 'Litres, ml, gallons' },
   { id: 'speed', path: 'speed-converter', name: 'Speed converter', group: 'Converters', icon: 'gauge', blurb: 'km/h, mph, m/s' },
   { id: 'data', path: 'data-size-converter', name: 'Data size converter', group: 'Converters', icon: 'hard-drive', blurb: 'KB, MB, GB, Mbps' },
+  { id: 'chess', path: 'games/chess', name: 'Chess vs computer', group: 'Games', icon: 'crown', blurb: 'Play & learn chess with a Telugu coach' },
   { id: 'techterms', path: 'computer-abbreviations', name: 'Computer full forms', group: 'Language tools', icon: 'cpu', blurb: '120+ IT abbreviations + data maths' },
   { id: 'telugu', path: 'telugu-typing', name: 'Telugu typing', group: 'Language tools', icon: 'languages', blurb: 'Type English, get తెలుగు' },
 ];

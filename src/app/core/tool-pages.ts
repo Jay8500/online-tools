@@ -1,7 +1,7 @@
 import { Faq } from './seo.service';
 import { TOOL_LINKS, ToolKind, ToolLinkLite } from './tool-links';
 
-export type Disclaimer = 'files' | 'health' | 'invoice' | 'upi' | 'language' | 'land' | 'units' | 'gold' | 'weather' | 'travel' | 'metro' | 'fuel' | 'grocery' | 'cinema' | 'holidays' | 'traffic' | 'nearby' | 'currency' | 'plans' | 'panchangam' | 'markets' | 'everyday' | 'pf' | 'rent' | 'ifsc' | 'wishes' | 'jobs';
+export type Disclaimer = 'files' | 'health' | 'invoice' | 'upi' | 'language' | 'land' | 'units' | 'gold' | 'weather' | 'travel' | 'metro' | 'fuel' | 'grocery' | 'cinema' | 'holidays' | 'traffic' | 'nearby' | 'currency' | 'plans' | 'panchangam' | 'markets' | 'everyday' | 'pf' | 'rent' | 'ifsc' | 'wishes' | 'jobs' | 'games';
 
 export interface ToolPageInfo extends ToolLinkLite {
   h1: string;
@@ -539,6 +539,26 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
     ],
     disclaimer: 'wishes',
   },
+  chess: {
+    h1: 'Play Chess vs Computer — Learn as You Play',
+    title: 'Play Chess Online Free vs Computer — Learn Chess in Telugu & English with Hints',
+    description: 'Play chess against the computer for free — Easy, Medium and Hard levels, hints, undo and a coach that explains how every piece moves in Telugu or English. No signup, works on phone.',
+    intro: 'New to chess? Tap a piece and the coach explains how it moves. Stuck? Tap Hint. Made a mistake? Undo.',
+    steps: [
+      'You play White. Tap one of your pieces — the squares it can go to light up with dots, and the coach explains how it moves.',
+      'Tap a dot (or drag the piece) to move. The computer replies in a moment.',
+      'Stuck? Tap Hint to see a good move. Made a mistake? Tap Undo.',
+      'Start on Easy. When you win, try Medium and Hard. Your game is saved if you close the page.',
+    ],
+    faqs: [
+      { q: 'I don’t know chess at all. Can I learn here?', a: 'Yes. Tap any piece and the coach tells you how it moves, in Telugu or English. Legal squares show as dots, so you can’t make a wrong move. Use Hint and Undo as much as you like.' },
+      { q: 'How strong is the computer?', a: 'Easy makes beginner mistakes so you can win, Medium plays sensible moves, and Hard looks a few moves ahead. It is made for learning, not for masters.' },
+      { q: 'How do I win?', a: 'Put the computer’s King in check so that it has no way out — that is checkmate. If a side has no legal move but is not in check, the game is a draw (stalemate).' },
+      { q: 'What happens when my pawn reaches the last row?', a: 'It becomes a Queen automatically — the strongest piece.' },
+      { q: 'Is it safe for kids?', a: 'Yes. No chat, no sign-up and nothing to download — just chess on the board.' },
+    ],
+    disclaimer: 'games',
+  },
   ifsc: {
     h1: 'IFSC Code Details — Bank & Branch',
     title: 'IFSC Code Finder — Check Bank, Branch, Address & MICR from IFSC',
@@ -636,6 +656,7 @@ export function toolPage(id: string): ToolPageInfo | undefined {
 }
 
 export const DISCLAIMERS: Record<Disclaimer, string> = {
+  games: 'Your game and settings are saved only on this device. The computer runs in your browser — nothing is sent anywhere.',
   jobs: 'Titles and links come from the official commission websites and refresh every few hours. Always confirm dates, fees and eligibility in the official notice before applying. We are not connected to any commission.',
   wishes: 'Your name and photo stay on your device; nothing is uploaded. Share the card freely.',
   rent: 'A format commonly accepted by employers for HRA — check with your HR or CA. Receipts must be signed by the owner; we don’t store anything you type.',

@@ -10,6 +10,7 @@ export const HUB_PATHS: Record<string, string> = {
   'Language tools': 'language-tools',
   Converters: 'unit-converters',
   'Daily tools': 'daily-tools',
+  Games: 'games',
 };
 
 export const HUB_ROUTES = [...new Set(Object.values(HUB_PATHS))];

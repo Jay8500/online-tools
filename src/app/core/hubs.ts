@@ -152,6 +152,17 @@ export const HUBS: Hub[] = [
     items: fromGroup('Language tools'),
     faqs: [{ q: 'Do I need to install a keyboard?', a: 'No. Type in English letters on this page and copy the Telugu text anywhere.' }],
   },
+  {
+    id: 'games',
+    path: 'games',
+    name: 'Games',
+    h1: 'Games',
+    title: 'Free Games — Play Chess vs Computer, Learn with a Telugu Coach',
+    description: 'Free brain games that also teach: play chess against the computer with hints, undo and a coach that explains every piece in Telugu or English. No signup, no download.',
+    intro: 'Games that are fun and teach you something. Start with chess — the coach explains every move.',
+    items: fromGroup('Games'),
+    faqs: [{ q: 'Do I need to sign up or download anything?', a: 'No. The games run in your browser on your phone or computer, free.' }],
+  },
 ];
 
 export function hubByName(name: string): Hub | undefined {

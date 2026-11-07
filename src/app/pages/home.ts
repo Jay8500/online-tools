@@ -38,6 +38,7 @@ const CHIPS: { key: string; label: string; icon: string }[] = [
   { key: 'Business tools', label: 'Business', icon: 'receipt' },
   { key: 'Health calculators', label: 'Health', icon: 'heart-pulse' },
   { key: 'Language tools', label: 'Language', icon: 'languages' },
+  { key: 'Games', label: 'Games', icon: 'crown' },
 ];
 /** Topic chips: related tools picked across groups (shown first, after "All"). */
 const TOPICS: { key: string; label: string; icon: string; title: string; paths: string[] }[] = [
