@@ -1,4 +1,6 @@
-import { Component, ElementRef, OnDestroy, ViewEncapsulation, afterNextRender, computed, inject, input, output, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, ViewEncapsulation, afterNextRender, computed, input, output, signal, viewChild } from '@angular/core';
+import { BackLayer, pushLayer } from '../core/back-layer';
+import { GameFx } from '../core/game-fx';
 
 interface News {
   title: string;
@@ -191,18 +193,11 @@ export class NewsPanel implements OnDestroy {
   protected readonly index = signal(0);
   protected readonly leaving = signal(false);
   private readonly feed = viewChild<ElementRef<HTMLElement>>('feed');
+  private readonly fx = new GameFx();
   private overflow = '';
-  /** Phone Back: 1 = open, 2 = reading a category — Back steps out instead of leaving the site. */
-  private depth = 0;
-  private readonly onPop = () => {
-    if (this.depth === 2) {
-      this.depth = 1;
-      this.readCat.set(null);
-    } else if (this.depth === 1) {
-      this.depth = 0;
-      this.shut();
-    }
-  };
+  /** Phone Back steps out one layer at a time: reader → rows → closed. */
+  private homeL?: BackLayer;
+  private readL?: BackLayer;
 
   constructor() {
     if (typeof document !== 'undefined' && !document.getElementById('nw-css')) {
@@ -222,16 +217,16 @@ export class NewsPanel implements OnDestroy {
       this.first.set(CATS.some((c) => c.id === start) ? start : 'telangana');
       // Load the rows in the order shown (the CDN caches each feed for 15 minutes).
       this.ordered().forEach((c, i) => setTimeout(() => this.load(c.id), i * 60));
-      this.depth = 1;
-      history.pushState({ ...(history.state ?? {}), nw: 1 }, '');
-      addEventListener('popstate', this.onPop);
+      this.homeL = pushLayer(() => {
+        this.homeL = this.readL = undefined;
+        this.shut();
+      });
     });
   }
 
   ngOnDestroy() {
     if (typeof document === 'undefined') return;
     document.documentElement.style.overflow = this.overflow;
-    removeEventListener('popstate', this.onPop);
   }
 
   private async load(id: string) {
@@ -245,13 +240,16 @@ export class NewsPanel implements OnDestroy {
   }
 
   protected openCat(id: string, i: number) {
+    this.fx.unlock();
+    this.fx.pop();
     try {
       localStorage.setItem(KEY, id);
     } catch {}
-    if (this.depth === 1) {
-      this.depth = 2;
-      history.pushState({ ...(history.state ?? {}), nw: 2 }, '');
-    }
+    if (!this.readL)
+      this.readL = pushLayer(() => {
+        this.readL = undefined;
+        this.readCat.set(null);
+      });
     this.readCat.set(id);
     this.index.set(i);
     setTimeout(() => {
@@ -261,15 +259,18 @@ export class NewsPanel implements OnDestroy {
   }
 
   protected toHome() {
-    if (this.depth === 2) return history.back();
+    const l = this.readL;
+    this.readL = undefined;
+    l?.release();
+    this.fx.soft();
     this.readCat.set(null);
   }
 
   protected close() {
     if (this.leaving()) return;
-    const d = this.depth;
-    this.depth = 0;
-    if (d) history.go(-d);
+    const l = this.homeL;
+    this.homeL = this.readL = undefined;
+    l?.release();
     this.shut();
   }
 
@@ -282,7 +283,12 @@ export class NewsPanel implements OnDestroy {
 
   protected onScroll() {
     const el = this.feed()?.nativeElement;
-    if (el) this.index.set(Math.round(el.scrollTop / Math.max(1, el.clientHeight)));
+    if (!el) return;
+    const i = Math.round(el.scrollTop / Math.max(1, el.clientHeight));
+    if (i !== this.index()) {
+      this.index.set(i);
+      this.fx.whoosh();
+    }
   }
 
   protected key(e: KeyboardEvent) {
@@ -294,6 +300,8 @@ export class NewsPanel implements OnDestroy {
   }
 
   protected async share(n: News) {
+    this.fx.unlock();
+    this.fx.tik();
     const text = `${n.title}\n\n📰 More news: tools.spreadapps.in`;
     try {
       if (navigator.share) return await navigator.share({ title: n.title, text, url: n.link });

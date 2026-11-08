@@ -1,4 +1,5 @@
-import { Component, ElementRef, afterNextRender, inject, input, output } from '@angular/core';
+import { Component, ElementRef, OnDestroy, afterNextRender, inject, input, output } from '@angular/core';
+import { BackLayer, pushLayer } from '../core/back-layer';
 import { RouterLink } from '@angular/router';
 import { APP_VERSION } from '../core/version';
 import { Icon } from './icon';
@@ -7,10 +8,10 @@ import { Icon } from './icon';
 @Component({
   selector: 'app-whats-new',
   imports: [RouterLink, Icon],
-  host: { '(document:keydown.escape)': 'closed.emit()' },
+  host: { '(document:keydown.escape)': 'close()' },
   template: `
     <div class="fixed inset-0 z-50 flex items-end justify-center sm:items-center" role="dialog" aria-modal="true" aria-labelledby="wn-title">
-      <button type="button" class="backdrop absolute inset-0 bg-black/40" aria-label="Close" tabindex="-1" (click)="closed.emit()"></button>
+      <button type="button" class="backdrop absolute inset-0 bg-black/40" aria-label="Close" tabindex="-1" (click)="close()"></button>
       <div class="sheet relative max-h-[85dvh] w-full overflow-y-auto rounded-t-3xl border border-line bg-surface p-4 shadow-2xl sm:max-w-lg sm:rounded-3xl sm:p-5">
         <div class="mx-auto mb-3 h-1 w-10 rounded-full bg-line sm:hidden" aria-hidden="true"></div>
         <div class="flex items-start justify-between gap-3">
@@ -18,14 +19,14 @@ import { Icon } from './icon';
             <h2 id="wn-title" class="text-lg font-bold">✨ New on Spread Apps Tools</h2>
             <p class="text-xs text-muted">{{ tools().length }} tools added recently — tap to try. <span class="font-mono">v{{ ver.version }}</span></p>
           </div>
-          <button type="button" class="close grid size-9 shrink-0 place-items-center rounded-full hover:bg-surface-2" aria-label="Close" (click)="closed.emit()">
+          <button type="button" class="close grid size-9 shrink-0 place-items-center rounded-full hover:bg-surface-2" aria-label="Close" (click)="close()">
             <svg lucideIcon="x" [size]="18" />
           </button>
         </div>
         <ul class="mt-3 space-y-1.5">
           @for (t of tools(); track t.path; let i = $index) {
             <li class="item" [style.animation-delay.ms]="60 + i * 40">
-              <a [routerLink]="'/' + t.path" (click)="closed.emit()" class="group flex items-center gap-3 rounded-2xl border border-line p-3 transition hover:border-brand/50">
+              <a [routerLink]="'/' + t.path" [replaceUrl]="true" (click)="leave()" class="group flex items-center gap-3 rounded-2xl border border-line p-3 transition hover:border-brand/50">
                 <span class="grid size-9 shrink-0 place-items-center rounded-xl bg-brand/10 text-brand"><svg [lucideIcon]="t.icon" [size]="18" /></span>
                 <span class="min-w-0 flex-1"><span class="block text-sm font-semibold group-hover:text-brand">{{ t.name }}</span><span class="block truncate text-xs text-muted">{{ t.blurb }}</span></span>
                 <svg lucideIcon="chevron-right" [size]="16" class="shrink-0 text-muted" />
@@ -46,13 +47,40 @@ import { Icon } from './icon';
     @media (prefers-reduced-motion: reduce) { .backdrop, .sheet, .item { animation: none; } }
   `,
 })
-export class WhatsNew {
+export class WhatsNew implements OnDestroy {
   readonly tools = input.required<{ path: string; name: string; icon: string; blurb: string }[]>();
   readonly closed = output<void>();
   protected readonly ver = APP_VERSION;
 
   constructor() {
     const host = inject(ElementRef<HTMLElement>).nativeElement;
-    afterNextRender(() => host.querySelector('button.close')?.focus());
+    afterNextRender(() => {
+      (host.querySelector('button.close') as HTMLElement | null)?.focus();
+      // Phone Back closes the sheet instead of leaving the page.
+      this.layer = pushLayer(() => {
+        this.layer = undefined;
+        this.closed.emit();
+      });
+    });
+  }
+
+  private layer?: BackLayer;
+
+  protected close() {
+    const l = this.layer;
+    this.layer = undefined;
+    l?.release();
+    this.closed.emit();
+  }
+
+  /** A tool link replaces the sheet's history step (replaceUrl), so nothing to take back. */
+  protected leave() {
+    this.layer?.drop();
+    this.layer = undefined;
+    this.closed.emit();
+  }
+
+  ngOnDestroy() {
+    this.layer?.release();
   }
 }

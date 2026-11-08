@@ -1,4 +1,5 @@
 import { Injectable, signal } from '@angular/core';
+import { BackLayer, pushLayer } from './back-layer';
 
 export type DialogTone = 'primary' | 'danger' | 'warning' | 'success';
 
@@ -36,11 +37,13 @@ export interface DialogState extends PromptOptions {
 @Injectable({ providedIn: 'root' })
 export class DialogService {
   readonly current = signal<DialogState | null>(null);
+  private layer?: BackLayer;
 
   confirm(o: ConfirmOptions): Promise<boolean> {
     return new Promise((resolve) => {
       this.current()?.resolve(this.current()!.kind === 'confirm' ? false : null);
       this.current.set({ label: '', ...o, kind: 'confirm', resolve: (v) => resolve(v === true) });
+      this.guard();
     });
   }
 
@@ -48,6 +51,18 @@ export class DialogService {
     return new Promise((resolve) => {
       this.current()?.resolve(this.current()!.kind === 'confirm' ? false : null);
       this.current.set({ ...o, kind: 'prompt', resolve: (v) => resolve(typeof v === 'string' ? v : null) });
+      this.guard();
+    });
+  }
+
+  /** Phone Back closes the dialog like Cancel. */
+  private guard() {
+    this.layer ??= pushLayer(() => {
+      this.layer = undefined;
+      const d = this.current();
+      if (!d) return;
+      this.current.set(null);
+      d.resolve(d.kind === 'confirm' ? false : null);
     });
   }
 
@@ -56,6 +71,9 @@ export class DialogService {
     const d = this.current();
     if (!d) return;
     this.current.set(null);
-    d.resolve(value);
+    const l = this.layer;
+    this.layer = undefined;
+    if (l) l.release().then(() => d.resolve(value));
+    else d.resolve(value);
   }
 }

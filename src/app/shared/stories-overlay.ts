@@ -1,4 +1,5 @@
 import { Component, Directive, ElementRef, OnDestroy, ViewEncapsulation, afterNextRender, computed, effect, inject, input, signal, viewChild } from '@angular/core';
+import { BackLayer, pushLayer } from '../core/back-layer';
 import { GameFx } from '../core/game-fx';
 import { LANGS, phoneLang } from '../core/langs';
 import { storyArt } from '../core/story-art';
@@ -269,7 +270,7 @@ export class StoryArtHost {
         }
 
         @if (menu()) {
-          <div class="ss-scrim clear" (click)="menu.set(false)"></div>
+          <div class="ss-scrim clear" (click)="closeMenu()"></div>
           <div class="ss-pop" [class.r]="mode() === 'browse'" role="menu" aria-label="Language">
             @for (l of langs; track l.id) {
               <button type="button" role="menuitemradio" [attr.lang]="l.id" [attr.aria-checked]="uiLang() === l.id" [disabled]="l.id !== 'te' && l.id !== 'en'" (click)="setLang(l.id)">
@@ -279,7 +280,7 @@ export class StoryArtHost {
           </div>
         }
         @if (suggesting()) {
-          <div class="ss-scrim" (click)="suggesting.set(false)"></div>
+          <div class="ss-scrim" (click)="closeSuggest()"></div>
           <div class="ss-sheet" role="dialog" aria-label="Suggest a story">
             <h3>{{ lang() === 'te' ? 'ఏ కథ కావాలి?' : 'Which story should we add?' }}</h3>
             <textarea #sug maxlength="400" [placeholder]="lang() === 'te' ? 'ఉదా: ప్రహ్లాదుడి కథ' : 'e.g. Prahlada’s story'" aria-label="Your story idea"></textarea>
@@ -303,25 +304,11 @@ export class StoriesOverlay implements OnDestroy {
   private drag: { id: number; x0: number; y0: number; t0: number; dx: number; mode: 'wait' | 'drag' | 'off' } | null = null;
   private frame = 0;
   private readonly onResize = () => this.place(0, false);
-  /**
-   * Phone back button: the overlay adds history entries (1 = open, 2 = reading from the home rows), so
-   * Back goes reader → rows → closed instead of leaving the site. Same URL, so the router ignores them.
-   */
-  private depth = 0;
-  private readonly onPop = () => {
-    if (this.depth === 2) {
-      this.depth = 1;
-      this.fx.soft();
-      this.mode.set('browse');
-    } else if (this.depth === 1) {
-      this.depth = 0;
-      this.shut();
-    }
-  };
-  private push() {
-    this.depth++;
-    history.pushState({ ...(history.state ?? {}), ss: this.depth }, '');
-  }
+  /** Phone Back steps out one layer at a time: menu / suggest sheet → reader → rows → closed. */
+  private homeL?: BackLayer;
+  private readL?: BackLayer;
+  private menuL?: BackLayer;
+  private sugL?: BackLayer;
   private readonly fx = new GameFx();
   private readonly arts = new Map<number, string>();
   private overflow = '';
@@ -390,8 +377,10 @@ export class StoriesOverlay implements OnDestroy {
       }
       this.place(0, false);
       this.wireSwipe();
-      this.push();
-      addEventListener('popstate', this.onPop);
+      this.homeL = pushLayer(() => {
+        this.homeL = this.readL = this.menuL = this.sugL = undefined;
+        this.shut();
+      });
       addEventListener('resize', this.onResize);
       if (st?.welcome) {
         import('../core/celebrate').then((c) => c.shower('festive', 4500));
@@ -415,7 +404,6 @@ export class StoriesOverlay implements OnDestroy {
     if (typeof document === 'undefined') return;
     document.documentElement.style.overflow = this.overflow;
     removeEventListener('resize', this.onResize);
-    removeEventListener('popstate', this.onPop);
     cancelAnimationFrame(this.frame);
   }
 
@@ -524,10 +512,10 @@ export class StoriesOverlay implements OnDestroy {
 
   protected onKey(e: KeyboardEvent) {
     if (e.key === 'Escape') {
-      if (this.menu() || this.suggesting()) {
-        this.menu.set(false);
-        this.suggesting.set(false);
-      } else this.close();
+      if (this.menu()) this.closeMenu();
+      else if (this.suggesting()) this.closeSuggest();
+      else if (this.readL) this.toBrowse();
+      else this.close();
       return;
     }
     if (this.menu() || this.suggesting()) return;
@@ -545,7 +533,12 @@ export class StoriesOverlay implements OnDestroy {
     this.fx.unlock();
     this.fx.pop();
     this.idx.set(i);
-    if (this.mode() === 'browse' && this.depth === 1) this.push();
+    if (this.mode() === 'browse' && !this.readL)
+      this.readL = pushLayer(() => {
+        this.readL = undefined;
+        this.fx.soft();
+        this.mode.set('browse');
+      });
     this.mode.set('read');
     this.entering.set(true);
     setTimeout(() => {
@@ -556,7 +549,9 @@ export class StoriesOverlay implements OnDestroy {
   }
 
   protected toBrowse() {
-    if (this.depth === 2) return history.back(); // popstate brings the rows back
+    const l = this.readL;
+    this.readL = undefined;
+    l?.release();
     this.fx.soft();
     this.mode.set('browse');
   }
@@ -569,10 +564,10 @@ export class StoriesOverlay implements OnDestroy {
   /** Shrinks back into the ring, then removes the overlay. */
   protected close() {
     if (this.leaving()) return;
-    // Drop our history entries too, so Back afterwards behaves like before the stories opened.
-    const d = this.depth;
-    this.depth = 0;
-    if (d) history.go(-d);
+    // Take our history steps back out, so Back afterwards behaves like before the stories opened.
+    const l = this.homeL;
+    this.homeL = this.readL = this.menuL = this.sugL = undefined;
+    l?.release();
     this.shut();
   }
 
@@ -589,14 +584,26 @@ export class StoriesOverlay implements OnDestroy {
 
   protected toggleMenu() {
     this.fx.unlock();
-    this.menu.update((m) => !m);
-    if (this.menu()) this.fx.soft();
+    if (this.menu()) return this.closeMenu();
+    this.menu.set(true);
+    this.fx.soft();
+    this.menuL = pushLayer(() => {
+      this.menuL = undefined;
+      this.menu.set(false);
+    });
+  }
+
+  protected closeMenu() {
+    this.menu.set(false);
+    const l = this.menuL;
+    this.menuL = undefined;
+    l?.release();
   }
 
   protected setLang(l: string) {
     if (l !== 'te' && l !== 'en') return;
     this.lang.set(l);
-    this.menu.set(false);
+    this.closeMenu();
     this.fx.pop();
     try {
       localStorage.setItem(LANG_KEY, l);
@@ -638,7 +645,18 @@ export class StoriesOverlay implements OnDestroy {
     this.fx.unlock();
     this.fx.soft();
     this.suggesting.set(true);
+    this.sugL = pushLayer(() => {
+      this.sugL = undefined;
+      this.suggesting.set(false);
+    });
     setTimeout(() => document.querySelector<HTMLTextAreaElement>('.ss-sheet textarea')?.focus(), 300);
+  }
+
+  protected closeSuggest() {
+    this.suggesting.set(false);
+    const l = this.sugL;
+    this.sugL = undefined;
+    l?.release();
   }
 
   protected async sendSuggest(text: string) {
@@ -648,7 +666,7 @@ export class StoriesOverlay implements OnDestroy {
     try {
       const r = await fetch('/api/feedback', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ page: 'spread-stories', name: 'Spread Stories', text: text.trim(), website: '' }) });
       if (!r.ok) throw new Error();
-      this.suggesting.set(false);
+      this.closeSuggest();
       this.fx.chime();
       this.toast.show(te ? 'ధన్యవాదాలు! మీ సూచన మాకు చేరింది 🙏' : 'Thank you! Your idea reached us 🙏', 'success');
     } catch {
