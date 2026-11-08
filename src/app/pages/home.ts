@@ -12,6 +12,7 @@ import { TOOL_GROUPS, groupAnchor } from '../core/tools';
 import { TOOL_LINKS } from '../core/tool-links';
 import { CALC_LINKS } from '../core/calc-links';
 import { AdSlot } from '../shared/ad-slot';
+import { PosterArt, POSTER_PATHS } from '../shared/poster-art';
 import { LiveBadge, WEATHER_ICON } from '../shared/live-badge';
 import { Sky } from '../shared/sky';
 import { MarketArt } from '../shared/market-art';
@@ -166,6 +167,11 @@ const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-p
     .pp:active { transform: scale(0.97); }
     .pp::after { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgb(0 0 0 / 0.25), transparent 70%); }
     .pp-art { position: absolute; z-index: -1; right: -8px; bottom: -14px; opacity: 0.16; transform: rotate(-10deg); transition: transform 0.5s; }
+    .pp > span { position: relative; z-index: 1; }
+    .pp-live app-poster-art { opacity: 0.45; }
+    @media (min-width: 768px) { .pp app-poster-art { width: 96px; height: 96px; opacity: 0.6; } .pp-live app-poster-art { opacity: 0.35; } }
+    .pp:hover app-poster-art { transform: translateY(-50%) scale(1.08) rotate(-3deg); }
+    .pp::after { background: linear-gradient(90deg, rgb(0 0 0 / 0.35), rgb(0 0 0 / 0.1) 55%, transparent); }
     .pp:hover .pp-art { transform: rotate(-4deg) scale(1.1); }
     .pl-knight { top: -12px; right: 8px; font-size: 8.5rem; color: #fff; opacity: 0.16; }
     .pl-peacock { top: -4px; right: 12px; font-size: 6.5rem; opacity: 0.3; }
@@ -182,7 +188,7 @@ const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-p
     }
     @media (prefers-reduced-motion: reduce) { .pl-card, .pl-art, .pp, .pp-art { transition: none; animation: none; } }
   `,
-  imports: [RouterLink, FormsModule, Icon, AdSlot, LiveBadge, Sky, MarketArt, FestivalCard, PinButton, ExamPicker, ToolTicker, WhatsNew, TodayCard],
+  imports: [PosterArt, RouterLink, FormsModule, Icon, AdSlot, LiveBadge, Sky, MarketArt, FestivalCard, PinButton, ExamPicker, ToolTicker, WhatsNew, TodayCard],
   template: `
     <app-festival-card />
     @if (sheetOpen()) {
@@ -294,11 +300,11 @@ const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-p
         <!-- Phones: two rows that swipe sideways (like streaming apps); larger screens: a grid -->
         <div class="pop-row">
           @for (t of popular(); track t.path; let i = $index) {
-            <div class="card sky-card pp group relative isolate flex items-center gap-3 overflow-hidden p-3" [style.--i]="i" [style.background]="poster(i)">
+            <div class="card sky-card pp group relative isolate flex items-center gap-3 overflow-hidden p-3" [style.--i]="i" [style.background]="poster(i)" [class.pp-live]="!!live(t.path)">
               @if (t.path === 'weather' && skyIcon()) { <app-sky [icon]="skyIcon()" class="-z-10" /> }
               @if (t.path === 'stock-market-today') { @defer (on idle) { <app-market-art /> } }
               <a [routerLink]="'/' + t.path" class="absolute inset-0 rounded-2xl" [attr.aria-label]="t.name"></a>
-              <svg [lucideIcon]="t.icon" [size]="76" class="pp-art" aria-hidden="true" />
+              @if (t.path === 'weather' && skyIcon()) {} @else if (hasPoster.has(t.path!)) { <app-poster-art [path]="t.path!" /> } @else { <svg [lucideIcon]="t.icon" [size]="76" class="pp-art" aria-hidden="true" /> }
               <span class="grid size-9 shrink-0 place-items-center rounded-xl bg-white/20 text-white"><svg [lucideIcon]="t.icon" [size]="18" /></span>
               <span class="min-w-0"><span class="block text-sm font-semibold group-hover:text-brand">{{ t.name }}@if (fresh.has(t.path!)) { <span class="ml-1 inline-block rounded-full bg-brand px-1.5 align-middle text-[9px] leading-4 font-bold text-white">NEW</span> }</span><span class="hidden text-xs text-muted sm:block">{{ t.blurb }}</span></span>
               <span class="-my-1.5 -mr-1.5 ml-auto flex shrink-0 flex-col items-end gap-0.5 self-start">
@@ -449,6 +455,7 @@ export class Home {
   protected readonly stories = inject(StoriesService);
   /** Little number grid drawn on the Sudoku card. */
   protected readonly sudokuArt = ['5', '', '3', '', '7', '', '9', '', '1'];
+  protected readonly hasPoster = POSTER_PATHS;
   protected readonly xoArt = ['✕', '', '◯', '', '✕', '', '◯', '', '✕'];
   /** Poster colours for the Popular row (streaming-app style). */
   private readonly posters = ['#4f46e5,#1e1b4b', '#0d9488,#042f2e', '#e11d48,#4c0519', '#d97706,#451a03', '#2563eb,#0c1e4a', '#9333ea,#2e1065', '#059669,#022c22', '#db2777,#500724'];
