@@ -124,6 +124,18 @@ const at = (x: number, y: number) => (FILES[x] + (8 - y)) as Square;
             </div>
           </div>
         }
+        @if (mode() === 'online' && onlineErr() && !room() && !joinFor() && !joining()) {
+          <!-- someone else's link (full, cancelled or expired): say so on the board and offer a way to play -->
+          <div class="over">
+            <div class="grid justify-items-center gap-3 px-4">
+              <p class="text-lg font-extrabold">{{ onlineErr() }}</p>
+              <div class="flex flex-wrap justify-center gap-2">
+                <button type="button" class="btn-primary" (click)="onlineErr.set(''); quickInvite()">👥 Start my own game</button>
+                <button type="button" class="btn-ghost bg-white/90 text-slate-900" (click)="leaveOnline()">🤖 Play the computer</button>
+              </div>
+            </div>
+          </div>
+        }
         @if (joining()) {
           <div class="over"><p class="text-lg font-extrabold">♟️ Joining {{ joining() }}’s game…</p></div>
         }
