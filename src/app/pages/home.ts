@@ -24,6 +24,7 @@ import { TodayCard } from '../shared/today-card';
 import { LATEST_ADDED, NEW_TOOLS, freshPaths } from '../core/new-tools';
 import { UserTools } from '../core/user-tools';
 import { SOURCES } from '../core/sources';
+import { StoriesService } from '../core/stories.service';
 
 const HOME_PER_GROUP = 4;
 const EXAM_KEY = 'Exam photos';
@@ -140,6 +141,36 @@ const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-p
 
 @Component({
   selector: 'app-home',
+  styles: `
+    .pl-row { display: flex; gap: 10px; margin: 0 -12px; padding: 0 12px 4px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding: 12px; scrollbar-width: none; }
+    .pl-row::-webkit-scrollbar, .pop-row::-webkit-scrollbar { display: none; }
+    .pl-card { position: relative; isolation: isolate; flex: 0 0 78%; height: 10rem; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end; gap: 1px;
+      overflow: hidden; border: 0; border-radius: 1rem; padding: 1rem; color: #fff; text-align: left; scroll-snap-align: start; cursor: pointer;
+      box-shadow: 0 12px 26px -14px rgb(15 23 42 / 0.6); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s; }
+    .pl-card::after { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(0deg, rgb(0 0 0 / 0.55), transparent 70%); }
+    .pl-card:hover { transform: translateY(-2px); box-shadow: 0 18px 32px -14px rgb(15 23 42 / 0.7); }
+    .pl-card:active { transform: scale(0.98); }
+    .pl-card small { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #fcd34d; }
+    .pl-card b { font-size: 1.125rem; line-height: 1.25; }
+    .pl-card span:not(.pl-art) { font-size: 0.75rem; color: rgb(255 255 255 / 0.78); }
+    .pl-card em { margin-top: 8px; font-style: normal; font-size: 0.75rem; font-weight: 700; color: #0f172a; background: #fff; border-radius: 6px; padding: 4px 12px; }
+    .pl-art { position: absolute; z-index: -1; line-height: 1; opacity: 0.25; transition: transform 0.5s; }
+    .pl-card:hover .pl-art { transform: scale(1.1) rotate(-5deg); }
+    .pl-knight { top: -12px; right: 8px; font-size: 8.5rem; color: #fff; opacity: 0.16; }
+    .pl-peacock { top: -4px; right: 12px; font-size: 6.5rem; opacity: 0.3; }
+    .pl-grid { top: 12px; right: 12px; display: grid; grid-template-columns: repeat(3, 1.75rem); gap: 4px; opacity: 0.32; }
+    .pl-grid i { display: grid; place-items: center; height: 1.75rem; border: 1px solid rgb(255 255 255 / 0.5); border-radius: 6px; font-style: normal; font-weight: 700; font-size: 0.85rem; }
+    .pop-row { display: grid; grid-auto-flow: column; grid-template-rows: repeat(2, auto); grid-auto-columns: 82%; gap: 8px; margin: 0 -12px; padding: 0 12px 4px;
+      overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding: 12px; scrollbar-width: none; }
+    .pop-row > * { scroll-snap-align: start; }
+    @media (min-width: 400px) { .pop-row { grid-auto-columns: 62%; } }
+    @media (min-width: 768px) {
+      .pl-row { display: grid; grid-template-columns: repeat(3, 1fr); margin: 0; padding: 0; overflow: visible; }
+      .pl-card { flex: none; }
+      .pop-row { grid-auto-flow: row; grid-template-columns: repeat(4, 1fr); grid-template-rows: none; grid-auto-columns: auto; margin: 0; padding: 0; overflow: visible; }
+    }
+    @media (prefers-reduced-motion: reduce) { .pl-card, .pl-art { transition: none; } }
+  `,
   imports: [RouterLink, FormsModule, Icon, AdSlot, LiveBadge, Sky, MarketArt, FestivalCard, PinButton, ExamPicker, ToolTicker, WhatsNew, TodayCard],
   template: `
     <app-festival-card />
@@ -213,9 +244,36 @@ const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-p
 
     @if (popularMode()) {
       @defer (on idle) { <app-today-card /> } @placeholder { <div class="mt-5 h-[7.5rem] sm:h-24" aria-hidden="true"></div> }
+
+      <!-- Play & learn: big cinema-style cards so visitors see the games and stories at once -->
+      <section class="mt-5" aria-labelledby="h-play">
+        <div class="mb-2 flex items-baseline justify-between gap-2">
+          <h2 id="h-play" class="text-xs font-bold tracking-wide text-muted uppercase">🎮 Play & learn</h2>
+          <a routerLink="/games" class="shrink-0 text-xs font-semibold text-brand hover:underline">All games →</a>
+        </div>
+        <div class="pl-row">
+          <a routerLink="/games/chess" class="pl-card"
+             style="background: radial-gradient(circle at 78% 18%, #4f5bd5, #141a4a 58%, #0b0f2e)">
+            <span class="pl-art pl-knight" aria-hidden="true">♞</span>
+            <small>Game · NEW</small><b>Chess vs computer</b><span>Easy to Hard · coach in 7 languages</span><em>▶ Play</em>
+          </a>
+          <a routerLink="/games/sudoku" class="pl-card"
+             style="background: radial-gradient(circle at 80% 15%, #14b8a6, #0b4f4a 55%, #052926)">
+            <span class="pl-art pl-grid" aria-hidden="true">@for (d of sudokuArt; track $index) { <i>{{ d }}</i> }</span>
+            <small>Game · Daily puzzle</small><b>Sudoku</b><span>A new puzzle every day · notes & hints</span><em>▶ Play today’s</em>
+          </a>
+          <button type="button" (click)="stories.show()" class="pl-card"
+             style="background: radial-gradient(circle at 80% 20%, #f6a623, #7a1f3d 55%, #1a0b1f)">
+            <span class="pl-art pl-peacock" aria-hidden="true">🦚</span>
+            <small>Spread Stories</small><b>Gita, Ramayanam & more</b><span>One short lesson per story · తెలుగు & English</span><em>▶ Watch</em>
+          </button>
+        </div>
+      </section>
+
       <section class="mt-5" aria-labelledby="h-popular">
         <h2 id="h-popular" class="mb-2 text-xs font-bold tracking-wide text-muted uppercase">Popular</h2>
-        <div class="grid grid-cols-1 gap-2 min-[400px]:grid-cols-2 md:grid-cols-4">
+        <!-- Phones: two rows that swipe sideways (like streaming apps); larger screens: a grid -->
+        <div class="pop-row">
           @for (t of popular(); track t.path) {
             <div class="card group relative isolate flex items-center gap-3 overflow-hidden p-3 transition hover:border-brand/50" [class.sky-card]="t.path === 'weather' && !!skyIcon()">
               @if (t.path === 'weather' && skyIcon()) { <app-sky [icon]="skyIcon()" class="-z-10" /> }
@@ -368,6 +426,9 @@ export class Home {
   }
   protected readonly toolTotal = TOOL_GROUPS.reduce((n, g) => n + g.tools.length, 0) + EXAMS.length;
   private readonly userTools = inject(UserTools);
+  protected readonly stories = inject(StoriesService);
+  /** Little number grid drawn on the Sudoku card. */
+  protected readonly sudokuArt = ['5', '', '3', '', '7', '', '9', '', '1'];
   private readonly router = inject(Router);
   /** Enter in the search box opens the best match straight away (one step less). */
   protected openFirst() {
