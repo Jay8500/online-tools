@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnDestroy, afterNextRender, computed, signal, viewChild } from '@angular/core';
-import { CoachLang, LANGS, phoneLang } from '../../core/chess';
+import { CoachLang, LANGS, phoneLang } from '../../core/langs';
 import { GameFx, bubble, confetti, reducedMotion } from '../../core/game-fx';
 import { PEERS, SUDOKU_TEXT, SudokuLevel, UNITS, makePuzzle, todayKey } from '../../core/sudoku';
 import { Icon } from '../../shared/icon';

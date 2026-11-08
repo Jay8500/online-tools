@@ -1,17 +1,7 @@
 /** Pieces (own drawings, viewBox 0 0 100 100) and the coach's lines for the chess tool. */
 export type PieceType = 'p' | 'n' | 'b' | 'r' | 'q' | 'k';
-export type CoachLang = 'te' | 'en' | 'hi' | 'ta' | 'kn' | 'mr' | 'or';
-
-/** Coach languages in menu order; `own` = the language's name in its own script. */
-export const LANGS: { id: CoachLang; own: string }[] = [
-  { id: 'te', own: 'తెలుగు' },
-  { id: 'en', own: 'English' },
-  { id: 'hi', own: 'हिन्दी' },
-  { id: 'ta', own: 'தமிழ்' },
-  { id: 'kn', own: 'ಕನ್ನಡ' },
-  { id: 'mr', own: 'मराठी' },
-  { id: 'or', own: 'ଓଡ଼ିଆ' },
-];
+import type { CoachLang } from './langs';
+export { LANGS, phoneLang, type CoachLang } from './langs';
 
 const BASE = 'M22 88H78a4 4 0 0 0 4-4V80a6 6 0 0 0-6-6H24a6 6 0 0 0-6 6v4a4 4 0 0 0 4 4z';
 const COLLAR = (y: number) => `M30 ${y}H70a3.5 3.5 0 0 1 0 7H30a3.5 3.5 0 0 1 0-7z`;
@@ -260,13 +250,3 @@ export const COACH: Record<CoachLang, Record<string, string>> = {
     resumed: 'ଆପଣଙ୍କ ପୁରୁଣା ଖେଳ ଜାରି ରହିଛି। ନୂଆ ଚାହିଁଲେ New ଦବାନ୍ତୁ।',
   },
 };
-
-/** First visit: the phone's language if the coach speaks it (other than English), else Telugu. */
-export function phoneLang(): CoachLang {
-  const want = typeof navigator === 'undefined' ? [] : (navigator.languages ?? [navigator.language]);
-  for (const l of want) {
-    const id = l.slice(0, 2).toLowerCase();
-    if (id !== 'en' && LANGS.some((x) => x.id === id)) return id as CoachLang;
-  }
-  return 'te';
-}

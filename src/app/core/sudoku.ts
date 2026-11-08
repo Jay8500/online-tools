@@ -3,7 +3,7 @@
  * by one as long as the puzzle still has exactly one answer. A seed gives the same puzzle again
  * (used for the daily puzzle, the same for everyone).
  */
-import type { CoachLang } from './chess';
+import type { CoachLang } from './langs';
 
 export type SudokuLevel = 'easy' | 'medium' | 'hard';
 /** Numbers left on the board for each level (hard stops earlier if a unique answer needs more). */
