@@ -556,6 +556,7 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
       { q: 'How strong is the computer?', a: 'Easy makes beginner mistakes so you can win, Medium plays sensible moves, and Hard looks a few moves ahead. It is made for learning, not for masters.' },
       { q: 'How do I win?', a: 'Put the computer’s King in check so that it has no way out — that is checkmate. If a side has no legal move but is not in check, the game is a draw (stalemate).' },
       { q: 'What happens when my pawn reaches the last row?', a: 'It becomes a Queen automatically — the strongest piece.' },
+      { q: 'Can I play with a friend?', a: 'Yes. Tap 👥 Friend and play together on one phone — after each move the board turns to the other player. Online play with a link or QR code is coming soon.' },
       { q: 'Is it safe for kids?', a: 'Yes. No chat, no sign-up and nothing to download — just chess on the board.' },
     ],
     disclaimer: 'games',

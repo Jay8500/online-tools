@@ -36,8 +36,8 @@ const at = (x: number, y: number) => (FILES[x] + (8 - y)) as Square;
       <p class="coach" aria-live="polite" [attr.lang]="lang()">{{ coachText() }}</p>
 
       <div class="who top">
-        <span><b>Computer</b> · {{ level().label }}</span>
-        <span class="caps">@for (t of lost().w; track $index) { <svg viewBox="0 0 100 100" class="w"><path [attr.d]="svg[t].d" /></svg> }</span>
+        <span>@if (mode() === 'cpu') { <b>Computer</b> · {{ level().label }} } @else { <b>{{ sideName(topSide()) }}</b>@if (turn() === topSide() && !result()) { <i class="ml-1.5 inline-block size-2 rounded-full bg-brand align-middle ring-2 ring-brand/25"></i> } }</span>
+        <span class="caps">@for (t of lost()[bottomSide()]; track $index) { <svg viewBox="0 0 100 100" [class.w]="bottomSide() === 'w'"><path [attr.d]="svg[t].d" /></svg> }</span>
       </div>
 
       <div
@@ -48,7 +48,7 @@ const at = (x: number, y: number) => (FILES[x] + (8 - y)) as Square;
         (pointerup)="up($event)"
         (pointercancel)="cancelDrag()"
       >
-        @for (s of squares; track s.sq) {
+        @for (s of squares(); track s.sq) {
           <button
             type="button"
             class="sq"
@@ -93,8 +93,8 @@ const at = (x: number, y: number) => (FILES[x] + (8 - y)) as Square;
       </div>
 
       <div class="who bottom">
-        <span><b>You</b> · White</span>
-        <span class="caps">@for (t of lost().b; track $index) { <svg viewBox="0 0 100 100"><path [attr.d]="svg[t].d" /></svg> }</span>
+        <span>@if (mode() === 'cpu') { <b>You</b> · White } @else { <b>{{ sideName(bottomSide()) }}</b>@if (turn() === bottomSide() && !result()) { <i class="ml-1.5 inline-block size-2 rounded-full bg-brand align-middle ring-2 ring-brand/25"></i> } }</span>
+        <span class="caps">@for (t of lost()[topSide()]; track $index) { <svg viewBox="0 0 100 100" [class.w]="topSide() === 'w'"><path [attr.d]="svg[t].d" /></svg> }</span>
       </div>
 
       <div class="btns">
@@ -105,11 +105,17 @@ const at = (x: number, y: number) => (FILES[x] + (8 - y)) as Square;
 
       <div class="opts">
         <p class="font-bold text-brand">{{ status() }}</p>
-        <div class="seg" role="group" aria-label="Computer level">
-          @for (l of levels; track l.id) {
-            <button type="button" [attr.aria-pressed]="level().id === l.id" (click)="setLevel(l.id)">{{ l.label }}</button>
-          }
+        <div class="seg" role="group" aria-label="Play against">
+          <button type="button" [attr.aria-pressed]="mode() === 'cpu'" (click)="setMode('cpu')">🤖 Computer</button>
+          <button type="button" [attr.aria-pressed]="mode() === 'local'" (click)="setMode('local')">👥 Friend</button>
         </div>
+        @if (mode() === 'cpu') {
+          <div class="seg" role="group" aria-label="Computer level">
+            @for (l of levels; track l.id) {
+              <button type="button" [attr.aria-pressed]="level().id === l.id" (click)="setLevel(l.id)">{{ l.label }}</button>
+            }
+          </div>
+        }
         <div class="row">
           <select class="input min-w-0 flex-1" aria-label="Coach language" (change)="setLang($any($event.target).value)">
             @for (l of langs; track l.id) {
@@ -187,10 +193,19 @@ const at = (x: number, y: number) => (FILES[x] + (8 - y)) as Square;
 export class ChessTool implements OnDestroy {
   protected readonly svg = PIECE_SVG;
   protected readonly levels = LEVELS;
-  protected readonly squares = Array.from({ length: 64 }, (_, i) => {
-    const x = i % 8, y = Math.floor(i / 8);
-    return { x, y, sq: at(x, y), dark: (x + y) % 2 === 1 };
-  });
+  /** 'cpu' = against the computer; 'local' = two players on one phone, the board turns to whoever moves. */
+  protected readonly mode = signal<'cpu' | 'local'>('cpu');
+  /** Board seen from Black's side (turned 180°). */
+  protected readonly flip = signal(false);
+  protected readonly squares = computed(() =>
+    Array.from({ length: 64 }, (_, i) => {
+      const x = i % 8, y = Math.floor(i / 8);
+      return { x, y, sq: this.atv(x, y), dark: (x + y) % 2 === 1 };
+    }),
+  );
+  protected readonly topSide = computed<Color>(() => (this.flip() ? 'w' : 'b'));
+  protected readonly bottomSide = computed<Color>(() => (this.flip() ? 'b' : 'w'));
+  private flipTimer?: ReturnType<typeof setTimeout>;
 
   private readonly chess = new Chess();
   private readonly boardEl = viewChild.required<ElementRef<HTMLElement>>('board');
@@ -217,7 +232,8 @@ export class ChessTool implements OnDestroy {
   protected readonly coach = signal<Coach>({ key: 'start' });
 
   protected readonly level = computed(() => LEVELS.find((l) => l.id === this.levelId())!);
-  protected readonly myTurn = computed(() => (this.ver(), !this.busy() && this.chess.turn() === 'w' && !this.chess.isGameOver()));
+  protected readonly turn = computed<Color>(() => (this.ver(), this.chess.turn()));
+  protected readonly myTurn = computed(() => (this.ver(), !this.busy() && !this.chess.isGameOver() && (this.mode() === 'local' || this.chess.turn() === 'w')));
   protected readonly checked = computed<Color | null>(() => (this.ver(), this.chess.inCheck() ? this.chess.turn() : null));
   protected readonly movePairs = computed(() => {
     this.ver();
@@ -237,7 +253,7 @@ export class ChessTool implements OnDestroy {
     this.ver();
     if (!s) return [];
     return this.chess.moves({ square: s, verbose: true }).map((m) => {
-      const [x, y] = xy(m.to);
+      const [x, y] = this.xyv(m.to);
       return { sq: m.to, x, y, cap: !!m.captured };
     });
   });
@@ -245,10 +261,16 @@ export class ChessTool implements OnDestroy {
     this.ver();
     const c = this.chess, t = COACH[this.lang()];
     if (!c.isGameOver()) return null;
+    if (c.isCheckmate() && this.mode() === 'local') return { title: c.turn() === 'b' ? t['whiteWins'] : t['blackWins'], sub: t['winSub'] };
     if (c.isCheckmate()) return c.turn() === 'b' ? { title: t['win'], sub: t['winSub'] } : { title: t['lose'], sub: t['loseSub'] };
     return { title: t['draw'], sub: c.isStalemate() ? t['stalemate'] : t['drawSub'] };
   });
-  protected readonly status = computed(() => this.result()?.title ?? COACH[this.lang()][this.busy() ? 'thinking' : 'yourTurn']);
+  protected readonly status = computed(() => {
+    const t = COACH[this.lang()];
+    if (this.result()) return this.result()!.title;
+    if (this.mode() === 'local') return t[this.turn() === 'w' ? 'turnWhite' : 'turnBlack'];
+    return t[this.busy() ? 'thinking' : 'yourTurn'];
+  });
   protected readonly coachText = computed(() => {
     const c = this.coach(), lang = this.lang();
     if ('tip' in c) return `${PIECE_NAME[lang][c.tip]}: ${PIECE_TIP[lang][c.tip]}`;
@@ -263,6 +285,7 @@ export class ChessTool implements OnDestroy {
       try {
         const p = JSON.parse(localStorage.getItem(PREFS) ?? '{}');
         if (LEVELS.some((l) => l.id === p.level)) this.levelId.set(p.level);
+        if (p.mode === 'local') this.mode.set('local');
         this.lang.set(LANGS.some((l) => l.id === p.lang) ? p.lang : phoneLang());
         if (p.sound === false) this.sound.set(false);
         const pgn = localStorage.getItem(SAVE);
@@ -273,6 +296,7 @@ export class ChessTool implements OnDestroy {
           this.last.set(h ? { from: h.from, to: h.to } : null);
           this.coach.set({ key: 'resumed' });
           this.ver.update((v) => v + 1);
+          if (this.mode() === 'local') this.flip.set(this.chess.turn() === 'b');
         }
       } catch {
         this.chess.reset();
@@ -281,13 +305,14 @@ export class ChessTool implements OnDestroy {
         this.worker = new Worker(new URL('./chess.worker', import.meta.url), { type: 'module' });
         this.worker.onmessage = (e) => this.onEngine(e.data);
       }
-      if (this.chess.turn() === 'b' && !this.chess.isGameOver()) this.computerMove();
+      if (this.mode() === 'cpu' && this.chess.turn() === 'b' && !this.chess.isGameOver()) this.computerMove();
     });
   }
 
   ngOnDestroy() {
     this.worker?.terminate();
     this.audio?.close();
+    clearTimeout(this.flipTimer);
   }
 
   protected label(sq: Square) {
@@ -295,10 +320,26 @@ export class ChessTool implements OnDestroy {
     return p ? `${sq} ${p.color === 'w' ? 'white' : 'black'} ${PIECE_NAME.en[p.type]}` : sq;
   }
 
+  /** Screen column/row of a square (0..7), turned when the board is seen from Black. */
+  private xyv(sq: string): readonly [number, number] {
+    const [x, y] = xy(sq);
+    return this.flip() ? [7 - x, 7 - y] : [x, y];
+  }
+
+  private atv(x: number, y: number): Square {
+    return this.flip() ? at(7 - x, 7 - y) : at(x, y);
+  }
+
+  protected sideName(c: Color) {
+    const n: Record<string, [string, string]> = { te: ['తెల్ల పావులు', 'నల్ల పావులు'], en: ['White', 'Black'], hi: ['सफ़ेद', 'काले'], ta: ['வெள்ளை', 'கருப்பு'], kn: ['ಬಿಳಿ', 'ಕಪ್ಪು'], mr: ['पांढरे', 'काळे'], or: ['ଧଳା', 'କଳା'] };
+    const [w, b] = n[this.lang()] ?? n['en'];
+    return c === 'w' ? '⚪ ' + w : '⚫ ' + b;
+  }
+
   protected place(p: PieceView) {
     const d = this.dragging();
     if (d?.id === p.id) return `translate(${d.x * 100}%, ${d.y * 100}%) scale(1.15)`;
-    const [x, y] = xy(p.sq);
+    const [x, y] = this.xyv(p.sq);
     return `translate(${x * 100}%, ${y * 100}%)`;
   }
 
@@ -306,7 +347,7 @@ export class ChessTool implements OnDestroy {
 
   private squareAt(e: PointerEvent, rect: DOMRect): Square | null {
     const x = Math.floor(((e.clientX - rect.left) / rect.width) * 8), y = Math.floor(((e.clientY - rect.top) / rect.height) * 8);
-    return x >= 0 && x < 8 && y >= 0 && y < 8 ? at(x, y) : null;
+    return x >= 0 && x < 8 && y >= 0 && y < 8 ? this.atv(x, y) : null;
   }
 
   protected down(e: PointerEvent) {
@@ -324,11 +365,12 @@ export class ChessTool implements OnDestroy {
   private pick(sq: Square, e?: PointerEvent, rect?: DOMRect) {
     const p = this.chess.get(sq);
     const sel = this.selected();
-    if (sel && sel !== sq && p?.color !== 'w') {
+    const me = this.chess.turn();
+    if (sel && sel !== sq && p?.color !== me) {
       this.tryMove(sel, sq);
       return;
     }
-    if (p?.color !== 'w') return this.selected.set(null);
+    if (p?.color !== me) return this.selected.set(null);
     this.hint.set(null);
     this.selected.set(sq);
     this.coach.set({ tip: p.type });
@@ -381,7 +423,8 @@ export class ChessTool implements OnDestroy {
       return false;
     }
     this.apply(m, true);
-    if (!this.chess.isGameOver()) this.computerMove();
+    if (this.mode() === 'local') this.turnBoard();
+    else if (!this.chess.isGameOver()) this.computerMove();
     return true;
   }
 
@@ -409,6 +452,21 @@ export class ChessTool implements OnDestroy {
     else if (m.captured) this.coach.set(mine ? { key: 'youTook', p: m.captured, n: PIECE_VALUE[m.captured] } : { key: 'theyTook', p: m.captured });
     else if (!mine && !('tip' in this.coach())) this.coach.set({ key: 'start' });
     if (this.chess.inCheck() && !this.chess.isGameOver()) this.coach.set({ key: mine ? 'youCheck' : 'inCheck' });
+  }
+
+  /** Two players on one phone: after the move has slid, turn the board to the next player. */
+  private turnBoard(delay = 650) {
+    clearTimeout(this.flipTimer);
+    if (this.chess.isGameOver()) return;
+    this.flipTimer = setTimeout(() => this.flip.set(this.chess.turn() === 'b'), delay);
+  }
+
+  protected setMode(m: 'cpu' | 'local') {
+    if (m === this.mode()) return;
+    this.mode.set(m);
+    this.newGame();
+    this.coach.set({ key: m === 'local' ? 'passPlay' : 'start' });
+    this.savePrefs();
   }
 
   private computerMove() {
@@ -447,7 +505,7 @@ export class ChessTool implements OnDestroy {
     this.reqId++;
     this.busy.set(false);
     // Take back the computer's reply too, so it is the player's turn again.
-    const steps = this.chess.turn() === 'w' && this.chess.history().length >= 2 ? 2 : 1;
+    const steps = this.mode() === 'cpu' && this.chess.turn() === 'w' && this.chess.history().length >= 2 ? 2 : 1;
     for (let i = 0; i < steps; i++) this.chess.undo();
     // A game restored from storage has no saved piece lists, so rebuild from the board then.
     this.pieces.set(h.length >= steps ? h[h.length - steps] : this.fromBoard());
@@ -459,7 +517,8 @@ export class ChessTool implements OnDestroy {
     this.coach.set({ key: 'undo' });
     this.ver.update((v) => v + 1);
     this.save();
-    if (this.chess.turn() === 'b') this.computerMove();
+    if (this.mode() === 'local') this.turnBoard(250);
+    else if (this.chess.turn() === 'b') this.computerMove();
   }
 
   protected newGame() {
@@ -471,7 +530,9 @@ export class ChessTool implements OnDestroy {
     this.last.set(null);
     this.selected.set(null);
     this.hint.set(null);
-    this.coach.set({ key: 'start' });
+    clearTimeout(this.flipTimer);
+    this.flip.set(false);
+    this.coach.set({ key: this.mode() === 'local' ? 'passPlay' : 'start' });
     this.ver.update((v) => v + 1);
     this.save();
   }
@@ -499,7 +560,7 @@ export class ChessTool implements OnDestroy {
 
   private savePrefs() {
     try {
-      localStorage.setItem(PREFS, JSON.stringify({ level: this.levelId(), lang: this.lang(), sound: this.sound() }));
+      localStorage.setItem(PREFS, JSON.stringify({ level: this.levelId(), lang: this.lang(), sound: this.sound(), mode: this.mode() }));
     } catch {}
   }
 
