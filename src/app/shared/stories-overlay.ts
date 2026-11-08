@@ -16,7 +16,7 @@ const SITE = 'https://tools.spreadapps.in';
  * it opens (they ship in this lazy chunk, not in the site's CSS). Picture classes: `ss-a-*`.
  */
 const CSS = `
-.ss{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;gap:14px;background:rgb(4 3 12/.9);backdrop-filter:blur(6px);color:#fff4dc;animation:ss-in .3s cubic-bezier(.2,.8,.2,1);touch-action:pan-y;user-select:none}
+.ss{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;gap:14px;background:#05040f;color:#fff4dc;animation:ss-in .3s cubic-bezier(.2,.8,.2,1);user-select:none}
 @keyframes ss-in{from{opacity:0;transform:scale(.97)}}
 .ss-panel{position:relative;width:min(440px,100vw);height:100dvh;background:#0c0a1f;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto minmax(0,1fr);overflow:hidden}
 @media (min-width:600px){.ss-panel{height:min(calc(100dvh - 32px),880px);border-radius:24px;box-shadow:0 30px 80px rgb(0 0 0/.6)}}
@@ -45,11 +45,11 @@ const CSS = `
 .ss-chip:active{transform:scale(.94)}.ss-chip[aria-pressed=true]{background:#f6a623;border-color:#f6a623;color:#0c0a1f;font-weight:700}
 .ss button:focus-visible{outline:3px solid #facc15;outline-offset:2px}
 .ss-stage{position:relative;overflow:hidden;min-height:0;cursor:grab}
-.ss-track{display:flex;height:100%;will-change:transform}.ss-track.snap{transition:transform .4s cubic-bezier(.2,.8,.2,1)}
+.ss-stage{touch-action:pan-y}.ss-track{display:flex;height:100%;will-change:transform;transform:translate3d(0,0,0);backface-visibility:hidden}.ss-track.snap{transition:transform .38s cubic-bezier(.22,.9,.3,1)}
 .ss-card{position:relative;flex:0 0 100%;height:100%;overflow:hidden}
 .ss-art{position:absolute;inset:0 0 auto;height:60%;overflow:hidden}.ss-art svg{width:100%;height:100%;display:block}
 .ss-art::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgb(12 10 31/.25),transparent 25%,transparent 55%,#0c0a1f)}
-.ss-tag{position:absolute;left:12px;top:8px;z-index:1;font:600 10px system-ui;letter-spacing:.08em;text-transform:uppercase;background:rgb(12 10 31/.5);padding:4px 8px;border-radius:999px;backdrop-filter:blur(4px)}
+.ss-tag{position:absolute;left:12px;top:8px;z-index:1;font:600 10px system-ui;letter-spacing:.08em;text-transform:uppercase;background:rgb(12 10 31/.5);padding:4px 8px;border-radius:999px}
 .ss-txt{position:absolute;inset:46% 0 0;padding:0 54px 18px 16px;display:flex;flex-direction:column;gap:7px;overflow:auto;scrollbar-width:none}
 .ss-txt::-webkit-scrollbar{display:none}
 @media (max-height:760px){.ss-art{height:52%}.ss-txt{top:37%}}
@@ -64,7 +64,7 @@ const CSS = `
 @keyframes ss-rise{from{opacity:0;translate:0 8px}}
 .ss-rail{position:absolute;right:8px;bottom:18px;display:flex;flex-direction:column;gap:10px;z-index:4}
 .ss-rail button{width:38px;border:0;background:none;color:#fff4dc;cursor:pointer;display:grid;justify-items:center;gap:2px;font:500 9.5px system-ui;padding:0}
-.ss-rail span{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:rgb(255 255 255/.1);border:1px solid rgb(255 244 220/.16);backdrop-filter:blur(8px);transition:transform .15s,background .2s}
+.ss-rail span{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:rgb(255 255 255/.1);border:1px solid rgb(255 244 220/.16);transition:transform .15s,background .2s}
 .ss-rail button:hover span{background:rgb(255 255 255/.18)}.ss-rail button:active span{transform:scale(.85)}
 .ss-rail svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .ss-rail .liked span{background:rgb(232 67 107/.28);border-color:rgb(255 90 122/.5)}.ss-rail .liked svg{fill:#ff5a7a;stroke:#ff5a7a;animation:ss-pop .4s}
@@ -129,9 +129,6 @@ export class StoryArtHost {
           </button>
           <div class="ss-mark" aria-hidden="true"><i></i>Spread Stories</div>
           <div class="ss-right">
-            <button type="button" class="ss-ib" [attr.aria-label]="sound() ? 'Sound on' : 'Sound off'" [attr.aria-pressed]="sound()" (click)="toggleSound()">
-              <svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9z" />@if (sound()) { <path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" /> } @else { <path d="M17 9l5 6M22 9l-5 6" /> }</svg>
-            </button>
             <button type="button" class="ss-ib" aria-label="Close stories" (click)="close()"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" /></svg></button>
           </div>
         </div>
@@ -140,14 +137,8 @@ export class StoryArtHost {
             <button type="button" class="ss-chip" [attr.aria-pressed]="cur().c === c.id" (click)="jump(c.id)">{{ c.icon }} <span>{{ c.n[uiLang()] }}</span></button>
           }
         </div>
-        <div
-          class="ss-stage"
-          (pointerdown)="down($event)"
-          (pointermove)="move($event)"
-          (pointerup)="up()"
-          (pointercancel)="up()"
-        >
-          <div class="ss-track" [class.snap]="!dragging()" [style.transform]="'translateX(calc(' + -idx() * 100 + '% + ' + dx() + 'px))'">
+        <div class="ss-stage" #stage>
+          <div class="ss-track" #track>
             @for (s of stories; track s.slug; let i = $index) {
               <article class="ss-card" [class.in]="i === idx()" [attr.aria-hidden]="i !== idx()" aria-roledescription="story">
                 @if (i >= idx() - 1 && i <= idx() + 1) { <div class="ss-art" [ssArt]="art(i)"></div> }
@@ -204,10 +195,14 @@ export class StoriesOverlay implements OnDestroy {
   private readonly svc = inject(StoriesService);
   private readonly toast = inject(ToastService);
   private readonly chipsEl = viewChild<ElementRef<HTMLElement>>('chips');
+  private readonly stageEl = viewChild<ElementRef<HTMLElement>>('stage');
+  private readonly trackEl = viewChild<ElementRef<HTMLElement>>('track');
+  /** Swipe state lives outside signals so a moving finger never re-renders the cards. */
+  private drag: { id: number; x0: number; y0: number; t0: number; dx: number; mode: 'wait' | 'drag' | 'off' } | null = null;
+  private frame = 0;
+  private readonly onResize = () => this.place(0, false);
   private readonly fx = new GameFx();
   private readonly arts = new Map<number, string>();
-  private x0 = 0;
-  private t0 = 0;
   private overflow = '';
 
   protected readonly stories = STORIES;
@@ -215,13 +210,10 @@ export class StoriesOverlay implements OnDestroy {
   protected readonly langs = LANGS;
   protected readonly idx = signal(0);
   protected readonly lang = signal<StoryLang>('te');
-  protected readonly dx = signal(0);
-  protected readonly dragging = signal(false);
   protected readonly menu = signal(false);
   protected readonly suggesting = signal(false);
   protected readonly sending = signal(false);
   protected readonly hint = signal(false);
-  protected readonly sound = signal(true);
   protected readonly liked = signal<Record<string, boolean>>({});
   private readonly counts = signal<Record<string, number>>({});
 
@@ -250,17 +242,18 @@ export class StoriesOverlay implements OnDestroy {
         const l = localStorage.getItem(LANG_KEY);
         this.lang.set(l === 'en' || l === 'te' ? l : phoneLang() === 'te' ? 'te' : 'en');
         this.liked.set(Object.fromEntries((JSON.parse(localStorage.getItem(LIKED_KEY) ?? '[]') as string[]).map((k) => [k, true])));
-        this.sound.set(localStorage.getItem('stories-sound') !== 'off');
         if (!localStorage.getItem(HINT_KEY)) {
           this.hint.set(true);
           setTimeout(() => this.hideHint(), 5000);
         }
       } catch {}
-      this.fx.on = this.sound();
       this.fx.unlock();
       const st = this.svc.start();
       const at = st ? STORIES.findIndex((s) => s.c === st.col && (!st.slug || s.slug === st.slug)) : -1;
       if (at >= 0) this.idx.set(at);
+      this.place(0, false);
+      this.wireSwipe();
+      addEventListener('resize', this.onResize);
       if (st?.welcome) {
         import('../core/celebrate').then((c) => c.shower('festive', 4500));
         setTimeout(() => this.fx.chime(), 300);
@@ -280,7 +273,61 @@ export class StoriesOverlay implements OnDestroy {
   }
 
   ngOnDestroy() {
-    if (typeof document !== 'undefined') document.documentElement.style.overflow = this.overflow;
+    if (typeof document === 'undefined') return;
+    document.documentElement.style.overflow = this.overflow;
+    removeEventListener('resize', this.onResize);
+    cancelAnimationFrame(this.frame);
+  }
+
+  /** Moves the strip of cards: the current card plus `px` of finger travel. */
+  private place(px: number, animate: boolean) {
+    const t = this.trackEl()?.nativeElement, w = this.stageEl()?.nativeElement.clientWidth ?? 0;
+    if (!t) return;
+    t.classList.toggle('snap', animate);
+    t.style.transform = `translate3d(${-this.idx() * w + px}px,0,0)`;
+  }
+
+  /** Native pointer listeners (no change detection per move); a vertical drag is left to text scrolling. */
+  private wireSwipe() {
+    const st = this.stageEl()?.nativeElement;
+    if (!st) return;
+    st.addEventListener('pointerdown', (e) => {
+      if (this.drag || (e.target as HTMLElement).closest('.ss-rail')) return;
+      this.drag = { id: e.pointerId, x0: e.clientX, y0: e.clientY, t0: performance.now(), dx: 0, mode: 'wait' };
+    });
+    st.addEventListener('pointermove', (e) => {
+      const d = this.drag;
+      if (!d || d.id !== e.pointerId || d.mode === 'off') return;
+      const dx = e.clientX - d.x0, dy = e.clientY - d.y0;
+      if (d.mode === 'wait') {
+        if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+        if (Math.abs(dy) > Math.abs(dx)) return void (d.mode = 'off');
+        d.mode = 'drag';
+        d.x0 = e.clientX;
+        d.t0 = performance.now();
+        st.setPointerCapture(e.pointerId);
+        this.fx.unlock();
+        this.hideHint();
+      }
+      const raw = e.clientX - d.x0;
+      const edge = (this.idx() === 0 && raw > 0) || (this.idx() === STORIES.length - 1 && raw < 0);
+      d.dx = edge ? raw / 3 : raw;
+      cancelAnimationFrame(this.frame);
+      this.frame = requestAnimationFrame(() => this.place(d.dx, false));
+    });
+    const end = (e: PointerEvent) => {
+      const d = this.drag;
+      if (!d || d.id !== e.pointerId) return;
+      this.drag = null;
+      cancelAnimationFrame(this.frame);
+      if (d.mode !== 'drag') return;
+      const w = st.clientWidth, v = d.dx / Math.max(1, performance.now() - d.t0);
+      if (d.dx < -w * 0.18 || v < -0.4) this.step(1);
+      else if (d.dx > w * 0.18 || v > 0.4) this.step(-1);
+      else this.place(0, true);
+    };
+    st.addEventListener('pointerup', end);
+    st.addEventListener('pointercancel', end);
   }
 
   protected art(i: number): string {
@@ -303,6 +350,7 @@ export class StoriesOverlay implements OnDestroy {
       this.fx.whoosh();
     }
     this.idx.set(n);
+    this.place(0, true);
     this.centerChip();
   }
 
@@ -332,33 +380,6 @@ export class StoriesOverlay implements OnDestroy {
     try {
       localStorage.setItem(HINT_KEY, '1');
     } catch {}
-  }
-
-  protected down(e: PointerEvent) {
-    if ((e.target as HTMLElement).closest('.ss-rail')) return;
-    this.fx.unlock();
-    this.dragging.set(true);
-    this.x0 = e.clientX;
-    this.t0 = performance.now();
-    this.dx.set(0);
-    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
-  }
-
-  protected move(e: PointerEvent) {
-    if (!this.dragging()) return;
-    const d = e.clientX - this.x0;
-    const edge = (this.idx() === 0 && d > 0) || (this.idx() === STORIES.length - 1 && d < 0);
-    this.dx.set(edge ? d / 3 : d);
-  }
-
-  protected up() {
-    if (!this.dragging()) return;
-    const d = this.dx();
-    const fast = Math.abs(d) / (performance.now() - this.t0) > 0.45;
-    this.dragging.set(false);
-    this.dx.set(0);
-    if (d < -60 || (fast && d < -20)) this.step(1);
-    else if (d > 60 || (fast && d > 20)) this.step(-1);
   }
 
   protected onKey(e: KeyboardEvent) {
@@ -397,16 +418,6 @@ export class StoriesOverlay implements OnDestroy {
     this.fx.pop();
     try {
       localStorage.setItem(LANG_KEY, l);
-    } catch {}
-  }
-
-  protected toggleSound() {
-    this.sound.update((s) => !s);
-    this.fx.on = this.sound();
-    this.fx.unlock();
-    this.fx.tik();
-    try {
-      localStorage.setItem('stories-sound', this.sound() ? 'on' : 'off');
     } catch {}
   }
 
