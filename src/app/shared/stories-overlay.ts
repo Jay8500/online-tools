@@ -303,6 +303,25 @@ export class StoriesOverlay implements OnDestroy {
   private drag: { id: number; x0: number; y0: number; t0: number; dx: number; mode: 'wait' | 'drag' | 'off' } | null = null;
   private frame = 0;
   private readonly onResize = () => this.place(0, false);
+  /**
+   * Phone back button: the overlay adds history entries (1 = open, 2 = reading from the home rows), so
+   * Back goes reader → rows → closed instead of leaving the site. Same URL, so the router ignores them.
+   */
+  private depth = 0;
+  private readonly onPop = () => {
+    if (this.depth === 2) {
+      this.depth = 1;
+      this.fx.soft();
+      this.mode.set('browse');
+    } else if (this.depth === 1) {
+      this.depth = 0;
+      this.shut();
+    }
+  };
+  private push() {
+    this.depth++;
+    history.pushState({ ...(history.state ?? {}), ss: this.depth }, '');
+  }
   private readonly fx = new GameFx();
   private readonly arts = new Map<number, string>();
   private overflow = '';
@@ -371,6 +390,8 @@ export class StoriesOverlay implements OnDestroy {
       }
       this.place(0, false);
       this.wireSwipe();
+      this.push();
+      addEventListener('popstate', this.onPop);
       addEventListener('resize', this.onResize);
       if (st?.welcome) {
         import('../core/celebrate').then((c) => c.shower('festive', 4500));
@@ -394,6 +415,7 @@ export class StoriesOverlay implements OnDestroy {
     if (typeof document === 'undefined') return;
     document.documentElement.style.overflow = this.overflow;
     removeEventListener('resize', this.onResize);
+    removeEventListener('popstate', this.onPop);
     cancelAnimationFrame(this.frame);
   }
 
@@ -523,6 +545,7 @@ export class StoriesOverlay implements OnDestroy {
     this.fx.unlock();
     this.fx.pop();
     this.idx.set(i);
+    if (this.mode() === 'browse' && this.depth === 1) this.push();
     this.mode.set('read');
     this.entering.set(true);
     setTimeout(() => {
@@ -533,6 +556,7 @@ export class StoriesOverlay implements OnDestroy {
   }
 
   protected toBrowse() {
+    if (this.depth === 2) return history.back(); // popstate brings the rows back
     this.fx.soft();
     this.mode.set('browse');
   }
@@ -544,6 +568,15 @@ export class StoriesOverlay implements OnDestroy {
 
   /** Shrinks back into the ring, then removes the overlay. */
   protected close() {
+    if (this.leaving()) return;
+    // Drop our history entries too, so Back afterwards behaves like before the stories opened.
+    const d = this.depth;
+    this.depth = 0;
+    if (d) history.go(-d);
+    this.shut();
+  }
+
+  private shut() {
     if (this.leaving()) return;
     this.fx.soft();
     this.leaving.set(true);
