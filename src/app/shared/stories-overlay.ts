@@ -34,6 +34,44 @@ const CSS = `
 @keyframes ss-pop-in{from{opacity:0;transform:scale(.4)}}
 .ss-card.in .ss-art svg{animation:ss-kb 12s ease-out both}
 @keyframes ss-kb{from{transform:scale(1)}to{transform:scale(1.07)}}
+.ss-panel.wide{width:min(1040px,100vw)}
+.ss-browse{position:absolute;inset:0;z-index:15;overflow-y:auto;overflow-x:hidden;background:#0b0b0f;scrollbar-width:none;overscroll-behavior:contain}
+.ss-browse::-webkit-scrollbar{display:none}
+.ss-bh{position:sticky;top:0;z-index:5;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 14px 22px;background:linear-gradient(#0b0b0f,rgb(11 11 15/.75) 45%,transparent)}
+.ss-bh .ss-right{gap:8px}
+.ss-hero{position:relative;height:min(64dvh,540px);margin-top:-64px;cursor:pointer;overflow:hidden}
+.ss-hero-art{position:absolute;inset:0}.ss-hero-art svg{width:100%;height:100%;display:block;animation:ss-kb 16s ease-out both}
+.ss-hero::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(0deg,#0b0b0f 3%,rgb(11 11 15/.55) 32%,transparent 62%),linear-gradient(90deg,rgb(11 11 15/.7),transparent 60%)}
+.ss-hero-txt{position:absolute;left:16px;right:16px;bottom:16px;z-index:1;max-width:540px;display:grid;gap:7px}
+.ss-badge{justify-self:start;font:800 10.5px system-ui;letter-spacing:.14em;text-transform:uppercase;color:#0b0b0f;background:linear-gradient(135deg,#f6a623,#f2c14e);padding:3px 8px;border-radius:4px}
+.ss-hero-ttl{margin:0;font:800 clamp(25px,6.2vw,46px)/1.2 "Noto Sans Telugu","Nirmala UI",system-ui;text-shadow:0 2px 22px rgb(0 0 0/.85);text-wrap:balance}
+.ss-hero-txt[lang=en] .ss-hero-ttl{font-family:Georgia,"Times New Roman",serif;line-height:1.1}
+.ss-hero-l{margin:0;font:500 15px/1.5 "Noto Sans Telugu","Nirmala UI",system-ui;color:rgb(255 244 220/.86);max-width:46ch;text-shadow:0 1px 10px rgb(0 0 0/.8)}
+.ss-hero-btns{display:flex;gap:10px;margin-top:4px}
+.ss-play,.ss-ghost{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:6px;padding:9px 18px;font:800 15px "Noto Sans Telugu","Nirmala UI",system-ui;cursor:pointer;transition:transform .15s,background .2s}
+.ss-play{background:#fff4dc;color:#0b0b0f}.ss-play:hover{background:#fff}.ss-ghost{background:rgb(255 255 255/.16);color:#fff4dc}.ss-ghost:hover{background:rgb(255 255 255/.26)}
+.ss-play:active,.ss-ghost:active{transform:scale(.95)}
+.ss-play svg{width:14px;height:14px;fill:currentColor}
+.ss-row{padding:4px 0 6px;position:relative;z-index:1}
+.ss-row h3{margin:0 16px 6px;font:700 16px "Noto Sans Telugu","Nirmala UI",system-ui;color:#f5f0e6}
+.ss-tiles{display:flex;gap:8px;overflow-x:auto;padding:6px 16px 14px;scroll-snap-type:x mandatory;scroll-padding:16px;scrollbar-width:none}
+.ss-tiles::-webkit-scrollbar{display:none}
+.ss-tile{position:relative;flex:0 0 clamp(150px,41vw,230px);aspect-ratio:16/10;border:0;padding:0;border-radius:8px;overflow:hidden;background:#1a1626;cursor:pointer;scroll-snap-align:start;color:#fff4dc;text-align:left;transition:transform .32s cubic-bezier(.2,.8,.2,1),box-shadow .32s}
+.ss-tile-art,.ss-tile-art svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.ss-tile-art *{animation:none!important}
+.ss-tile::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgb(0 0 0/.88),transparent 62%);transition:opacity .3s}
+.ss-tile span{position:absolute;left:8px;right:8px;bottom:6px;z-index:1;font:700 13px/1.3 "Noto Sans Telugu","Nirmala UI",system-ui;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ss-tile small{position:absolute;left:8px;top:6px;z-index:1;font:800 10px system-ui;letter-spacing:.08em;color:#f2c14e;text-shadow:0 1px 6px #000}
+@media (hover:hover){.ss-tile:hover{transform:scale(1.08);z-index:2;box-shadow:0 16px 34px rgb(0 0 0/.7)}}
+.ss-tile:active{transform:scale(.96)}
+.ss-foot{padding:8px 16px 28px;font:12px system-ui;color:rgb(255 244 220/.45)}
+.ss.intro .ss-hero-art{animation:ss-art 1.2s cubic-bezier(.2,.8,.2,1) .15s both}
+.ss.intro .ss-hero-txt>*{animation:ss-rise .6s cubic-bezier(.2,.8,.2,1) both}
+.ss.intro .ss-row{animation:ss-rise .6s cubic-bezier(.2,.8,.2,1) both}
+.ss-panel.enter .ss-stage,.ss-panel.enter .ss-chips{animation:ss-read .45s cubic-bezier(.2,.8,.2,1) both}
+@keyframes ss-read{from{opacity:0;transform:scale(.96)}}
+.ss-back{width:30px}
+.ss-lead{display:flex;gap:6px;justify-self:start}
 .ss-panel{position:relative;width:min(440px,100vw);height:100dvh;background:#0c0a1f;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto minmax(0,1fr);overflow:hidden}
 @media (min-width:600px){.ss-panel{height:min(calc(100dvh - 32px),880px);border-radius:24px;box-shadow:0 30px 80px rgb(0 0 0/.6)}}
 .ss-nav{display:none;width:40px;height:40px;border-radius:50%;border:1px solid rgb(255 244 220/.2);background:rgb(255 255 255/.06);color:#fff4dc;font-size:22px;cursor:pointer}
@@ -52,6 +90,7 @@ const CSS = `
 .ss-lang .car{width:10px;height:10px;transition:rotate .25s}.ss-lang[aria-expanded=true] .car{rotate:180deg}
 .ss-pop{position:absolute;left:12px;top:72px;z-index:32;display:grid;grid-template-columns:1fr 1fr;gap:2px;width:min(260px,calc(100% - 24px));max-height:calc(100% - 90px);overflow:auto;padding:6px;border-radius:16px;background:#fff9ee;color:#1d1530;box-shadow:0 20px 40px rgb(0 0 0/.45);transform-origin:24px 0;animation:ss-swing .55s cubic-bezier(.2,1.3,.4,1)}
 @keyframes ss-swing{0%{opacity:0;transform:perspective(500px) rotateX(-80deg)}60%{opacity:1;transform:perspective(500px) rotateX(10deg)}100%{transform:perspective(500px) rotateX(0)}}
+.ss-pop.r{left:auto;right:12px;top:56px}
 .ss-pop button{display:flex;justify-content:space-between;align-items:center;gap:4px;border:0;background:none;padding:8px 9px;border-radius:10px;font:500 14px system-ui;color:#1d1530;cursor:pointer}
 .ss-pop button:hover:not(:disabled){background:#f3e6cd}.ss-pop button[aria-checked=true]{background:#1d1530;color:#fff9ee}.ss-pop button:disabled{opacity:.55;cursor:default}
 .ss-pop small{font-size:10px;opacity:.7}
@@ -131,18 +170,21 @@ export class StoryArtHost {
   encapsulation: ViewEncapsulation.None,
   template: `
     <div class="ss" role="dialog" aria-modal="true" aria-label="Spread Stories" [class.intro]="intro()" [class.out]="leaving()" [style.--ox]="ox" [style.--oy]="oy" (click)="backdrop($event)">
-      <button type="button" class="ss-nav" aria-label="Previous story" [disabled]="idx() === 0" (click)="step(-1)">‹</button>
-      <div class="ss-panel" #panel>
+      @if (mode() === 'read') { <button type="button" class="ss-nav" aria-label="Previous story" [disabled]="idx() === 0" (click)="step(-1)">‹</button> }
+      <div class="ss-panel" #panel [class.wide]="mode() === 'browse'" [class.enter]="entering()">
         <div class="ss-bars" aria-hidden="true">
           @for (k of colIdx(); track k) { <i [class.on]="k <= idx()"></i> }
           <em>{{ idx() + 1 }}/{{ stories.length }}</em>
         </div>
         <div class="ss-top">
-          <button type="button" class="ss-lang" aria-haspopup="true" aria-label="Language" [attr.aria-expanded]="menu()" (click)="toggleMenu()">
-            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18" /></svg>
-            <span>{{ langName() }}</span>
-            <svg class="car" viewBox="0 0 10 10"><path d="M2 3.5l3 3 3-3" /></svg>
-          </button>
+          <div class="ss-lead">
+            <button type="button" class="ss-ib ss-back" aria-label="All stories" title="All stories" (click)="toBrowse()"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" /></svg></button>
+            <button type="button" class="ss-lang" aria-haspopup="true" aria-label="Language" [attr.aria-expanded]="menu()" (click)="toggleMenu()">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18" /></svg>
+              <span>{{ langName() }}</span>
+              <svg class="car" viewBox="0 0 10 10"><path d="M2 3.5l3 3 3-3" /></svg>
+            </button>
+          </div>
           <div class="ss-mark" aria-hidden="true"><i></i>Spread Stories</div>
           <div class="ss-right">
             <button type="button" class="ss-ib" aria-label="Close stories" (click)="close()"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" /></svg></button>
@@ -182,9 +224,52 @@ export class StoryArtHost {
           @if (hint()) { <div class="ss-hint" aria-hidden="true"><b>👆</b><span>{{ lang() === 'te' ? 'తదుపరి కథకు స్వైప్ చేయండి' : 'Swipe for the next story' }}</span></div> }
         </div>
 
+        @if (mode() === 'browse') {
+          <div class="ss-browse" #browse>
+            <div class="ss-bh">
+              <div class="ss-mark" aria-hidden="true"><i></i>Spread Stories</div>
+              <div class="ss-right">
+                <button type="button" class="ss-lang" aria-haspopup="true" aria-label="Language" [attr.aria-expanded]="menu()" (click)="toggleMenu()">
+                  <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18" /></svg>
+                  <span>{{ langName() }}</span>
+                </button>
+                <button type="button" class="ss-ib" aria-label="Close stories" (click)="close()"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" /></svg></button>
+              </div>
+            </div>
+            <section class="ss-hero" (click)="openAt(feat)" [attr.aria-label]="stories[feat][lang()].t">
+              <div class="ss-hero-art" [ssArt]="art(feat)"></div>
+              <div class="ss-hero-txt" [attr.lang]="lang()">
+                <span class="ss-badge" style="animation-delay:.45s">{{ lang() === 'te' ? 'నేటి కథ' : 'Story of the day' }}</span>
+                <div class="ss-src" style="animation-delay:.52s">{{ colOf(stories[feat].c).icon }} {{ stories[feat][lang()].src }}</div>
+                <h2 class="ss-hero-ttl" style="animation-delay:.6s">{{ stories[feat][lang()].t }}</h2>
+                <p class="ss-hero-l" style="animation-delay:.7s">{{ stories[feat][lang()].l }}</p>
+                <div class="ss-hero-btns" style="animation-delay:.8s">
+                  <button type="button" class="ss-play" (click)="openAt(feat); $event.stopPropagation()"><svg viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z" /></svg>{{ lang() === 'te' ? 'చదవండి' : 'Read' }}</button>
+                  <button type="button" class="ss-ghost" (click)="shareAt(feat); $event.stopPropagation()">{{ lang() === 'te' ? 'షేర్' : 'Share' }}</button>
+                </div>
+              </div>
+            </section>
+            @for (c of cols; track c.id; let r = $index) {
+              <section class="ss-row" [style.animation-delay.ms]="700 + r * 90" [attr.aria-label]="c.n[lang()]">
+                <h3>{{ c.icon }} {{ c.n[lang()] }}</h3>
+                <div class="ss-tiles">
+                  @for (i of byCol[c.id]; track i; let n = $index) {
+                    <button type="button" class="ss-tile" (click)="openAt(i)">
+                      <div class="ss-tile-art" [ssArt]="art(i)"></div>
+                      <small>{{ n + 1 }}</small>
+                      <span [attr.lang]="lang()">{{ stories[i][lang()].t }}</span>
+                    </button>
+                  }
+                </div>
+              </section>
+            }
+            <p class="ss-foot">{{ lang() === 'te' ? 'ప్రతి కథకు అసలు మూలం చూపించాం. చిత్రాలు మా సొంతవి.' : 'Every story shows its source. All pictures are our own drawings.' }}</p>
+          </div>
+        }
+
         @if (menu()) {
           <div class="ss-scrim clear" (click)="menu.set(false)"></div>
-          <div class="ss-pop" role="menu" aria-label="Language">
+          <div class="ss-pop" [class.r]="mode() === 'browse'" role="menu" aria-label="Language">
             @for (l of langs; track l.id) {
               <button type="button" role="menuitemradio" [attr.lang]="l.id" [attr.aria-checked]="uiLang() === l.id" [disabled]="l.id !== 'te' && l.id !== 'en'" (click)="setLang(l.id)">
                 {{ l.own }}@if (l.id !== 'te' && l.id !== 'en') { <small>soon</small> }
@@ -202,7 +287,7 @@ export class StoryArtHost {
           </div>
         }
       </div>
-      <button type="button" class="ss-nav" aria-label="Next story" [disabled]="idx() === stories.length - 1" (click)="step(1)">›</button>
+      @if (mode() === 'read') { <button type="button" class="ss-nav" aria-label="Next story" [disabled]="idx() === stories.length - 1" (click)="step(1)">›</button> }
     </div>
   `,
   host: { '(document:keydown)': 'onKey($event)' },
@@ -233,6 +318,12 @@ export class StoriesOverlay implements OnDestroy {
   /** First-open entrance (brand, chips, picture), then plain swipes. */
   protected readonly intro = signal(true);
   protected readonly leaving = signal(false);
+  /** 'browse' = hero + rows of tiles; 'read' = swipe cards. A shared link goes straight to 'read'. */
+  protected readonly mode = signal<'browse' | 'read'>('browse');
+  protected readonly entering = signal(false);
+  /** Story of the day for the hero (changes every day, same for everyone). */
+  protected readonly feat = Math.floor(Date.now() / 86400000) % STORIES.length;
+  protected readonly byCol: Record<string, number[]> = Object.fromEntries(STORY_COL_INFO.map((c) => [c.id, STORIES.map((s, i) => (s.c === c.id ? i : -1)).filter((i) => i >= 0)]));
   protected readonly ox = this.svc.origin() ? this.svc.origin()!.x + 'px' : '50%';
   protected readonly oy = this.svc.origin() ? this.svc.origin()!.y + 'px' : '30%';
   protected readonly liked = signal<Record<string, boolean>>({});
@@ -273,7 +364,10 @@ export class StoriesOverlay implements OnDestroy {
       setTimeout(() => this.intro.set(false), 1600);
       const st = this.svc.start();
       const at = st ? STORIES.findIndex((s) => s.c === st.col && (!st.slug || s.slug === st.slug)) : -1;
-      if (at >= 0) this.idx.set(at);
+      if (at >= 0) {
+        this.idx.set(at);
+        this.mode.set('read');
+      }
       this.place(0, false);
       this.wireSwipe();
       addEventListener('resize', this.onResize);
@@ -421,6 +515,30 @@ export class StoriesOverlay implements OnDestroy {
   /** A click on the dark area around the panel (laptops) closes the stories. */
   protected backdrop(e: MouseEvent) {
     if (e.target === e.currentTarget) this.close();
+  }
+
+  /** From a tile or the hero: open the swipe cards at that story. */
+  protected openAt(i: number) {
+    this.fx.unlock();
+    this.fx.pop();
+    this.idx.set(i);
+    this.mode.set('read');
+    this.entering.set(true);
+    setTimeout(() => {
+      this.place(0, false);
+      this.centerChip();
+    });
+    setTimeout(() => this.entering.set(false), 500);
+  }
+
+  protected toBrowse() {
+    this.fx.soft();
+    this.mode.set('browse');
+  }
+
+  protected shareAt(i: number) {
+    this.idx.set(i);
+    this.share();
   }
 
   /** Shrinks back into the ring, then removes the overlay. */
