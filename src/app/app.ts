@@ -42,7 +42,7 @@ import { StoriesService } from './core/stories.service';
           <button type="button" class="story-ring" (click)="stories.showFrom($event)" (pointerenter)="stories.warm()" (pointerdown)="stories.warm()" aria-label="Spread Stories" title="Spread Stories" aria-haspopup="dialog">
             <span aria-hidden="true">🦚</span>
           </button>
-          <button type="button" class="btn-icon relative size-9 border-transparent bg-transparent" (click)="newsOpen.set(true)" aria-label="Latest news" title="Latest news" aria-haspopup="dialog">
+          <button type="button" class="btn-icon relative size-9 border-transparent bg-transparent" (click)="openNews($event)" (pointerenter)="warmNews()" (pointerdown)="warmNews()" aria-label="Latest news" title="Latest news" aria-haspopup="dialog">
             <svg lucideIcon="newspaper" [size]="18" />
             <span class="absolute top-1.5 right-1.5 size-1.5 rounded-full bg-rose-500" aria-hidden="true"></span>
           </button>
@@ -125,7 +125,7 @@ import { StoriesService } from './core/stories.service';
       @defer { <app-stories /> }
     }
     @if (newsOpen()) {
-      @defer { <app-news-panel (closed)="newsOpen.set(false)" /> }
+      @defer { <app-news-panel [origin]="newsOrigin()" (closed)="newsOpen.set(false)" /> }
     }
     <app-consent-banner />
     <app-update-banner />
@@ -148,6 +148,16 @@ export class App {
   protected readonly ver = APP_VERSION;
   /** 📰 header button → news panel (its code loads only when opened) */
   protected readonly newsOpen = signal(false);
+  protected readonly newsOrigin = signal<{ x: number; y: number } | null>(null);
+  protected openNews(e: Event) {
+    const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    this.newsOrigin.set({ x: r.left + r.width / 2, y: r.top + r.height / 2 });
+    this.newsOpen.set(true);
+  }
+  /** Fetch the news code as soon as a finger or mouse reaches the button. */
+  protected warmNews() {
+    import('./shared/news-panel').catch(() => undefined);
+  }
   /** Header ring → Spread Stories (stories, pictures and styles load only when opened) */
   protected readonly stories = inject(StoriesService);
   /** Footer sections folded on phones/tablets (all open on large screens) */
