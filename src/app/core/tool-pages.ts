@@ -559,6 +559,27 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
     ],
     disclaimer: 'games',
   },
+  sudoku: {
+    h1: 'Sudoku — Free Daily Puzzle with Hints',
+    title: 'Play Sudoku Online Free — Daily Puzzle, Easy to Hard, Notes & Hints',
+    description: 'Free Sudoku on your phone: Easy, Medium and Hard puzzles plus one daily puzzle for everyone, with pencil notes, hints, undo and mistake check. Help in Telugu, Hindi, Tamil, Kannada, Marathi, Odia and English. No signup.',
+    intro: 'Tap a square, tap a number. Every row, column and 3×3 box needs 1 to 9 once. Soft sounds and bubbles make it relaxing.',
+    steps: [
+      'Pick a level — Easy, Medium, Hard — or 📅 Today for the daily puzzle.',
+      'Tap an empty square, then a number below. A wrong number turns red, so you learn as you go.',
+      'Not sure? Turn on Notes and jot small candidate numbers. Stuck? Tap Hint.',
+      'Finish all 81 squares to win. Solve the daily puzzle every day to grow your 🔥 streak. Your game is saved if you close the page.',
+    ],
+    faqs: [
+      { q: 'What are the rules of Sudoku?', a: 'Fill the 9×9 grid so each row, each column and each 3×3 box contains the numbers 1 to 9 exactly once. The numbers already given cannot be changed.' },
+      { q: 'Does every puzzle have one answer?', a: 'Yes. Each puzzle is made on your device and checked so it has exactly one solution — no guessing needed.' },
+      { q: 'What is the daily puzzle?', a: 'Tap 📅 Today. Everyone gets the same Medium puzzle for the day and a new one comes at midnight. Solve it on consecutive days to build a streak.' },
+      { q: 'How do Notes work?', a: 'Turn on Notes and tap numbers to write small candidates in a square. When you place a correct number, the same note is cleared from its row, column and box automatically.' },
+      { q: 'Can I play with a keyboard?', a: 'Yes. Use the arrow keys to move, 1–9 to fill, Backspace to erase and N to switch Notes on or off.' },
+      { q: 'Is it good for kids and elders?', a: 'Yes. Sudoku builds logic and focus. There is no chat, no sign-up and no time pressure — the timer is only for fun.' },
+    ],
+    disclaimer: 'games',
+  },
   ifsc: {
     h1: 'IFSC Code Details — Bank & Branch',
     title: 'IFSC Code Finder — Check Bank, Branch, Address & MICR from IFSC',
@@ -656,7 +677,7 @@ export function toolPage(id: string): ToolPageInfo | undefined {
 }
 
 export const DISCLAIMERS: Record<Disclaimer, string> = {
-  games: 'Your game and settings are saved only on this device. The computer runs in your browser — nothing is sent anywhere.',
+  games: 'Your game and settings are saved only on this device. Everything runs in your browser — nothing is sent anywhere.',
   jobs: 'Titles and links come from the official commission websites and refresh every few hours. Always confirm dates, fees and eligibility in the official notice before applying. We are not connected to any commission.',
   wishes: 'Your name and photo stay on your device; nothing is uploaded. Share the card freely.',
   rent: 'A format commonly accepted by employers for HRA — check with your HR or CA. Receipts must be signed by the owner; we don’t store anything you type.',
