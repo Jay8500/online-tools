@@ -34,7 +34,8 @@ const CSS = `
 @keyframes ss-pop-in{from{opacity:0;transform:scale(.4)}}
 .ss-card.in .ss-art svg{animation:ss-kb 12s ease-out both}
 @keyframes ss-kb{from{transform:scale(1)}to{transform:scale(1.07)}}
-.ss-panel.wide{width:min(1040px,100vw)}
+.ss-panel.wide{width:100vw;height:100dvh;border-radius:0;box-shadow:none}
+@media (min-width:600px){.ss-panel.wide .ss-hero{height:min(72dvh,640px)}.ss-panel.wide .ss-hero-txt{left:4vw;bottom:6vh}.ss-panel.wide .ss-row h3{margin-left:4vw}.ss-panel.wide .ss-tiles{padding-left:4vw;padding-right:4vw;scroll-padding:4vw}.ss-panel.wide .ss-tile{flex-basis:clamp(180px,17vw,280px)}.ss-panel.wide .ss-bh{padding-left:4vw;padding-right:4vw}.ss-panel.wide .ss-foot{padding-left:4vw}}
 .ss-browse{position:absolute;inset:0;z-index:15;overflow-y:auto;overflow-x:hidden;background:#0b0b0f;scrollbar-width:none;overscroll-behavior:contain}
 .ss-browse::-webkit-scrollbar{display:none}
 .ss-bh{position:sticky;top:0;z-index:5;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 14px 22px;background:linear-gradient(#0b0b0f,rgb(11 11 15/.75) 45%,transparent)}
