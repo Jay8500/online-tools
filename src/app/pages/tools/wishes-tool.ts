@@ -1,5 +1,5 @@
 import { isPlatformBrowser } from '@angular/common';
-import { Component, ElementRef, PLATFORM_ID, afterNextRender, computed, effect, inject, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, PLATFORM_ID, afterNextRender, computed, effect, inject, input, signal, viewChild } from '@angular/core';
 import { CoachLang, LANGS, phoneLang } from '../../core/langs';
 import { ToastService } from '../../core/toast.service';
 import { Icon } from '../../shared/icon';
@@ -105,6 +105,8 @@ export class WishesTool {
   private readonly cv = viewChild<ElementRef<HTMLCanvasElement>>('cv');
   protected readonly size = SIZE;
   protected readonly fests = FESTS;
+  /** Festival to open with (e.g. from the home festival card). */
+  readonly initial = input<string>();
   protected readonly fest = signal(defaultFest());
   protected readonly lang = signal<Lang>('te');
   protected readonly langs = LANGS;
@@ -115,6 +117,8 @@ export class WishesTool {
 
   constructor() {
     afterNextRender(() => {
+      const i = this.initial();
+      if (i && FESTS.some((x) => x.id === i)) this.fest.set(i);
       try {
         const l = localStorage.getItem(LANG_KEY);
         this.lang.set(LANGS.some((x) => x.id === l) ? (l as Lang) : phoneLang());

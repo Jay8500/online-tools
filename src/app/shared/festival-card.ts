@@ -1,7 +1,7 @@
 import { isPlatformBrowser } from '@angular/common';
-import { Component, PLATFORM_ID, afterNextRender, inject, signal } from '@angular/core';
+import { Component, ElementRef, PLATFORM_ID, afterNextRender, computed, inject, signal, viewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { ToastService } from '../core/toast.service';
+import { WishesTool } from '../pages/tools/wishes-tool';
 import { Icon } from './icon';
 import type { Festival } from '../core/celebrate';
 
@@ -11,7 +11,7 @@ import type { Festival } from '../core/celebrate';
  */
 @Component({
   selector: 'app-festival-card',
-  imports: [RouterLink, Icon],
+  imports: [RouterLink, Icon, WishesTool],
   styles: `
 .festival-card { border-color: rgb(251 191 36 / 0.45); background: linear-gradient(135deg, #fff7e0, #ffe4ec 60%, #fff); color: #3b2300; }
 .festival-card[data-theme='national'] { background: linear-gradient(180deg, #ffe0bf 0%, #ffffff 50%, #d7f3d9 100%); color: #12305c; border-color: #ffcf99; }
@@ -39,14 +39,25 @@ import type { Festival } from '../core/celebrate';
               <p class="text-xs font-bold tracking-wide uppercase opacity-80">{{ f.mood === 'tribute' ? 'Today' : 'Today’s festival' }} · {{ dateText(f.date) }}</p>
               <h2 class="text-xl font-extrabold sm:text-2xl">{{ f.wish }}</h2>
               <p class="text-sm opacity-90">{{ f.mood === 'tribute' ? f.name + ' — a public holiday.' : 'From all of us at Spread Apps — have a safe and happy ' + f.name + '!' }}</p>
-              <div class="mt-2 flex flex-wrap gap-2">
-                <button type="button" class="btn-primary min-h-9 text-sm" (click)="celebrate()">{{ f.mood === 'tribute' ? '🌸 Pay tribute' : '🎉 Celebrate' }}</button>
-                <button type="button" class="btn-ghost min-h-9 min-w-9 bg-surface/70 px-2.5 text-sm sm:px-3" (click)="share()" aria-label="Share this greeting" title="Share on WhatsApp, Instagram, Facebook"><svg lucideIcon="share-2" [size]="16" /><span class="hidden sm:inline">Share</span></button>
-                <a routerLink="/holiday-calendar" class="btn-ghost min-h-9 bg-surface/70 text-sm">All holidays →</a>
-              </div>
             </div>
           </div>
+          <div class="relative mt-3 flex gap-2 sm:pl-[7.1rem]">
+            <button type="button" class="btn-primary min-h-9 min-w-0 flex-1 px-2 text-[13px] whitespace-nowrap sm:flex-none sm:px-4 sm:text-sm" (click)="celebrate()">{{ f.mood === 'tribute' ? '🌸 Tribute' : '🎉 Celebrate' }}</button>
+            @if (wishId()) {
+              <button type="button" class="btn-ghost min-h-9 min-w-0 flex-1 bg-surface/80 px-2 text-[13px] whitespace-nowrap sm:flex-none sm:px-4 sm:text-sm" [attr.aria-expanded]="maker()" (click)="toggleMaker()">✨ {{ maker() ? 'Close card' : 'Make card' }}</button>
+            }
+            <a routerLink="/holiday-calendar" class="btn-ghost min-h-9 min-w-0 flex-1 bg-surface/70 px-2 text-[13px] whitespace-nowrap sm:flex-none sm:px-4 sm:text-sm">Holidays →</a>
+          </div>
         </section>
+        @if (maker() && wishId(); as id) {
+          <section #makerBox class="card animate-fade-up relative mb-3 scroll-mt-20 p-4" aria-label="Make your festival card">
+            <div class="mb-3 flex items-center justify-between gap-2">
+              <h2 class="text-base font-bold">✨ Make your {{ f.name }} card</h2>
+              <button type="button" class="btn-icon" aria-label="Close card maker" title="Close" (click)="maker.set(false)"><svg lucideIcon="x" [size]="18" /></button>
+            </div>
+            @defer (on immediate) { <app-wishes-tool [initial]="id" /> } @placeholder { <div class="h-[36rem]"></div> }
+          </section>
+        }
       } @else {
         <a routerLink="/holiday-calendar" class="animate-fade-up mb-3 flex items-center gap-3 rounded-2xl border border-line bg-gradient-to-r from-amber-400/20 via-rose-400/10 to-transparent px-3 py-2 text-sm hover:border-brand/50">
           <span class="animate-float text-2xl" aria-hidden="true">@if (f.art === 'flag') { <span class="tricolour"></span> } @else { {{ f.art }} }</span>
@@ -66,7 +77,22 @@ import type { Festival } from '../core/celebrate';
 export class FestivalCard {
   protected readonly fest = signal<Festival | null>(null);
   protected readonly inDays = signal(0);
-  private readonly toast = inject(ToastService);
+  protected readonly maker = signal(false);
+  private readonly makerBox = viewChild<ElementRef<HTMLElement>>('makerBox');
+  /** Matching card in the wishes maker, if there is one for today's festival. */
+  protected readonly wishId = computed(() => {
+    const n = this.fest()?.name.toLowerCase() ?? '';
+    const map: [RegExp, string][] = [
+      [/diwali|deepavali/, 'diwali'],
+      [/christmas/, 'christmas'],
+      [/new year/, 'newyear'],
+      [/sankranti|pongal/, 'sankranti'],
+      [/ugadi|gudi padwa/, 'ugadi'],
+      [/fitr|ramzan/, 'ramzan'],
+      [/dussehra|dasara|vijaya/, 'dasara'],
+    ];
+    return this.inDays() === 0 ? (map.find(([re]) => re.test(n))?.[1] ?? '') : '';
+  });
 
   constructor() {
     const browser = isPlatformBrowser(inject(PLATFORM_ID));
@@ -87,25 +113,9 @@ export class FestivalCard {
     (await import('../core/celebrate')).shower(f.theme);
   }
 
-  /** Share the greeting with a link: whoever opens it gets the festival shower on their first visit of the day. */
-  protected async share() {
-    const f = this.fest();
-    if (!f) return;
-    const tag = f.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-    const url = 'https://tools.spreadapps.in/?utm_source=festival-share&utm_medium=social&utm_campaign=' + tag;
-    const text = f.mood === 'tribute' ? f.wish : `${f.wish} ✨\nOpen for a little surprise 🎉`;
-    try {
-      if (navigator.share) return await navigator.share({ title: f.name, text, url });
-    } catch (e) {
-      if ((e as Error).name === 'AbortError') return;
-    }
-    const all = `${text}\n${url}`;
-    try {
-      await navigator.clipboard.writeText(all);
-      this.toast.show('Link copied — paste it in WhatsApp, Instagram or Facebook', 'success');
-    } catch {
-      open('https://wa.me/?text=' + encodeURIComponent(all), '_blank', 'noopener');
-    }
+  protected toggleMaker() {
+    this.maker.update((m) => !m);
+    if (this.maker()) setTimeout(() => this.makerBox()?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
   }
 
   protected dateText(iso: string) {
