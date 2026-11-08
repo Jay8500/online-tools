@@ -60,6 +60,23 @@ export class GameFx {
     this.note(190, 90, 0.16, 0.25);
     this.buzz(40);
   }
+  /** A soft swish, for swiping a card. */
+  whoosh() {
+    const c = this.ctx;
+    if (!this.on || !c) return;
+    const len = 0.22, buf = c.createBuffer(1, Math.floor(c.sampleRate * len), c.sampleRate), d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.sin((Math.PI * i) / d.length);
+    const s = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
+    s.buffer = buf;
+    f.type = 'bandpass';
+    f.Q.value = 0.8;
+    f.frequency.setValueAtTime(500, c.currentTime);
+    f.frequency.exponentialRampToValueAtTime(2200, c.currentTime + len);
+    g.gain.value = 0.12;
+    s.connect(f).connect(g).connect(c.destination);
+    s.start();
+    this.buzz(8);
+  }
   /** Puzzle solved. */
   win() {
     [784, 988, 1175, 1568, 1976].forEach((f, i) => this.note(f, f, 0.45, 0.1, i * 0.09, 'triangle'));

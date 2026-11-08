@@ -9,6 +9,7 @@ const kbTool = () => import('./pages/kb-tool').then((m) => m.KbTool);
 const legal = () => import('./pages/legal');
 const calcPage = () => import('./pages/calc-page').then((m) => m.CalcPageView);
 const toolPage = () => import('./pages/tool-page').then((m) => m.ToolPageView);
+const storyPage = () => import('./pages/story-page').then((m) => m.StoryPage);
 
 /** Every route here is prerendered to static HTML at build time (see app.routes.server.ts). */
 export const routes: Routes = [
@@ -19,6 +20,8 @@ export const routes: Routes = [
   ...CALC_LINKS.map((c) => ({ path: c.path, loadComponent: calcPage, data: { calc: c.id } })),
   ...HUB_ROUTES.map((path) => ({ path, loadComponent: () => import('./pages/hub-page').then((m) => m.HubPage), data: { hubPath: path } })),
   ...TOOL_LINKS.map((t) => ({ path: t.path, loadComponent: toolPage, data: { tool: t.id } })),
+  { path: 'stories', loadComponent: storyPage },
+  { path: 'stories/:col/:slug', loadComponent: storyPage },
   { path: 'about', loadComponent: () => legal().then((m) => m.About) },
   { path: 'privacy', loadComponent: () => legal().then((m) => m.Privacy) },
   { path: 'terms', loadComponent: () => legal().then((m) => m.Terms) },

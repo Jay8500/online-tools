@@ -22,10 +22,12 @@ import { MoreFrom } from './shared/more-from';
 import { LikeBox } from './shared/like-box';
 import { APP_VERSION } from './core/version';
 import { NewsPanel } from './shared/news-panel';
+import { StoriesOverlay } from './shared/stories-overlay';
+import { StoriesService } from './core/stories.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, Icon, Brand, Benefits, ToastHost, DialogHost, UpdateBanner, ConsentBanner, ScrollTop, InstallHint, InstallFooter, MoreFrom, LikeBox, NewsPanel],
+  imports: [RouterOutlet, RouterLink, Icon, Brand, Benefits, ToastHost, DialogHost, UpdateBanner, ConsentBanner, ScrollTop, InstallHint, InstallFooter, MoreFrom, LikeBox, NewsPanel, StoriesOverlay],
   template: `
     <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[200] focus:rounded-lg focus:bg-brand focus:px-3 focus:py-2 focus:text-brand-ink">Skip to tool</a>
     <!-- Soft colour lights behind the whole site; header, cards, chips and footer are see-through glass over them -->
@@ -37,6 +39,9 @@ import { NewsPanel } from './shared/news-panel';
           <a routerLink="/exam-photo-signature-resize" class="hidden rounded-lg px-2.5 py-1.5 text-muted hover:bg-surface-2 hover:text-ink sm:block">Exam photos</a>
           <a routerLink="/resize-image-to-kb" class="hidden rounded-lg px-2.5 py-1.5 text-muted hover:bg-surface-2 hover:text-ink sm:block">Resize to KB</a>
           <a routerLink="/money-calculators" class="hidden rounded-lg px-2.5 py-1.5 text-muted hover:bg-surface-2 hover:text-ink sm:block">Calculators</a>
+          <button type="button" class="story-ring" (click)="stories.show()" aria-label="Spread Stories" title="Spread Stories" aria-haspopup="dialog">
+            <span aria-hidden="true">🦚</span>
+          </button>
           <button type="button" class="btn-icon relative size-9 border-transparent bg-transparent" (click)="newsOpen.set(true)" aria-label="Latest news" title="Latest news" aria-haspopup="dialog">
             <svg lucideIcon="newspaper" [size]="18" />
             <span class="absolute top-1.5 right-1.5 size-1.5 rounded-full bg-rose-500" aria-hidden="true"></span>
@@ -116,6 +121,9 @@ import { NewsPanel } from './shared/news-panel';
       </p>
     </footer>
 
+    @if (stories.open()) {
+      @defer { <app-stories /> }
+    }
     @if (newsOpen()) {
       @defer { <app-news-panel (closed)="newsOpen.set(false)" /> }
     }
@@ -140,6 +148,8 @@ export class App {
   protected readonly ver = APP_VERSION;
   /** 📰 header button → news panel (its code loads only when opened) */
   protected readonly newsOpen = signal(false);
+  /** Header ring → Spread Stories (stories, pictures and styles load only when opened) */
+  protected readonly stories = inject(StoriesService);
   /** Footer sections folded on phones/tablets (all open on large screens) */
   protected readonly open = signal<Record<string, boolean>>({});
   protected toggle(k: string) {
