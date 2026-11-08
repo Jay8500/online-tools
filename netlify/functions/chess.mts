@@ -6,7 +6,7 @@ import { Chess } from 'chess.js';
  * Online chess with a friend (invite link / QR). No sign-up: a room holds two names and two secret
  * tokens. Every move is checked with chess.js here, so both phones always agree.
  *  GET  /api/chess?id=ROOM&t=TOKEN → room state (and marks this player as "seen")
- *  POST /api/chess { a: 'create', name }            → { id, token, color }
+ *  POST /api/chess { a: 'create', name, mins }      → { id, token, color }   (mins: 0 = no clock, 3, 5 or 10 per player)
  *       { a: 'join', id, name }                      → { token, color }
  *       { a: 'move', id, t, ply, uci }               → state
  *       { a: 'resign' | 'draw' | 'cancel' | 'claim' | 'rematch', id, t } → state
@@ -26,7 +26,9 @@ interface Room {
   host: Color;
   players: Partial<Record<Color, Player>>;
   moves: string[];
-  result: { kind: 'mate' | 'resign' | 'draw' | 'stalemate' | 'left'; winner?: Color } | null;
+  result: { kind: 'mate' | 'resign' | 'draw' | 'stalemate' | 'left' | 'time'; winner?: Color } | null;
+  /** Chess clock: milliseconds left per player; `at` = when the side to move started thinking. */
+  clock?: { base: number; w: number; b: number; at: number } | null;
   drawOffer: Color | null;
   events: { n: number; by: Color; e: string }[];
   ev: number;
@@ -49,10 +51,9 @@ export default async (req: Request, context: Context) => {
     const room = await load(store, url.searchParams.get('id'));
     if (!room) return json({ error: 'gone' }, 410);
     const me = who(room, url.searchParams.get('t'));
-    if (me) {
-      room.players[me]!.seen = Date.now();
-      await save(store, room);
-    }
+    const flagged = flag(room);
+    if (me) room.players[me]!.seen = Date.now();
+    if (me || flagged) await save(store, room);
     return json(view(room, me), 200, { 'Cache-Control': 'no-store' });
   }
 
@@ -76,7 +77,8 @@ export default async (req: Request, context: Context) => {
     if (n >= 40) return json({ error: 'Too many games today. Please try tomorrow.' }, 429);
     await seen.set(key, String(n + 1));
     const host: Color = Math.random() < 0.5 ? 'w' : 'b';
-    const room: Room = { id: rid(), created: Date.now(), status: 'waiting', host, players: { [host]: { name: clean(b['name']), token: tok(), seen: Date.now() } }, moves: [], result: null, drawOffer: null, events: [], ev: 0, game: 1 };
+    const mins = [3, 5, 10].includes(Number(b['mins'])) ? Number(b['mins']) : 0;
+    const room: Room = { id: rid(), created: Date.now(), status: 'waiting', host, players: { [host]: { name: clean(b['name']), token: tok(), seen: Date.now() } }, moves: [], result: null, drawOffer: null, events: [], ev: 0, game: 1, clock: mins ? { base: mins * 60_000, w: mins * 60_000, b: mins * 60_000, at: 0 } : null };
     await save(store, room);
     return json({ id: room.id, token: room.players[host]!.token, color: host });
   }
@@ -91,6 +93,7 @@ export default async (req: Request, context: Context) => {
     const color: Color = room.host === 'w' ? 'b' : 'w';
     room.players[color] = { name: clean(b['name']), token: tok(), seen: Date.now() };
     room.status = 'playing';
+    if (room.clock) room.clock.at = Date.now(); // White's clock starts when the friend joins
     await save(store, room);
     return json({ token: room.players[color]!.token, color });
   }
@@ -99,6 +102,7 @@ export default async (req: Request, context: Context) => {
   if (!me) return json({ error: 'Not a player in this game.' }, 403);
   room.players[me]!.seen = Date.now();
   const them: Color = me === 'w' ? 'b' : 'w';
+  flag(room);
 
   switch (a) {
     case 'move': {
@@ -114,6 +118,11 @@ export default async (req: Request, context: Context) => {
       }
       room.moves.push(uci);
       room.drawOffer = null;
+      if (room.clock) {
+        const now = Date.now();
+        room.clock[me] -= now - room.clock.at;
+        room.clock.at = now;
+      }
       if (c.isCheckmate()) finish(room, { kind: 'mate', winner: me });
       else if (c.isStalemate()) finish(room, { kind: 'stalemate' });
       else if (c.isDraw()) finish(room, { kind: 'draw' });
@@ -145,6 +154,7 @@ export default async (req: Request, context: Context) => {
       room.drawOffer = null;
       room.status = 'playing';
       room.game++;
+      if (room.clock) room.clock = { ...room.clock, w: room.clock.base, b: room.clock.base, at: Date.now() };
       break;
     case 'react': {
       const e = String(b['e'] ?? '');
@@ -159,6 +169,16 @@ export default async (req: Request, context: Context) => {
   const meNow = who(room, String(b['t'] ?? ''));
   return json(view(room, meNow));
 };
+
+/** The side to move ran out of time → the other side wins. Returns true when that just happened. */
+function flag(room: Room) {
+  if (room.status !== 'playing' || !room.clock) return false;
+  const mover: Color = room.moves.length % 2 === 0 ? 'w' : 'b';
+  if (room.clock[mover] - (Date.now() - room.clock.at) > 0) return false;
+  room.clock[mover] = 0;
+  finish(room, { kind: 'time', winner: mover === 'w' ? 'b' : 'w' });
+  return true;
+}
 
 function finish(room: Room, r: Room['result']) {
   room.status = 'over';
@@ -181,7 +201,10 @@ function who(room: Room, t: string | null): Color | null {
 function view(room: Room, me: Color | null) {
   const now = Date.now();
   const p = (c: Color) => (room.players[c] ? { name: room.players[c]!.name, away: Math.round((now - room.players[c]!.seen) / 1000) } : null);
-  return { id: room.id, status: room.status, me, host: room.host, players: { w: p('w'), b: p('b') }, moves: room.moves, result: room.result, drawOffer: room.drawOffer, events: room.events, game: room.game, rev: room.rev ?? 0 };
+  const run: Color | null = room.status === 'playing' && room.clock ? (room.moves.length % 2 === 0 ? 'w' : 'b') : null;
+  const left = (c: Color) => (room.clock ? Math.max(0, room.clock[c] - (c === run ? now - room.clock.at : 0)) : 0);
+  const clock = room.clock ? { w: left('w'), b: left('b'), run } : null;
+  return { id: room.id, status: room.status, me, host: room.host, players: { w: p('w'), b: p('b') }, moves: room.moves, result: room.result, drawOffer: room.drawOffer, events: room.events, game: room.game, rev: room.rev ?? 0, clock };
 }
 
 async function load(store: ReturnType<typeof getStore>, id: string | null): Promise<Room | null> {

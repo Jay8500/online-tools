@@ -541,9 +541,9 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
     disclaimer: 'wishes',
   },
   chess: {
-    h1: 'Play Chess vs Computer — Learn as You Play',
-    title: 'Play Chess Online Free vs Computer — Learn Chess in Telugu, Hindi, Tamil & More with Hints',
-    description: 'Play chess against the computer for free — Easy, Medium and Hard levels, hints, undo and a coach that explains how every piece moves in Telugu, English, Hindi, Tamil, Kannada, Marathi or Odia. No signup, works on phone.',
+    h1: 'Play Chess — vs Computer or a Friend',
+    title: 'Play Chess Online Free — vs Computer or a Friend, Learn in Telugu, Hindi & More',
+    description: 'Play chess free against the computer (Easy, Medium, Hard) or a friend — on one phone or online with a link, with an optional chess clock. Hints, undo and a coach that explains how every piece moves in Telugu, English, Hindi, Tamil, Kannada, Marathi or Odia. No signup, works on phone.',
     intro: 'New to chess? Tap a piece and the coach explains how it moves. Stuck? Tap Hint. Made a mistake? Undo.',
     steps: [
       'You play White. Tap one of your pieces — the squares it can go to light up with dots, and the coach explains how it moves.',
@@ -557,6 +557,7 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
       { q: 'How do I win?', a: 'Put the computer’s King in check so that it has no way out — that is checkmate. If a side has no legal move but is not in check, the game is a draw (stalemate).' },
       { q: 'What happens when my pawn reaches the last row?', a: 'It becomes a Queen automatically — the strongest piece.' },
       { q: 'Can I play with a friend?', a: 'Yes. Tap 👥 Friend to play together on one phone (the board turns after each move), or 🔗 Online to send your friend a link or QR code and play on two phones — no sign-up.' },
+      { q: 'Is there a chess clock?', a: 'Yes. When you play a friend — on one phone or online — pick No timer, 3, 5 or 10 minutes each. The clock of the player to move counts down and turns red in the last 20 seconds; whoever runs out of time loses.' },
       { q: 'Is it safe for kids?', a: 'Yes. No chat, no sign-up and nothing to download — just chess on the board.' },
     ],
     disclaimer: 'games',

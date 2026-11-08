@@ -13,7 +13,7 @@ interface PieceView {
   c: Color;
   sq: Square;
 }
-type Coach = { key: string; p?: PieceType; sq?: string; n?: number } | { tip: PieceType };
+type Coach = { key: string; p?: PieceType; sq?: string; n?: number; who?: string } | { tip: PieceType };
 interface RoomView {
   id: string;
   status: 'waiting' | 'playing' | 'over' | 'cancelled';
@@ -21,11 +21,13 @@ interface RoomView {
   host: Color;
   players: Record<Color, { name: string; away: number } | null>;
   moves: string[];
-  result: { kind: 'mate' | 'resign' | 'draw' | 'stalemate' | 'left'; winner?: Color } | null;
+  result: { kind: 'mate' | 'resign' | 'draw' | 'stalemate' | 'left' | 'time'; winner?: Color } | null;
   drawOffer: Color | null;
   events: { n: number; by: Color; e: string }[];
   game: number;
   rev: number;
+  /** ms left per player when the server answered; `run` = whose clock is ticking */
+  clock: { w: number; b: number; run: Color | null } | null;
 }
 
 const FILES = 'abcdefgh';
@@ -52,7 +54,12 @@ const at = (x: number, y: number) => (FILES[x] + (8 - y)) as Square;
       <p class="coach" aria-live="polite" [attr.lang]="lang()">{{ coachText() }}</p>
 
       <div class="who top">
-        <span>@if (mode() === 'cpu') { <b>Computer</b> · {{ level().label }} } @else { <b>{{ nameOf(topSide()) }}</b>@if (turn() === topSide() && !result()) { <i class="ml-1.5 inline-block size-2 rounded-full bg-brand align-middle ring-2 ring-brand/25"></i> } }</span>
+        <span [style.background]="activeSide() === topSide() ? 'color-mix(in oklab, var(--brand) 16%, transparent)' : null" style="border-radius:999px;padding:2px 8px;margin-left:-8px;transition:background .3s">
+          @if (mode() === 'cpu') { <b>Computer</b> · {{ level().label }} } @else { <b>{{ nameOf(topSide()) }}</b>@if (activeSide() === topSide()) { <i class="ml-1.5 inline-block size-2 rounded-full bg-brand align-middle ring-2 ring-brand/25"></i> } }
+          @if (showClock()) {
+            <b class="ml-2 rounded-md px-1.5 py-0.5 font-mono text-xs" [style.background]="clockLow(topSide()) ? '#dc2626' : clockRun() === topSide() ? 'var(--brand)' : 'var(--surface-2)'" [style.color]="clockLow(topSide()) || clockRun() === topSide() ? '#fff' : 'var(--ink)'">⏱ {{ clockText(topSide()) }}</b>
+          }
+        </span>
         <span class="caps">@for (t of lost()[bottomSide()]; track $index) { <svg viewBox="0 0 100 100" [class.w]="bottomSide() === 'w'"><path [attr.d]="svg[t].d" /></svg> }</span>
       </div>
 
@@ -119,7 +126,12 @@ const at = (x: number, y: number) => (FILES[x] + (8 - y)) as Square;
       </div>
 
       <div class="who bottom">
-        <span>@if (mode() === 'cpu') { <b>You</b> · White } @else { <b>{{ nameOf(bottomSide()) }}</b>@if (turn() === bottomSide() && !result()) { <i class="ml-1.5 inline-block size-2 rounded-full bg-brand align-middle ring-2 ring-brand/25"></i> } }</span>
+        <span [style.background]="activeSide() === bottomSide() ? 'color-mix(in oklab, var(--brand) 16%, transparent)' : null" style="border-radius:999px;padding:2px 8px;margin-left:-8px;transition:background .3s">
+          @if (mode() === 'cpu') { <b>You</b> · White } @else { <b>{{ nameOf(bottomSide()) }}</b>@if (activeSide() === bottomSide()) { <i class="ml-1.5 inline-block size-2 rounded-full bg-brand align-middle ring-2 ring-brand/25"></i> } }
+          @if (showClock()) {
+            <b class="ml-2 rounded-md px-1.5 py-0.5 font-mono text-xs" [style.background]="clockLow(bottomSide()) ? '#dc2626' : clockRun() === bottomSide() ? 'var(--brand)' : 'var(--surface-2)'" [style.color]="clockLow(bottomSide()) || clockRun() === bottomSide() ? '#fff' : 'var(--ink)'">⏱ {{ clockText(bottomSide()) }}</b>
+          }
+        </span>
         <span class="caps">@for (t of lost()[topSide()]; track $index) { <svg viewBox="0 0 100 100" [class.w]="topSide() === 'w'"><path [attr.d]="svg[t].d" /></svg> }</span>
       </div>
 
@@ -144,6 +156,11 @@ const at = (x: number, y: number) => (FILES[x] + (8 - y)) as Square;
           <button type="button" [attr.aria-pressed]="mode() === 'local'" (click)="setMode('local')">👥 Friend</button>
           <button type="button" [attr.aria-pressed]="mode() === 'online'" (click)="setMode('online')">🔗 Online</button>
         </div>
+        @if (mode() === 'local') {
+          <div class="seg" role="group" aria-label="Chess clock">
+            @for (m of timers; track m) { <button type="button" [attr.aria-pressed]="mins() === m" (click)="setMins(m)">{{ m ? '⏱ ' + m + ' min' : 'No timer' }}</button> }
+          </div>
+        }
         @if (mode() === 'online') {
           <div class="card grid gap-2 p-3 text-sm">
             @if (onlineErr()) { <p class="font-semibold text-rose-600" role="alert">{{ onlineErr() }}</p> }
@@ -154,6 +171,9 @@ const at = (x: number, y: number) => (FILES[x] + (8 - y)) as Square;
             } @else if (!room()) {
               <p>Play with a friend on their own phone. Send them a link or let them scan the QR — no sign-up.</p>
               <input class="input" maxlength="20" placeholder="Your name" aria-label="Your name" [value]="myName()" (input)="myName.set($any($event.target).value)" />
+              <div class="seg" role="group" aria-label="Chess clock">
+            @for (m of timers; track m) { <button type="button" [attr.aria-pressed]="mins() === m" (click)="setMins(m)">{{ m ? '⏱ ' + m + ' min' : 'No timer' }}</button> }
+          </div>
               <button type="button" class="btn-primary" [disabled]="waitingNet()" (click)="create()">Create invite</button>
             } @else if (room()!.status === 'waiting') {
               <p class="font-semibold">Waiting for your friend to join…</p>
@@ -284,6 +304,30 @@ export class ChessTool implements OnDestroy {
   private joinId = '';
   protected readonly reaction = signal<{ e: string } | null>(null);
   protected readonly emojis = ['👍', '😮', '😂', '👏', '🙏', '🔥'];
+  /** Chess clock minutes per player (0 = no clock). */
+  protected readonly timers = [0, 3, 5, 10];
+  protected readonly mins = signal(10);
+  /** Ticks while a clock runs, so the numbers count down. */
+  protected readonly now = signal(Date.now());
+  private roomAt = 0;
+  private tickTimer?: ReturnType<typeof setInterval>;
+  private flagAsked = false;
+  /** One-phone game clock; `run` = whose time is going. */
+  protected readonly lclock = signal<{ w: number; b: number; at: number; run: Color } | null>(null);
+  protected readonly localFlag = signal<Color | null>(null);
+  private baseTitle = '';
+  protected readonly showClock = computed(() => (this.mode() === 'online' ? !!this.room()?.clock && this.room()!.status !== 'waiting' : this.mode() === 'local' && this.mins() > 0));
+  protected readonly clockRun = computed<Color | null>(() => {
+    if (this.mode() === 'online') return this.room()?.clock?.run ?? null;
+    if (this.mode() !== 'local' || this.localFlag() || this.result()) return null;
+    return this.lclock()?.run ?? null;
+  });
+  /** Whose move it is (highlighted label), or nobody once the game is over. */
+  protected readonly activeSide = computed<Color | null>(() => {
+    if (this.mode() === 'cpu' || this.result()) return null;
+    if (this.mode() === 'online' && this.room()?.status !== 'playing') return null;
+    return this.turn();
+  });
   protected readonly oppSide = computed<Color>(() => (this.room()?.me === 'b' ? 'w' : 'b'));
   protected readonly oppAway = computed(() => this.room()?.players[this.oppSide()]?.away ?? 0);
   protected readonly inviteUrl = computed(() => (this.room() ? `https://tools.spreadapps.in/games/chess?room=${this.room()!.id}` : ''));
@@ -327,7 +371,7 @@ export class ChessTool implements OnDestroy {
   protected readonly turn = computed<Color>(() => (this.ver(), this.chess.turn()));
   protected readonly myTurn = computed(() => {
     this.ver();
-    if (this.busy() || this.chess.isGameOver()) return false;
+    if (this.busy() || this.chess.isGameOver() || this.localFlag()) return false;
     if (this.mode() === 'online') return this.room()?.status === 'playing' && this.chess.turn() === this.room()?.me;
     return this.mode() === 'local' || this.chess.turn() === 'w';
   });
@@ -359,6 +403,10 @@ export class ChessTool implements OnDestroy {
     const c = this.chess, t = COACH[this.lang()];
     // Online, resign / draw / a friend leaving end the game without the board being over.
     if (this.mode() === 'online') return this.onlineResult();
+    if (this.mode() === 'local' && this.localFlag()) {
+      const lost = this.localFlag()!;
+      return { title: t[lost === 'w' ? 'blackWins' : 'whiteWins'], sub: `⏱ ${this.sideName(lost)} ran out of time.` };
+    }
     if (!c.isGameOver()) return null;
     if (c.isCheckmate() && this.mode() === 'local') return { title: c.turn() === 'b' ? t['whiteWins'] : t['blackWins'], sub: t['winSub'] };
     if (c.isCheckmate()) return c.turn() === 'b' ? { title: t['win'], sub: t['winSub'] } : { title: t['lose'], sub: t['loseSub'] };
@@ -370,8 +418,8 @@ export class ChessTool implements OnDestroy {
     if (this.mode() === 'online') {
       const r = this.room();
       if (!r) return '🔗 Online';
-      if (r.status === 'waiting') return 'Waiting for your friend…';
-      return this.myTurn() ? t['yourTurn'] : `${this.nameOf(this.oppSide())} is thinking…`;
+      if (r.status === 'waiting') return 'Waiting for your friend to join…';
+      return this.myTurn() ? '🟢 Your move' : `⏳ ${this.oppName()}’s move`;
     }
     if (this.mode() === 'local') return t[this.turn() === 'w' ? 'turnWhite' : 'turnBlack'];
     return t[this.busy() ? 'thinking' : 'yourTurn'];
@@ -382,7 +430,8 @@ export class ChessTool implements OnDestroy {
     return COACH[lang][c.key]
       .replace('{p}', c.p ? PIECE_NAME[lang][c.p].replace(/ \(.*\)/, '') : '')
       .replace('{sq}', c.sq ?? '')
-      .replace('{n}', String(c.n ?? ''));
+      .replace('{n}', String(c.n ?? ''))
+      .replace('{name}', c.who ?? '');
   });
 
   constructor() {
@@ -417,6 +466,12 @@ export class ChessTool implements OnDestroy {
       const id = new URLSearchParams(location.search).get('room');
       if (id && /^[a-z0-9]{8}$/.test(id)) this.openRoom(id);
       document.addEventListener('visibilitychange', this.onVisible);
+      this.baseTitle = document.title;
+      try {
+        const m = Number(localStorage.getItem('chess-mins') ?? 10);
+        if (this.timers.includes(m)) this.mins.set(m);
+      } catch {}
+      this.tickTimer = setInterval(() => this.tick(), 250);
     });
   }
 
@@ -426,6 +481,8 @@ export class ChessTool implements OnDestroy {
     clearTimeout(this.flipTimer);
     clearTimeout(this.pollTimer);
     clearTimeout(this.reactTimer);
+    clearInterval(this.tickTimer);
+    if (this.baseTitle && typeof document !== 'undefined') document.title = this.baseTitle;
     if (typeof document !== 'undefined') document.removeEventListener('visibilitychange', this.onVisible);
   }
 
@@ -544,7 +601,10 @@ export class ChessTool implements OnDestroy {
     }
     this.apply(m, true);
     if (this.mode() === 'online') this.sendMove(m);
-    else if (this.mode() === 'local') this.turnBoard();
+    else if (this.mode() === 'local') {
+      this.runLocalClock(m.color);
+      this.turnBoard();
+    }
     else if (!this.chess.isGameOver()) this.computerMove();
     return true;
   }
@@ -570,7 +630,7 @@ export class ChessTool implements OnDestroy {
 
     if (m.isKingsideCastle() || m.isQueensideCastle()) this.coach.set({ key: 'castle' });
     else if (m.promotion) this.coach.set({ key: 'promote' });
-    else if (m.captured) this.coach.set(mine ? { key: 'youTook', p: m.captured, n: PIECE_VALUE[m.captured] } : { key: 'theyTook', p: m.captured });
+    else if (m.captured) this.coach.set(mine ? { key: 'youTook', p: m.captured, n: PIECE_VALUE[m.captured] } : this.mode() === 'online' ? { key: 'friendTook', p: m.captured, who: this.oppName() } : { key: 'theyTook', p: m.captured });
     else if (!mine && !('tip' in this.coach())) this.coach.set({ key: 'start' });
     if (this.chess.inCheck() && !this.chess.isGameOver()) this.coach.set({ key: mine ? 'youCheck' : 'inCheck' });
   }
@@ -654,6 +714,8 @@ export class ChessTool implements OnDestroy {
     this.hint.set(null);
     clearTimeout(this.flipTimer);
     this.flip.set(false);
+    this.lclock.set(null);
+    this.localFlag.set(null);
     this.coach.set({ key: this.mode() === 'local' ? 'passPlay' : 'start' });
     this.ver.update((v) => v + 1);
     this.save();
@@ -662,7 +724,9 @@ export class ChessTool implements OnDestroy {
   // --- online game with a friend ---
 
   private readonly onVisible = () => {
-    if (document.visibilityState === 'visible' && this.room()) this.poll(0);
+    if (document.visibilityState !== 'visible') return;
+    if (this.baseTitle) document.title = this.baseTitle;
+    if (this.room()) this.poll(0);
   };
 
   private async api(body: Record<string, unknown>) {
@@ -682,7 +746,7 @@ export class ChessTool implements OnDestroy {
     this.waitingNet.set(true);
     this.rememberName();
     try {
-      const { ok, j } = await this.api({ a: 'create', name: this.myName() });
+      const { ok, j } = await this.api({ a: 'create', name: this.myName(), mins: this.mins() });
       if (!ok) throw new Error(j.error);
       this.enterRoom(j.id, j.token);
     } catch (e) {
@@ -802,7 +866,11 @@ export class ChessTool implements OnDestroy {
       if (theirs && this.gameNo) this.showReaction(theirs.e);
     }
     const before = this.room();
+    const friendMoved = !!before && before.game === v.game && v.moves.length > before.moves.length && v.moves.length % 2 === (v.me === 'w' ? 0 : 1);
+    this.roomAt = Date.now();
+    this.flagAsked = false;
     this.room.set(v);
+    if (friendMoved && v.status === 'playing') this.yourMoveCue();
     if (before?.status === 'waiting' && v.status === 'playing') this.feedback(false);
   }
 
@@ -901,19 +969,89 @@ export class ChessTool implements OnDestroy {
 
   private onlineResult() {
     const r = this.room(), t = COACH[this.lang()];
-    if (!r?.result) return null;
+    if (!r) return null;
     const opp = r.players[this.oppSide()]?.name ?? 'Your friend';
-    const won = r.result.winner === r.me;
-    switch (r.result.kind) {
+    // The board can show mate a moment before the server's answer arrives.
+    const res = r.result ?? (this.chess.isCheckmate() ? { kind: 'mate' as const, winner: (this.chess.turn() === 'w' ? 'b' : 'w') as Color } : null);
+    if (!res) return null;
+    const won = res.winner === r.me;
+    switch (res.kind) {
+      case 'time':
+        return won ? { title: t['win'], sub: `⏱ ${opp} ran out of time.` } : { title: `${opp} won the game`, sub: '⏱ Your time ran out. Rematch?' };
       case 'mate':
-        return won ? { title: t['win'], sub: `Checkmate! You beat ${opp}.` } : { title: t['lose'], sub: `${opp} won this one. Rematch?` };
+        return won ? { title: t['win'], sub: `Checkmate! You beat ${opp}.` } : { title: `${opp} won the game`, sub: 'Checkmate. Good game — tap Rematch to play again.' };
       case 'resign':
-        return won ? { title: t['win'], sub: `${opp} resigned.` } : { title: 'You resigned', sub: `${opp} wins this game.` };
+        return won ? { title: t['win'], sub: `${opp} resigned.` } : { title: `${opp} won the game`, sub: 'You resigned.' };
       case 'left':
-        return won ? { title: t['win'], sub: `${opp} left the game.` } : { title: 'Game over', sub: 'You were away too long.' };
+        return won ? { title: t['win'], sub: `${opp} left the game.` } : { title: `${opp} won the game`, sub: 'You were away too long.' };
       default:
-        return { title: t['draw'], sub: r.result.kind === 'stalemate' ? t['stalemate'] : t['drawSub'] };
+        return { title: t['draw'], sub: res.kind === 'stalemate' ? t['stalemate'] : t['drawSub'] };
     }
+  }
+
+  // --- chess clock & turn cues ---
+
+  protected setMins(m: number) {
+    this.mins.set(m);
+    try {
+      localStorage.setItem('chess-mins', String(m));
+    } catch {}
+    if (this.mode() === 'local') this.newGame();
+  }
+
+  protected oppName() {
+    return this.room()?.players[this.oppSide()]?.name ?? 'Your friend';
+  }
+
+  /** Milliseconds left on a side's clock right now. */
+  private clockLeft(c: Color) {
+    const now = this.now();
+    if (this.mode() === 'online') {
+      const ck = this.room()?.clock;
+      if (!ck) return 0;
+      return Math.max(0, ck[c] - (ck.run === c ? now - this.roomAt : 0));
+    }
+    const lc = this.lclock();
+    if (!lc) return this.mins() * 60_000;
+    return Math.max(0, lc[c] - (lc.run === c && !this.localFlag() && !this.chess.isGameOver() ? now - lc.at : 0));
+  }
+
+  protected clockText(c: Color) {
+    const s = Math.ceil(this.clockLeft(c) / 1000);
+    return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+  }
+
+  protected clockLow(c: Color) {
+    return this.showClock() && this.clockRun() === c && this.clockLeft(c) < 20_000;
+  }
+
+  /** One-phone game: the mover's clock stops, the other side's starts (it begins with White's first move). */
+  private runLocalClock(mover: Color) {
+    if (!this.mins()) return;
+    const now = Date.now(), base = this.mins() * 60_000;
+    const lc = this.lclock() ?? { w: base, b: base, at: now, run: mover };
+    const spent = lc.run === mover ? now - lc.at : 0;
+    this.lclock.set({ ...lc, [mover]: Math.max(0, lc[mover] - spent), at: now, run: mover === 'w' ? 'b' : 'w' });
+  }
+
+  private tick() {
+    if (!this.clockRun()) return;
+    this.now.set(Date.now());
+    const run = this.clockRun()!;
+    if (this.clockLeft(run) > 0) return;
+    if (this.mode() === 'local') {
+      this.localFlag.set(run);
+      this.ver.update((v) => v + 1);
+    } else if (this.mode() === 'online' && !this.flagAsked) {
+      this.flagAsked = true; // the server decides; ask it now
+      this.poll(0);
+    }
+  }
+
+  /** Your friend just moved: a buzz, the move sound, and a title hint when the tab is in the background. */
+  private yourMoveCue() {
+    if (this.sound()) navigator.vibrate?.([25, 40, 25]);
+    if (document.hidden && this.baseTitle) document.title = 'Your move ♟️ · ' + this.baseTitle;
   }
 
   private fromBoard(): PieceView[] {

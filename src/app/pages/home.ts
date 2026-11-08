@@ -255,7 +255,7 @@ const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-p
           <a routerLink="/games/chess" class="pl-card"
              style="background: radial-gradient(circle at 78% 18%, #4f5bd5, #141a4a 58%, #0b0f2e)">
             <span class="pl-art pl-knight" aria-hidden="true">♞</span>
-            <small>Game · NEW</small><b>Chess vs computer</b><span>Easy to Hard · coach in 7 languages</span><em>▶ Play</em>
+            <small>Game · NEW</small><b>Chess</b><span>Computer or a friend · coach in 7 languages</span><em>▶ Play</em>
           </a>
           <a routerLink="/games/sudoku" class="pl-card"
              style="background: radial-gradient(circle at 80% 15%, #14b8a6, #0b4f4a 55%, #052926)">

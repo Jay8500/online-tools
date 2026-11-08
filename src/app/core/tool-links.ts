@@ -109,7 +109,7 @@ export const TOOL_LINKS: ToolLinkLite[] = [
   { id: 'volume', path: 'volume-converter', name: 'Volume converter', group: 'Converters', icon: 'cup-soda', blurb: 'Litres, ml, gallons' },
   { id: 'speed', path: 'speed-converter', name: 'Speed converter', group: 'Converters', icon: 'gauge', blurb: 'km/h, mph, m/s' },
   { id: 'data', path: 'data-size-converter', name: 'Data size converter', group: 'Converters', icon: 'hard-drive', blurb: 'KB, MB, GB, Mbps' },
-  { id: 'chess', path: 'games/chess', name: 'Chess vs computer', group: 'Games', icon: 'crown', blurb: 'Play & learn chess with a Telugu coach' },
+  { id: 'chess', path: 'games/chess', name: 'Chess', group: 'Games', icon: 'crown', blurb: 'Play the computer or a friend · coach in 7 languages' },
   { id: 'sudoku', path: 'games/sudoku', name: 'Sudoku', group: 'Games', icon: 'grid-3x3', blurb: 'Daily puzzle, notes, hints & soft sounds' },
   { id: 'techterms', path: 'computer-abbreviations', name: 'Computer full forms', group: 'Language tools', icon: 'cpu', blurb: '120+ IT abbreviations + data maths' },
   { id: 'telugu', path: 'telugu-typing', name: 'Telugu typing', group: 'Language tools', icon: 'languages', blurb: 'Type English, get తెలుగు' },
