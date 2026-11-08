@@ -111,6 +111,10 @@ import { AgeTool, CgpaTool, DaysTool, PercentTool, PfTool, SplitTool } from './t
           {{ t.intro }}
           @if (uses(); as n) { <span class="font-medium text-ink">Used {{ n | number }} times.</span> }
         </p>
+        @if (t.group === 'Games') {
+          <!-- Games travel by word of mouth: one tap to send the game to friends -->
+          <button type="button" class="btn-ghost -mt-1 mb-3 min-h-9 text-sm" (click)="shareGame()"><svg lucideIcon="share-2" [size]="16" /> Share this game</button>
+        }
 
         <section class="card p-3 sm:p-4" (input)="used()" (change)="used()" (click)="usedIfButton($event)" aria-label="Tool">
           @switch (t.id) {
@@ -232,6 +236,23 @@ export class ToolPageView {
   protected readonly priceTool = computed(() => ['gold', 'fuel', 'grocery', 'recharge', 'ott', 'metro', 'currency'].includes(this.info().id));
 
   /** Opens the Suggest box (like-box) with a ready "wrong price" note. */
+  /** Share a game page (WhatsApp, Instagram…) with a short invitation; a link that tells which share it came from. */
+  protected async shareGame() {
+    const t = this.info();
+    const msg: Record<string, string> = {
+      chess: '♟️ Free chess on Spread Apps — play the computer or a friend, with a coach in Telugu, Hindi & more.',
+      sudoku: '🧩 A new Sudoku every day on Spread Apps — notes, hints, no sign-up.',
+    };
+    const url = `https://tools.spreadapps.in/${t.path}?utm_source=game-share&utm_medium=social`;
+    const text = msg[t.id] ?? `🎮 Play ${t.name} free on Spread Apps.`;
+    try {
+      if (navigator.share) return await navigator.share({ title: t.name, text, url });
+    } catch (e) {
+      if ((e as Error).name === 'AbortError') return;
+    }
+    open(`https://wa.me/?text=${encodeURIComponent(text + '\n' + url)}`, '_blank', 'noopener');
+  }
+
   protected reportPrice() {
     window.dispatchEvent(new CustomEvent('open-suggest', { detail: `Wrong price on ${this.info().name}: ` }));
   }
