@@ -431,14 +431,14 @@ export class ChessTool implements OnDestroy {
     // Online, resign / draw / a friend leaving end the game without the board being over.
     if (this.mode() === 'online') return this.onlineResult();
     if (this.mode() === 'cpu' && this.localFlag()) {
-      return this.localFlag() === 'w' ? { title: t['lose'], sub: '⏱ Your time ran out — the computer wins.' } : { title: t['win'], sub: '⏱ The computer ran out of time!' };
+      return this.localFlag() === 'w' ? { title: t['timeUp'], sub: 'Your time ran out — the computer wins.' } : { title: t['win'], sub: '⏱ The computer ran out of time!' };
     }
     if (this.mode() === 'local' && this.localFlag()) {
       const lost = this.localFlag()!;
       return { title: t[lost === 'w' ? 'blackWins' : 'whiteWins'], sub: `⏱ ${this.sideName(lost)} ran out of time.` };
     }
     if (!c.isGameOver()) return null;
-    if (c.isCheckmate() && this.mode() === 'local') return { title: c.turn() === 'b' ? t['whiteWins'] : t['blackWins'], sub: t['winSub'] };
+    if (c.isCheckmate() && this.mode() === 'local') return { title: c.turn() === 'b' ? t['whiteWins'] : t['blackWins'], sub: t['mateSub'] };
     if (c.isCheckmate()) return c.turn() === 'b' ? { title: t['win'], sub: t['winSub'] } : { title: t['lose'], sub: t['loseSub'] };
     return { title: t['draw'], sub: c.isStalemate() ? t['stalemate'] : t['drawSub'] };
   });
@@ -1109,6 +1109,8 @@ export class ChessTool implements OnDestroy {
     const run = this.clockRun()!;
     if (this.clockLeft(run) > 0) return;
     if (this.mode() !== 'online') {
+      const lc = this.lclock();
+      if (lc) this.lclock.set({ ...lc, [run]: 0 });
       this.localFlag.set(run);
       this.reqId++; // a computer reply still thinking is dropped
       this.busy.set(false);

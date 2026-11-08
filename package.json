@@ -1,6 +1,6 @@
 {
   "name": "tools",
-  "version": "1.19.2",
+  "version": "1.19.3",
   "scripts": {
     "ng": "ng",
     "prestart": "node scripts/write-version.mjs",
