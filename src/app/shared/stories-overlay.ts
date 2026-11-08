@@ -16,8 +16,24 @@ const SITE = 'https://tools.spreadapps.in';
  * it opens (they ship in this lazy chunk, not in the site's CSS). Picture classes: `ss-a-*`.
  */
 const CSS = `
-.ss{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;gap:14px;background:#05040f;color:#fff4dc;animation:ss-in .3s cubic-bezier(.2,.8,.2,1);user-select:none}
-@keyframes ss-in{from{opacity:0;transform:scale(.97)}}
+.ss{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;gap:14px;background:#05040f;color:#fff4dc;user-select:none;--ox:50%;--oy:0%;animation:ss-reveal .6s cubic-bezier(.7,0,.3,1) both}
+.ss.out{animation:ss-hide .32s cubic-bezier(.7,0,.3,1) both}
+@keyframes ss-reveal{from{clip-path:circle(0 at var(--ox) var(--oy))}to{clip-path:circle(150vmax at var(--ox) var(--oy))}}
+@keyframes ss-hide{from{clip-path:circle(150vmax at var(--ox) var(--oy))}to{clip-path:circle(0 at var(--ox) var(--oy))}}
+.ss.intro .ss-mark{animation:ss-brand .9s cubic-bezier(.2,.9,.3,1.2) .15s both}
+.ss.intro .ss-mark i{animation:ss-halo 1.2s ease-out .3s both}
+.ss.intro .ss-bars,.ss.intro .ss-lang,.ss.intro .ss-right{animation:ss-drop .5s cubic-bezier(.2,.8,.2,1) .45s both}
+.ss.intro .ss-chip{animation:ss-drop .5s cubic-bezier(.2,.8,.2,1) both}
+.ss.intro .ss-card.in .ss-art{animation:ss-art 1.1s cubic-bezier(.2,.8,.2,1) .25s both}
+.ss.intro .ss-card.in .ss-ttl{animation-delay:.6s}.ss.intro .ss-card.in .ss-lesson{animation-delay:.75s}
+.ss.intro .ss-rail button{animation:ss-pop-in .45s cubic-bezier(.2,1.4,.4,1) both}
+@keyframes ss-brand{from{opacity:0;transform:scale(.6);filter:blur(8px)}60%{opacity:1;filter:blur(0)}}
+@keyframes ss-halo{0%{box-shadow:0 0 0 0 rgb(246 166 35/.9)}100%{box-shadow:0 0 0 18px rgb(246 166 35/0),0 0 10px rgb(246 166 35/.6)}}
+@keyframes ss-drop{from{opacity:0;transform:translateY(-10px)}}
+@keyframes ss-art{from{opacity:0;transform:scale(1.14)}}
+@keyframes ss-pop-in{from{opacity:0;transform:scale(.4)}}
+.ss-card.in .ss-art svg{animation:ss-kb 12s ease-out both}
+@keyframes ss-kb{from{transform:scale(1)}to{transform:scale(1.07)}}
 .ss-panel{position:relative;width:min(440px,100vw);height:100dvh;background:#0c0a1f;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto minmax(0,1fr);overflow:hidden}
 @media (min-width:600px){.ss-panel{height:min(calc(100dvh - 32px),880px);border-radius:24px;box-shadow:0 30px 80px rgb(0 0 0/.6)}}
 .ss-nav{display:none;width:40px;height:40px;border-radius:50%;border:1px solid rgb(255 244 220/.2);background:rgb(255 255 255/.06);color:#fff4dc;font-size:22px;cursor:pointer}
@@ -114,7 +130,7 @@ export class StoryArtHost {
   imports: [StoryArtHost],
   encapsulation: ViewEncapsulation.None,
   template: `
-    <div class="ss" role="dialog" aria-modal="true" aria-label="Spread Stories" (click)="backdrop($event)">
+    <div class="ss" role="dialog" aria-modal="true" aria-label="Spread Stories" [class.intro]="intro()" [class.out]="leaving()" [style.--ox]="ox" [style.--oy]="oy" (click)="backdrop($event)">
       <button type="button" class="ss-nav" aria-label="Previous story" [disabled]="idx() === 0" (click)="step(-1)">‹</button>
       <div class="ss-panel" #panel>
         <div class="ss-bars" aria-hidden="true">
@@ -134,7 +150,7 @@ export class StoryArtHost {
         </div>
         <div class="ss-chips" #chips role="group" aria-label="Collections">
           @for (c of cols; track c.id) {
-            <button type="button" class="ss-chip" [attr.aria-pressed]="cur().c === c.id" (click)="jump(c.id)">{{ c.icon }} <span>{{ c.n[uiLang()] }}</span></button>
+            <button type="button" class="ss-chip" [style.animation-delay.ms]="500 + $index * 60" [attr.aria-pressed]="cur().c === c.id" (click)="jump(c.id)">{{ c.icon }} <span>{{ c.n[uiLang()] }}</span></button>
           }
         </div>
         <div class="ss-stage" #stage>
@@ -153,13 +169,13 @@ export class StoryArtHost {
             }
           </div>
           <div class="ss-rail">
-            <button type="button" [class.liked]="liked()[key()]" [attr.aria-pressed]="!!liked()[key()]" aria-label="Like this story" (click)="like()">
+            <button type="button" style="animation-delay:.8s" [class.liked]="liked()[key()]" [attr.aria-pressed]="!!liked()[key()]" aria-label="Like this story" (click)="like()">
               <span><svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z" /></svg></span>{{ likeCount() }}
             </button>
-            <button type="button" aria-label="Share this story" (click)="share()">
+            <button type="button" style="animation-delay:.88s" aria-label="Share this story" (click)="share()">
               <span><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.5" /><circle cx="6" cy="12" r="2.5" /><circle cx="18" cy="19" r="2.5" /><path d="M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4" /></svg></span>Share
             </button>
-            <button type="button" aria-label="Suggest a story" (click)="openSuggest()">
+            <button type="button" style="animation-delay:.96s" aria-label="Suggest a story" (click)="openSuggest()">
               <span><svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z" /></svg></span>Suggest
             </button>
           </div>
@@ -214,6 +230,11 @@ export class StoriesOverlay implements OnDestroy {
   protected readonly suggesting = signal(false);
   protected readonly sending = signal(false);
   protected readonly hint = signal(false);
+  /** First-open entrance (brand, chips, picture), then plain swipes. */
+  protected readonly intro = signal(true);
+  protected readonly leaving = signal(false);
+  protected readonly ox = this.svc.origin() ? this.svc.origin()!.x + 'px' : '50%';
+  protected readonly oy = this.svc.origin() ? this.svc.origin()!.y + 'px' : '30%';
   protected readonly liked = signal<Record<string, boolean>>({});
   private readonly counts = signal<Record<string, number>>({});
 
@@ -248,6 +269,8 @@ export class StoriesOverlay implements OnDestroy {
         }
       } catch {}
       this.fx.unlock();
+      this.fx.tadum();
+      setTimeout(() => this.intro.set(false), 1600);
       const st = this.svc.start();
       const at = st ? STORIES.findIndex((s) => s.c === st.col && (!st.slug || s.slug === st.slug)) : -1;
       if (at >= 0) this.idx.set(at);
@@ -400,9 +423,16 @@ export class StoriesOverlay implements OnDestroy {
     if (e.target === e.currentTarget) this.close();
   }
 
+  /** Shrinks back into the ring, then removes the overlay. */
   protected close() {
-    this.fx.tik();
-    this.svc.close();
+    if (this.leaving()) return;
+    this.fx.soft();
+    this.leaving.set(true);
+    const quick = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    setTimeout(() => {
+      this.svc.close();
+      this.svc.origin.set(null);
+    }, quick ? 0 : 300);
   }
 
   protected toggleMenu() {

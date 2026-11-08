@@ -60,6 +60,12 @@ export class GameFx {
     this.note(190, 90, 0.16, 0.25);
     this.buzz(40);
   }
+  /** Opening "ta-dum": two warm low notes. */
+  tadum() {
+    this.note(196, 196, 0.35, 0.16, 0, 'triangle');
+    this.note(294, 294, 0.7, 0.14, 0.17, 'triangle');
+    this.note(588, 588, 0.6, 0.04, 0.17);
+  }
   /** A soft swish, for swiping a card. */
   whoosh() {
     const c = this.ctx;

@@ -39,7 +39,7 @@ import { StoriesService } from './core/stories.service';
           <a routerLink="/exam-photo-signature-resize" class="hidden rounded-lg px-2.5 py-1.5 text-muted hover:bg-surface-2 hover:text-ink sm:block">Exam photos</a>
           <a routerLink="/resize-image-to-kb" class="hidden rounded-lg px-2.5 py-1.5 text-muted hover:bg-surface-2 hover:text-ink sm:block">Resize to KB</a>
           <a routerLink="/money-calculators" class="hidden rounded-lg px-2.5 py-1.5 text-muted hover:bg-surface-2 hover:text-ink sm:block">Calculators</a>
-          <button type="button" class="story-ring" (click)="stories.show()" aria-label="Spread Stories" title="Spread Stories" aria-haspopup="dialog">
+          <button type="button" class="story-ring" (click)="stories.showFrom($event)" (pointerenter)="stories.warm()" (pointerdown)="stories.warm()" aria-label="Spread Stories" title="Spread Stories" aria-haspopup="dialog">
             <span aria-hidden="true">🦚</span>
           </button>
           <button type="button" class="btn-icon relative size-9 border-transparent bg-transparent" (click)="newsOpen.set(true)" aria-label="Latest news" title="Latest news" aria-haspopup="dialog">
