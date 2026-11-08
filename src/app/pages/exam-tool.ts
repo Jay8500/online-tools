@@ -2,6 +2,7 @@ import { DecimalPipe } from '@angular/common';
 import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Icon } from '../shared/icon';
+import { BackLink } from '../shared/back-link';
 import { CounterService } from '../core/counter.service';
 import { DOC_LABEL, DOC_SHORT, DocKind, DocSpec, EXAMS, Exam, examPath } from '../core/exams';
 import { Faq, SeoService } from '../core/seo.service';
@@ -12,13 +13,14 @@ import { ImageTool, ToolSpec } from '../shared/image-tool';
 
 @Component({
   selector: 'app-exam-tool',
-  imports: [RouterLink, Icon, ImageTool, AdSlot, FaqList, DecimalPipe],
+  imports: [BackLink, RouterLink, Icon, ImageTool, AdSlot, FaqList, DecimalPipe],
   template: `
     @let e = examData();
     @let d = doc();
     <div class="grid gap-x-6 lg:grid-cols-[minmax(0,1fr)_300px]">
       <div class="min-w-0">
         <nav aria-label="Breadcrumb" class="mb-1 flex items-center gap-1 text-xs text-muted">
+          <app-back-link />
           <a routerLink="/" class="hover:text-brand hover:underline">Home</a><svg lucideIcon="chevron-right" [size]="12" />
           <a routerLink="/exam-photo-signature-resize" class="hover:text-brand hover:underline">Exam photos</a><svg lucideIcon="chevron-right" [size]="12" />
           <span aria-current="page" class="font-medium text-ink">{{ e.name }} {{ docShort() }}</span>

@@ -60,10 +60,9 @@ const at = (x: number, y: number) => (FILES[x] + (8 - y)) as Square;
             <b class="ml-2 rounded-md px-1.5 py-0.5 font-mono text-xs" [style.background]="clockLow(topSide()) ? '#dc2626' : clockRun() === topSide() ? 'var(--brand)' : 'var(--surface-2)'" [style.color]="clockLow(topSide()) || clockRun() === topSide() ? '#fff' : 'var(--ink)'">⏱ {{ clockText(topSide()) }}</b>
           }
         </span>
+        <span class="caps" style="margin-right:auto;margin-left:10px;align-items:center" [attr.aria-label]="'Captured: ' + lost()[bottomSide()].length">@for (t of lost()[bottomSide()]; track $index) { <svg viewBox="0 0 100 100" [class.w]="bottomSide() === 'w'"><path [attr.d]="svg[t].d" /></svg> }@if (lead(topSide()) > 0) { <small style="margin-left:4px;font-weight:700;color:var(--ink)">+{{ lead(topSide()) }}</small> }</span>
         @if (!room() && !joining()) {
-          <button type="button" class="btn-primary min-h-8 px-3 text-xs" [disabled]="waitingNet()" (click)="quickInvite()">👥 Invite a friend</button>
-        } @else {
-          <span class="caps">@for (t of lost()[bottomSide()]; track $index) { <svg viewBox="0 0 100 100" [class.w]="bottomSide() === 'w'"><path [attr.d]="svg[t].d" /></svg> }</span>
+          <button type="button" class="btn-primary min-h-8 shrink-0 px-3 text-xs" [disabled]="waitingNet()" (click)="quickInvite()" aria-label="Invite a friend to play online">👥 Invite</button>
         }
       </div>
 
@@ -153,7 +152,7 @@ const at = (x: number, y: number) => (FILES[x] + (8 - y)) as Square;
             <b class="ml-2 rounded-md px-1.5 py-0.5 font-mono text-xs" [style.background]="clockLow(bottomSide()) ? '#dc2626' : clockRun() === bottomSide() ? 'var(--brand)' : 'var(--surface-2)'" [style.color]="clockLow(bottomSide()) || clockRun() === bottomSide() ? '#fff' : 'var(--ink)'">⏱ {{ clockText(bottomSide()) }}</b>
           }
         </span>
-        <span class="caps">@for (t of lost()[topSide()]; track $index) { <svg viewBox="0 0 100 100" [class.w]="topSide() === 'w'"><path [attr.d]="svg[t].d" /></svg> }</span>
+        <span class="caps" style="margin-right:auto;margin-left:10px;align-items:center" [attr.aria-label]="'Captured: ' + lost()[topSide()].length">@for (t of lost()[topSide()]; track $index) { <svg viewBox="0 0 100 100" [class.w]="topSide() === 'w'"><path [attr.d]="svg[t].d" /></svg> }@if (lead(bottomSide()) > 0) { <small style="margin-left:4px;font-weight:700;color:var(--ink)">+{{ lead(bottomSide()) }}</small> }</span>
       </div>
 
       <div class="btns">
@@ -179,7 +178,7 @@ const at = (x: number, y: number) => (FILES[x] + (8 - y)) as Square;
         </div>
         @if (mode() === 'local') {
           <div class="seg" role="group" aria-label="Chess clock">
-            @for (m of timers; track m) { <button type="button" [attr.aria-pressed]="mins() === m" (click)="setMins(m)">{{ m ? '⏱ ' + m + ' min' : 'No timer' }}</button> }
+            @for (m of timers; track m) { <button type="button" [attr.aria-pressed]="activeMins() === m" (click)="setMins(m)">{{ m ? '⏱ ' + m + ' min' : 'No timer' }}</button> }
           </div>
         }
         @if (mode() === 'online') {
@@ -193,7 +192,7 @@ const at = (x: number, y: number) => (FILES[x] + (8 - y)) as Square;
               <p>Play with a friend on their own phone. Send them a link or let them scan the QR — no sign-up.</p>
               <input class="input" maxlength="20" placeholder="Your name" aria-label="Your name" [value]="myName()" (input)="myName.set($any($event.target).value)" />
               <div class="seg" role="group" aria-label="Chess clock">
-            @for (m of timers; track m) { <button type="button" [attr.aria-pressed]="mins() === m" (click)="setMins(m)">{{ m ? '⏱ ' + m + ' min' : 'No timer' }}</button> }
+            @for (m of timers; track m) { <button type="button" [attr.aria-pressed]="activeMins() === m" (click)="setMins(m)">{{ m ? '⏱ ' + m + ' min' : 'No timer' }}</button> }
           </div>
               <button type="button" class="btn-primary" [disabled]="waitingNet()" (click)="create()">Create invite</button>
             } @else if (room()!.status === 'waiting') {
@@ -216,6 +215,9 @@ const at = (x: number, y: number) => (FILES[x] + (8 - y)) as Square;
             @for (l of levels; track l.id) {
               <button type="button" [attr.aria-pressed]="level().id === l.id" (click)="setLevel(l.id)">{{ l.label }}</button>
             }
+          </div>
+          <div class="seg" role="group" aria-label="Chess clock">
+            @for (m of timers; track m) { <button type="button" [attr.aria-pressed]="activeMins() === m" (click)="setMins(m)">{{ m ? '⏱ ' + m + ' min' : 'No timer' }}</button> }
           </div>
         }
         <div class="row">
@@ -254,7 +256,7 @@ const at = (x: number, y: number) => (FILES[x] + (8 - y)) as Square;
     .who { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--muted); min-height: 22px; }
     .who b { color: var(--ink); }
     .top { grid-area: top; } .bottom { grid-area: bottom; }
-    .caps { display: flex; } .caps svg { width: 16px; height: 16px; margin-left: -4px; fill: var(--bp); } .caps svg.w { fill: var(--wp); stroke: var(--we); stroke-width: 5; }
+    .caps { display: flex; } .caps svg { width: 19px; height: 19px; margin-left: -5px; fill: var(--bp); } .caps svg.w { fill: var(--wp); stroke: var(--we); stroke-width: 5; }
     .board { grid-area: board; position: relative; width: 100%; aspect-ratio: 1; border-radius: 12px; overflow: hidden; touch-action: none; user-select: none;
       box-shadow: 0 14px 34px -16px rgb(13 60 55 / .5); }
     .sq { position: absolute; width: 12.5%; height: 12.5%; background: var(--l); border: 0; padding: 0; cursor: pointer; }
@@ -323,6 +325,8 @@ export class ChessTool implements OnDestroy {
   /** Chess clock minutes per player (0 = no clock). */
   protected readonly timers = [0, 3, 5, 10];
   protected readonly mins = signal(10);
+  protected readonly cpuMins = signal(0);
+  protected readonly activeMins = computed(() => (this.mode() === 'cpu' ? this.cpuMins() : this.mins()));
   /** Ticks while a clock runs, so the numbers count down. */
   protected readonly now = signal(Date.now());
   private roomAt = 0;
@@ -332,15 +336,15 @@ export class ChessTool implements OnDestroy {
   protected readonly lclock = signal<{ w: number; b: number; at: number; run: Color } | null>(null);
   protected readonly localFlag = signal<Color | null>(null);
   private baseTitle = '';
-  protected readonly showClock = computed(() => (this.mode() === 'online' ? !!this.room()?.clock && this.room()!.status !== 'waiting' : this.mode() === 'local' && this.mins() > 0));
+  protected readonly showClock = computed(() => (this.mode() === 'online' ? !!this.room()?.clock && this.room()!.status !== 'waiting' : this.activeMins() > 0));
   protected readonly clockRun = computed<Color | null>(() => {
     if (this.mode() === 'online') return this.room()?.clock?.run ?? null;
-    if (this.mode() !== 'local' || this.localFlag() || this.result()) return null;
+    if (this.localFlag() || this.result()) return null;
     return this.lclock()?.run ?? null;
   });
   /** Whose move it is (highlighted label), or nobody once the game is over. */
   protected readonly activeSide = computed<Color | null>(() => {
-    if (this.mode() === 'cpu' || this.result()) return null;
+    if ((this.mode() === 'cpu' && !this.showClock()) || this.result()) return null;
     if (this.mode() === 'online' && this.room()?.status !== 'playing') return null;
     return this.turn();
   });
@@ -405,6 +409,13 @@ export class ChessTool implements OnDestroy {
     const list = (c: Color) => (Object.keys(start) as PieceType[]).flatMap((t) => Array<PieceType>(Math.max(0, have[c][t])).fill(t));
     return { w: list('w'), b: list('b') };
   });
+  /** Material lead of a side (pawn 1, knight/bishop 3, rook 5, queen 9), shown as "+3" by its captures. */
+  protected lead(side: Color) {
+    const l = this.lost(), v = (list: PieceType[]) => list.reduce((n, t) => n + PIECE_VALUE[t], 0);
+    const other: Color = side === 'w' ? 'b' : 'w';
+    return v(l[other]) - v(l[side]);
+  }
+
   protected readonly targets = computed(() => {
     const s = this.selected();
     this.ver();
@@ -419,6 +430,9 @@ export class ChessTool implements OnDestroy {
     const c = this.chess, t = COACH[this.lang()];
     // Online, resign / draw / a friend leaving end the game without the board being over.
     if (this.mode() === 'online') return this.onlineResult();
+    if (this.mode() === 'cpu' && this.localFlag()) {
+      return this.localFlag() === 'w' ? { title: t['lose'], sub: '⏱ Your time ran out — the computer wins.' } : { title: t['win'], sub: '⏱ The computer ran out of time!' };
+    }
     if (this.mode() === 'local' && this.localFlag()) {
       const lost = this.localFlag()!;
       return { title: t[lost === 'w' ? 'blackWins' : 'whiteWins'], sub: `⏱ ${this.sideName(lost)} ran out of time.` };
@@ -486,6 +500,8 @@ export class ChessTool implements OnDestroy {
       try {
         const m = Number(localStorage.getItem('chess-mins') ?? 10);
         if (this.timers.includes(m)) this.mins.set(m);
+        const cm = Number(localStorage.getItem('chess-cpu-mins') ?? 0);
+        if (this.timers.includes(cm)) this.cpuMins.set(cm);
       } catch {}
       this.tickTimer = setInterval(() => this.tick(), 250);
     });
@@ -620,8 +636,10 @@ export class ChessTool implements OnDestroy {
     else if (this.mode() === 'local') {
       this.runLocalClock(m.color);
       this.turnBoard();
+    } else {
+      this.runLocalClock(m.color);
+      if (!this.chess.isGameOver()) this.computerMove();
     }
-    else if (!this.chess.isGameOver()) this.computerMove();
     return true;
   }
 
@@ -693,7 +711,9 @@ export class ChessTool implements OnDestroy {
         this.coach.set({ key: cap ? 'hintTake' : 'hint', p: p.type, sq: r.to });
         return;
       }
+      if (this.localFlag()) return; // time already ran out
       this.apply(this.chess.move({ from: r.from, to: r.to, promotion: r.promotion }), false);
+      this.runLocalClock('b');
     }, r.kind === 'move' ? Math.max(0, MIN_THINK - (Date.now() - r.t0)) : 0);
   }
 
@@ -1040,11 +1060,12 @@ export class ChessTool implements OnDestroy {
   // --- chess clock & turn cues ---
 
   protected setMins(m: number) {
-    this.mins.set(m);
+    const cpu = this.mode() === 'cpu';
+    (cpu ? this.cpuMins : this.mins).set(m);
     try {
-      localStorage.setItem('chess-mins', String(m));
+      localStorage.setItem(cpu ? 'chess-cpu-mins' : 'chess-mins', String(m));
     } catch {}
-    if (this.mode() === 'local') this.newGame();
+    if (this.mode() !== 'online') this.newGame();
   }
 
   protected oppName() {
@@ -1060,7 +1081,7 @@ export class ChessTool implements OnDestroy {
       return Math.max(0, ck[c] - (ck.run === c ? now - this.roomAt : 0));
     }
     const lc = this.lclock();
-    if (!lc) return this.mins() * 60_000;
+    if (!lc) return this.activeMins() * 60_000;
     return Math.max(0, lc[c] - (lc.run === c && !this.localFlag() && !this.chess.isGameOver() ? now - lc.at : 0));
   }
 
@@ -1075,8 +1096,8 @@ export class ChessTool implements OnDestroy {
 
   /** One-phone game: the mover's clock stops, the other side's starts (it begins with White's first move). */
   private runLocalClock(mover: Color) {
-    if (!this.mins()) return;
-    const now = Date.now(), base = this.mins() * 60_000;
+    if (!this.activeMins()) return;
+    const now = Date.now(), base = this.activeMins() * 60_000;
     const lc = this.lclock() ?? { w: base, b: base, at: now, run: mover };
     const spent = lc.run === mover ? now - lc.at : 0;
     this.lclock.set({ ...lc, [mover]: Math.max(0, lc[mover] - spent), at: now, run: mover === 'w' ? 'b' : 'w' });
@@ -1087,8 +1108,10 @@ export class ChessTool implements OnDestroy {
     this.now.set(Date.now());
     const run = this.clockRun()!;
     if (this.clockLeft(run) > 0) return;
-    if (this.mode() === 'local') {
+    if (this.mode() !== 'online') {
       this.localFlag.set(run);
+      this.reqId++; // a computer reply still thinking is dropped
+      this.busy.set(false);
       this.ver.update((v) => v + 1);
     } else if (this.mode() === 'online' && !this.flagAsked) {
       this.flagAsked = true; // the server decides; ask it now

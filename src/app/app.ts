@@ -1,4 +1,4 @@
-import { Location, ViewportScroller } from '@angular/common';
+import { ViewportScroller } from '@angular/common';
 import { Component, afterNextRender, computed, inject, signal } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
@@ -24,6 +24,7 @@ import { APP_VERSION } from './core/version';
 import { NewsPanel } from './shared/news-panel';
 import { StoriesOverlay } from './shared/stories-overlay';
 import { StoriesService } from './core/stories.service';
+import { NavBack } from './core/nav-back.service';
 
 @Component({
   selector: 'app-root',
@@ -55,10 +56,10 @@ import { StoriesService } from './core/stories.service';
     </header>
 
     <main id="main" class="mx-auto min-h-[70vh] max-w-6xl px-3 pt-3 pb-8 sm:px-4">
-      @if (!isHome()) {
+      @if (!isHome() && !crumbs()) {
         <button type="button" class="mb-2 -ml-1 inline-flex items-center gap-1 rounded-lg px-2 py-1 text-sm font-semibold text-muted transition hover:bg-surface-2 hover:text-ink"
-                (click)="back()" [attr.aria-label]="canGoBack() ? 'Go back' : 'Go to all tools'">
-          <svg lucideIcon="arrow-left" [size]="16" /> {{ canGoBack() ? 'Back' : 'All tools' }}
+                (click)="nav.back()" [attr.aria-label]="nav.canGoBack() ? 'Go back' : 'Go to all tools'">
+          <svg lucideIcon="arrow-left" [size]="16" /> {{ nav.canGoBack() ? 'Back' : 'All tools' }}
         </button>
       }
       <router-outlet />
@@ -167,12 +168,12 @@ export class App {
   }
 
   private readonly router = inject(Router);
-  private readonly location = inject(Location);
+  protected readonly nav = inject(NavBack);
   private readonly url = signal('/');
-  /** Pages opened inside the app this visit (1 = landed directly, e.g. from Google). */
-  private navs = 0;
-  protected readonly canGoBack = signal(false);
+
   protected readonly isHome = computed(() => this.url().split(/[?#]/)[0] === '/');
+  /** Tool, calculator, exam, KB and category pages put "← Back" inside their breadcrumb line. */
+  protected readonly crumbs = computed(() => !/^\/(about|privacy|terms|contact|stats|404|stories)(\/|$)/.test(this.url().split(/[?#]/)[0]));
 
   constructor() {
     // Anchor links (#health-calculators…) stop below the sticky 48px header
@@ -188,8 +189,6 @@ export class App {
         } catch {
           /* fine */
         }
-      this.navs++;
-      this.canGoBack.set(this.navs > 1);
     });
     this.consent.init();
     // Keep the browser's install offer for our own install tip (loads a moment later)
@@ -201,6 +200,7 @@ export class App {
     // Festival day: a short shower once a day per device. First visit ever: a little glitter + thank-you note.
     afterNextRender(() => {
       setTimeout(async () => {
+        if (/[?&]room=/.test(location.search)) return;
         let firstVisit = false;
         try {
           // "consent" already set = a returning visitor from before this welcome existed
@@ -232,11 +232,6 @@ export class App {
     });
   }
 
-  /** Back to the previous page in the app; if the visitor landed here directly, go to the home page. */
-  protected back() {
-    if (this.canGoBack()) this.location.back();
-    else this.router.navigateByUrl('/');
-  }
 
   protected photoPath(e: (typeof EXAMS)[number]) {
     return examPath(e, 'photo');

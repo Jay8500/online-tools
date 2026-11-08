@@ -14,6 +14,7 @@ import { AdSlot } from '../shared/ad-slot';
 import { FaqList } from '../shared/faq-list';
 import { MoreFrom } from '../shared/more-from';
 import { Icon } from '../shared/icon';
+import { BackLink } from '../shared/back-link';
 import { BmiTool, CalorieTool, DueDateTool, IdealWeightTool } from './tools/health-tools';
 import { InvoiceTool } from './tools/invoice-tool';
 import { ImageToPdf, PdfCompress, PdfMerge, PdfSplit, PdfToImage } from './tools/pdf-tools';
@@ -47,7 +48,7 @@ import { AgeTool, CgpaTool, DaysTool, PercentTool, PfTool, SplitTool } from './t
 /** Pages for PDF, business, health and language tools (route data `tool` = id from core/tool-links.ts). */
 @Component({
   selector: 'app-tool-page',
-  imports: [
+  imports: [BackLink, 
     RouterLink,
     DecimalPipe,
     Icon,
@@ -102,6 +103,7 @@ import { AgeTool, CgpaTool, DaysTool, PercentTool, PfTool, SplitTool } from './t
     <div [class]="wide() ? 'grid gap-x-6' : 'grid gap-x-6 lg:grid-cols-[minmax(0,1fr)_300px]'">
       <div class="min-w-0">
         <nav aria-label="Breadcrumb" class="mb-1 flex items-center gap-1 text-xs text-muted">
+          <app-back-link />
           <a routerLink="/" class="hover:text-brand hover:underline">Home</a><svg lucideIcon="chevron-right" [size]="12" />
           <a [routerLink]="'/' + hubPath()" class="hover:text-brand hover:underline">{{ t.group }}</a><svg lucideIcon="chevron-right" [size]="12" />
           <span aria-current="page" class="font-medium text-ink">{{ t.name }}</span>

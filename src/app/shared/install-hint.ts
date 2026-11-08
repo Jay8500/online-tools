@@ -56,6 +56,7 @@ export class InstallHint {
         // Wait (without counting) while the cookie banner is open, then show once — ever
         const show = () => {
           if (this.consent.showBanner) return void setTimeout(show, 3000);
+          if (/[?&]room=/.test(location.search)) return void setTimeout(show, 15000); // in a chess game with a friend: not now
           this.kind.set(installEvent() ? 'prompt' : installKind());
           this.ready.set(true);
           this.save('shown');

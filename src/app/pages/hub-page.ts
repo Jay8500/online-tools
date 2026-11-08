@@ -8,6 +8,7 @@ import { SITE } from '../core/site.config';
 import { AdSlot } from '../shared/ad-slot';
 import { FaqList } from '../shared/faq-list';
 import { Icon } from '../shared/icon';
+import { BackLink } from '../shared/back-link';
 import { LiveBadge, WEATHER_ICON } from '../shared/live-badge';
 import { Sky } from '../shared/sky';
 import { MarketArt } from '../shared/market-art';
@@ -18,10 +19,11 @@ import { SOURCES } from '../core/sources';
 /** Category page, e.g. /health-calculators — intro + every tool in the group + other groups. */
 @Component({
   selector: 'app-hub-page',
-  imports: [RouterLink, Icon, AdSlot, FaqList, LiveBadge, Sky, MarketArt, PinButton],
+  imports: [BackLink, RouterLink, Icon, AdSlot, FaqList, LiveBadge, Sky, MarketArt, PinButton],
   template: `
     @let h = hub();
     <nav aria-label="Breadcrumb" class="mb-1 flex items-center gap-1 text-xs text-muted">
+          <app-back-link />
       <a routerLink="/" class="hover:text-brand hover:underline">Home</a><svg lucideIcon="chevron-right" [size]="12" />
       <span aria-current="page" class="font-medium text-ink">{{ h.h1 }}</span>
     </nav>

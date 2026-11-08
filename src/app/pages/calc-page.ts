@@ -10,18 +10,20 @@ import { SITE } from '../core/site.config';
 import { AdSlot } from '../shared/ad-slot';
 import { FaqList } from '../shared/faq-list';
 import { Icon } from '../shared/icon';
+import { BackLink } from '../shared/back-link';
 import { EmiCalc, FdCalc, GrowthCalc, PpfCalc } from './calc/growth-calcs';
 import { GstCalc, HraCalc, SalaryCalc, TaxCalc } from './calc/tax-calcs';
 
 /** One page per calculator (route data `calc` = id from core/calcs.ts). */
 @Component({
   selector: 'app-calc-page',
-  imports: [RouterLink, DecimalPipe, Icon, AdSlot, FaqList, EmiCalc, GrowthCalc, FdCalc, PpfCalc, TaxCalc, GstCalc, HraCalc, SalaryCalc],
+  imports: [BackLink, RouterLink, DecimalPipe, Icon, AdSlot, FaqList, EmiCalc, GrowthCalc, FdCalc, PpfCalc, TaxCalc, GstCalc, HraCalc, SalaryCalc],
   template: `
     @let c = info();
     <div class="grid gap-x-6 lg:grid-cols-[minmax(0,1fr)_300px]">
       <div class="min-w-0">
         <nav aria-label="Breadcrumb" class="mb-1 flex items-center gap-1 text-xs text-muted">
+          <app-back-link />
           <a routerLink="/" class="hover:text-brand hover:underline">Home</a><svg lucideIcon="chevron-right" [size]="12" />
           <a routerLink="/money-calculators" class="hover:text-brand hover:underline">Calculators</a><svg lucideIcon="chevron-right" [size]="12" />
           <span aria-current="page" class="font-medium text-ink">{{ c.name }}</span>
