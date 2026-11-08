@@ -1,6 +1,8 @@
 import { isPlatformBrowser } from '@angular/common';
 import { Component, PLATFORM_ID, afterNextRender, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { ToastService } from '../core/toast.service';
+import { Icon } from './icon';
 import type { Festival } from '../core/celebrate';
 
 /**
@@ -9,7 +11,7 @@ import type { Festival } from '../core/celebrate';
  */
 @Component({
   selector: 'app-festival-card',
-  imports: [RouterLink],
+  imports: [RouterLink, Icon],
   styles: `
 .festival-card { border-color: rgb(251 191 36 / 0.45); background: linear-gradient(135deg, #fff7e0, #ffe4ec 60%, #fff); color: #3b2300; }
 .festival-card[data-theme='national'] { background: linear-gradient(180deg, #ffe0bf 0%, #ffffff 50%, #d7f3d9 100%); color: #12305c; border-color: #ffcf99; }
@@ -39,6 +41,7 @@ import type { Festival } from '../core/celebrate';
               <p class="text-sm opacity-90">{{ f.mood === 'tribute' ? f.name + ' — a public holiday.' : 'From all of us at Spread Apps — have a safe and happy ' + f.name + '!' }}</p>
               <div class="mt-2 flex flex-wrap gap-2">
                 <button type="button" class="btn-primary min-h-9 text-sm" (click)="celebrate()">{{ f.mood === 'tribute' ? '🌸 Pay tribute' : '🎉 Celebrate' }}</button>
+                <button type="button" class="btn-ghost min-h-9 min-w-9 bg-surface/70 px-2.5 text-sm sm:px-3" (click)="share()" aria-label="Share this greeting" title="Share on WhatsApp, Instagram, Facebook"><svg lucideIcon="share-2" [size]="16" /><span class="hidden sm:inline">Share</span></button>
                 <a routerLink="/holiday-calendar" class="btn-ghost min-h-9 bg-surface/70 text-sm">All holidays →</a>
               </div>
             </div>
@@ -63,6 +66,7 @@ import type { Festival } from '../core/celebrate';
 export class FestivalCard {
   protected readonly fest = signal<Festival | null>(null);
   protected readonly inDays = signal(0);
+  private readonly toast = inject(ToastService);
 
   constructor() {
     const browser = isPlatformBrowser(inject(PLATFORM_ID));
@@ -81,6 +85,27 @@ export class FestivalCard {
     const f = this.fest();
     if (!f) return;
     (await import('../core/celebrate')).shower(f.theme);
+  }
+
+  /** Share the greeting with a link: whoever opens it gets the festival shower on their first visit of the day. */
+  protected async share() {
+    const f = this.fest();
+    if (!f) return;
+    const tag = f.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const url = 'https://tools.spreadapps.in/?utm_source=festival-share&utm_medium=social&utm_campaign=' + tag;
+    const text = f.mood === 'tribute' ? f.wish : `${f.wish} ✨\nOpen for a little surprise 🎉`;
+    try {
+      if (navigator.share) return await navigator.share({ title: f.name, text, url });
+    } catch (e) {
+      if ((e as Error).name === 'AbortError') return;
+    }
+    const all = `${text}\n${url}`;
+    try {
+      await navigator.clipboard.writeText(all);
+      this.toast.show('Link copied — paste it in WhatsApp, Instagram or Facebook', 'success');
+    } catch {
+      open('https://wa.me/?text=' + encodeURIComponent(all), '_blank', 'noopener');
+    }
   }
 
   protected dateText(iso: string) {
