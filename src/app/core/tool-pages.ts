@@ -583,6 +583,44 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
     ],
     disclaimer: 'games',
   },
+  ttt: {
+    h1: 'Tic-Tac-Toe — Play the Computer or a Friend',
+    title: 'Tic-Tac-Toe Online Free — vs Computer, 2 Players on One Phone or Online with a Link',
+    description: 'Play Tic-Tac-Toe (X and O) free: Easy, Medium or Unbeatable computer, two players on one phone, or invite a friend online with a link or QR code. Classic 3×3 and a bigger 4×4. No signup.',
+    intro: 'Get three in a row — across, down or diagonal — before your opponent. Try 4×4 for a longer game: four in a row wins.',
+    steps: [
+      'Pick who to play: 🤖 Computer, 👥 Friend (pass one phone) or 🔗 Online.',
+      'Tap a square to place your mark. ✕ always starts; the starter changes every game.',
+      'Get a full line to win — it lights up. If the board fills with no line, it is a draw.',
+      'To play a friend far away, tap 👥 Invite a friend online and send the link on WhatsApp. When they open it, the game starts by itself.',
+    ],
+    faqs: [
+      { q: 'Can I beat the Unbeatable computer?', a: 'No — on 3×3 it plays perfectly, so the best you can do is a draw. That is how Tic-Tac-Toe works: with perfect play from both sides every game is a draw. Try Medium to win, or 4×4 for a harder challenge.' },
+      { q: 'How do I play with a friend on another phone?', a: 'Tap 👥 Invite a friend online, type your name once and share the link or QR code. Your friend just taps it — no sign-up — and you each play on your own phone. The score stays across rematches.' },
+      { q: 'What is 4×4?', a: 'A bigger board where you need four in a row. It takes more planning and draws are less common.' },
+      { q: 'Is it safe for kids?', a: 'Yes. No chat, no sign-up and nothing to download. Online games only show the names you type and six emoji reactions.' },
+    ],
+    disclaimer: 'games',
+  },
+  rps: {
+    h1: 'Rock Paper Scissors — vs Computer or a Friend',
+    title: 'Rock Paper Scissors Online Free — vs Computer or a Friend, Best of 3 or 5',
+    description: 'Play Rock Paper Scissors free: against a computer that learns your habits, with a friend on one phone (picks stay hidden) or online with a link. Best of 3 or 5, with a "Rock… Paper… Scissors… Shoot!" countdown. No signup.',
+    intro: 'Rock breaks Scissors, Scissors cut Paper, Paper covers Rock. Win the most rounds to win the match.',
+    steps: [
+      'Pick who to play: 🤖 Computer, 👥 Friend (one phone) or 🔗 Online.',
+      'Choose Best of 3 or Best of 5, then tap ✊, ✋ or ✌️.',
+      'After the countdown both hands show. A tie does not count — go again.',
+      'On one phone, Player 1 picks first and passes the phone; their hand stays hidden until Player 2 picks.',
+    ],
+    faqs: [
+      { q: 'Does the computer cheat?', a: 'No. It picks before it sees your hand. Easy is completely random. Smart remembers what you usually play after each hand and tries to beat that habit — so mixing it up is the way to win.' },
+      { q: 'Online, can my friend see my pick?', a: 'No. Your hand stays on the server, hidden, until both of you have picked. Then both show together.' },
+      { q: 'What happens on a tie?', a: 'Nothing is counted — just play the round again. The first to win 2 rounds (Best of 3) or 3 rounds (Best of 5) wins the match.' },
+      { q: 'Is it safe for kids?', a: 'Yes. No chat, no sign-up and nothing to download.' },
+    ],
+    disclaimer: 'games',
+  },
   ifsc: {
     h1: 'IFSC Code Details — Bank & Branch',
     title: 'IFSC Code Finder — Check Bank, Branch, Address & MICR from IFSC',
@@ -680,7 +718,7 @@ export function toolPage(id: string): ToolPageInfo | undefined {
 }
 
 export const DISCLAIMERS: Record<Disclaimer, string> = {
-  games: 'Your game and settings are saved only on this device. Everything runs in your browser — nothing is sent anywhere.',
+  games: 'Your game and settings are saved only on this device. Playing the computer or a friend on one phone runs fully in your browser. Online games send only the moves and the name you type, and are deleted within a day.',
   jobs: 'Titles and links come from the official commission websites and refresh every few hours. Always confirm dates, fees and eligibility in the official notice before applying. We are not connected to any commission.',
   wishes: 'Your name and photo stay on your device; nothing is uploaded. Share the card freely.',
   rent: 'A format commonly accepted by employers for HRA — check with your HR or CA. Receipts must be signed by the owner; we don’t store anything you type.',

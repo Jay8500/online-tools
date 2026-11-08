@@ -43,6 +43,8 @@ import { WishesTool } from './tools/wishes-tool';
 import { JobsTool } from './tools/jobs-tool';
 import { ChessTool } from './tools/chess-tool';
 import { SudokuTool } from './tools/sudoku-tool';
+import { TttTool } from './tools/ttt-tool';
+import { RpsTool } from './tools/rps-tool';
 import { AgeTool, CgpaTool, DaysTool, PercentTool, PfTool, SplitTool } from './tools/everyday-tools';
 
 /** Pages for PDF, business, health and language tools (route data `tool` = id from core/tool-links.ts). */
@@ -93,6 +95,8 @@ import { AgeTool, CgpaTool, DaysTool, PercentTool, PfTool, SplitTool } from './t
     JobsTool,
     ChessTool,
     SudokuTool,
+    TttTool,
+    RpsTool,
     CgpaTool,
     SplitTool,
     DaysTool,
@@ -161,6 +165,8 @@ import { AgeTool, CgpaTool, DaysTool, PercentTool, PfTool, SplitTool } from './t
             @case ('jobs') { @defer (on immediate; hydrate on immediate) { <app-jobs-tool /> } @placeholder { <div class="h-[40rem]"></div> } }
             @case ('chess') { @defer (on immediate; hydrate on immediate) { <app-chess-tool /> } @placeholder { <div class="aspect-square"></div> } }
             @case ('sudoku') { @defer (on immediate; hydrate on immediate) { <app-sudoku-tool /> } @placeholder { <div class="aspect-square"></div> } }
+            @case ('ttt') { @defer (on immediate; hydrate on immediate) { <app-ttt-tool /> } @placeholder { <div class="aspect-square"></div> } }
+            @case ('rps') { @defer (on immediate; hydrate on immediate) { <app-rps-tool /> } @placeholder { <div style="min-height:420px"></div> } }
             @case ('wishes') { @defer (on immediate; hydrate on immediate) { <app-wishes-tool /> } @placeholder { <div class="h-[36rem]"></div> } }
             @case ('rent-receipt') { @defer (on immediate; hydrate on immediate) { <app-rent-receipt-tool /> } @placeholder { <div class="h-[40rem]"></div> } }
             @case ('ifsc') { @defer (on immediate; hydrate on immediate) { <app-ifsc-tool /> } @placeholder { <div class="h-48"></div> } }
@@ -244,6 +250,8 @@ export class ToolPageView {
     const msg: Record<string, string> = {
       chess: '♟️ Free chess on Spread Apps — play the computer or a friend, with a coach in Telugu, Hindi & more.',
       sudoku: '🧩 A new Sudoku every day on Spread Apps — notes, hints, no sign-up.',
+      ttt: '⭕❌ Tic-Tac-Toe on Spread Apps — beat the Unbeatable computer or play a friend online.',
+      rps: '✊✋✌️ Rock Paper Scissors on Spread Apps — best of 3 against the computer or a friend.',
     };
     const url = `https://tools.spreadapps.in/${t.path}?utm_source=game-share&utm_medium=social`;
     const text = msg[t.id] ?? `🎮 Play ${t.name} free on Spread Apps.`;

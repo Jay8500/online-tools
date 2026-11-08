@@ -49,7 +49,9 @@ export type ToolKind =
   | 'wishes'
   | 'jobs'
   | 'chess'
-  | 'sudoku';
+  | 'sudoku'
+  | 'ttt'
+  | 'rps';
 
 export type ToolGroupName = 'PDF tools' | 'Business tools' | 'Health calculators' | 'Language tools' | 'Converters' | 'Daily tools' | 'Games';
 
@@ -111,6 +113,8 @@ export const TOOL_LINKS: ToolLinkLite[] = [
   { id: 'data', path: 'data-size-converter', name: 'Data size converter', group: 'Converters', icon: 'hard-drive', blurb: 'KB, MB, GB, Mbps' },
   { id: 'chess', path: 'games/chess', name: 'Chess', group: 'Games', icon: 'crown', blurb: 'Play the computer or a friend · coach in 7 languages' },
   { id: 'sudoku', path: 'games/sudoku', name: 'Sudoku', group: 'Games', icon: 'grid-3x3', blurb: 'Daily puzzle, notes, hints & soft sounds' },
+  { id: 'ttt', path: 'games/tic-tac-toe', name: 'Tic-Tac-Toe', group: 'Games', icon: 'hash', blurb: 'Computer, a friend or online · 3×3 & 4×4' },
+  { id: 'rps', path: 'games/rock-paper-scissors', name: 'Rock Paper Scissors', group: 'Games', icon: 'scissors', blurb: 'Best of 3 or 5 · vs computer or a friend online' },
   { id: 'techterms', path: 'computer-abbreviations', name: 'Computer full forms', group: 'Language tools', icon: 'cpu', blurb: '120+ IT abbreviations + data maths' },
   { id: 'telugu', path: 'telugu-typing', name: 'Telugu typing', group: 'Language tools', icon: 'languages', blurb: 'Type English, get తెలుగు' },
 ];
