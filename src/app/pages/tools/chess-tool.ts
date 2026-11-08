@@ -60,7 +60,11 @@ const at = (x: number, y: number) => (FILES[x] + (8 - y)) as Square;
             <b class="ml-2 rounded-md px-1.5 py-0.5 font-mono text-xs" [style.background]="clockLow(topSide()) ? '#dc2626' : clockRun() === topSide() ? 'var(--brand)' : 'var(--surface-2)'" [style.color]="clockLow(topSide()) || clockRun() === topSide() ? '#fff' : 'var(--ink)'">⏱ {{ clockText(topSide()) }}</b>
           }
         </span>
-        <span class="caps">@for (t of lost()[bottomSide()]; track $index) { <svg viewBox="0 0 100 100" [class.w]="bottomSide() === 'w'"><path [attr.d]="svg[t].d" /></svg> }</span>
+        @if (!room() && !joining()) {
+          <button type="button" class="btn-primary min-h-8 px-3 text-xs" [disabled]="waitingNet()" (click)="quickInvite()">👥 Invite a friend</button>
+        } @else {
+          <span class="caps">@for (t of lost()[bottomSide()]; track $index) { <svg viewBox="0 0 100 100" [class.w]="bottomSide() === 'w'"><path [attr.d]="svg[t].d" /></svg> }</span>
+        }
       </div>
 
       <div
@@ -106,6 +110,23 @@ const at = (x: number, y: number) => (FILES[x] + (8 - y)) as Square;
         }
         @if (reaction(); as rc) {
           <div class="animate-fade-up" style="position:absolute;left:50%;top:38%;transform:translateX(-50%);z-index:8;font-size:64px;pointer-events:none;filter:drop-shadow(0 6px 10px rgb(0 0 0/.35))">{{ rc.e }}</div>
+        }
+        @if (mode() === 'online' && room()?.status === 'waiting') {
+          <div class="over">
+            <div class="grid justify-items-center gap-2 px-4">
+              <p class="text-lg font-extrabold">Waiting for your friend…</p>
+              @if (qr()) { <img [src]="qr()" alt="QR code to join this game" width="150" height="150" style="border-radius:12px;background:#fff;padding:5px" /> }
+              <p class="text-xs opacity-90">They tap the link or scan this — the game starts by itself.</p>
+              <div class="flex flex-wrap justify-center gap-2">
+                <button type="button" class="btn-primary" (click)="shareInvite()">📤 Share link</button>
+                <button type="button" class="btn-ghost bg-white/90 text-slate-900" (click)="copyInvite()">Copy</button>
+                <button type="button" class="btn-ghost bg-white/90 text-slate-900" (click)="cancelInvite()">Cancel</button>
+              </div>
+            </div>
+          </div>
+        }
+        @if (joining()) {
+          <div class="over"><p class="text-lg font-extrabold">♟️ Joining {{ joining() }}’s game…</p></div>
         }
         @if (result(); as r) {
           <div class="over">
@@ -176,14 +197,7 @@ const at = (x: number, y: number) => (FILES[x] + (8 - y)) as Square;
           </div>
               <button type="button" class="btn-primary" [disabled]="waitingNet()" (click)="create()">Create invite</button>
             } @else if (room()!.status === 'waiting') {
-              <p class="font-semibold">Waiting for your friend to join…</p>
-              @if (qr()) { <img [src]="qr()" alt="QR code to join this game" width="176" height="176" style="margin:0 auto;border-radius:12px;background:#fff;padding:6px" /> }
-              <p class="break-all text-xs text-muted">{{ inviteUrl() }}</p>
-              <div class="flex gap-2">
-                <button type="button" class="btn-primary flex-1" (click)="shareInvite()">Share link</button>
-                <button type="button" class="btn-ghost" (click)="copyInvite()">Copy</button>
-                <button type="button" class="btn-ghost" (click)="cancelInvite()">Cancel</button>
-              </div>
+              <p class="break-all text-xs text-muted">Invite link: {{ inviteUrl() }}</p>
             } @else {
               @if (oppAway() > 45 && room()!.status === 'playing') {
                 <p>⏳ {{ nameOf(oppSide()) }} seems away…</p>
@@ -301,6 +315,8 @@ export class ChessTool implements OnDestroy {
   protected readonly waitingNet = signal(false);
   /** Someone opened an invite link: the host's name until they join. */
   protected readonly joinFor = signal<string | null>(null);
+  /** Opening an invite link: the host's name while this phone joins by itself. */
+  protected readonly joining = signal<string | null>(null);
   private joinId = '';
   protected readonly reaction = signal<{ e: string } | null>(null);
   protected readonly emojis = ['👍', '😮', '😂', '👏', '🙏', '🔥'];
@@ -736,9 +752,31 @@ export class ChessTool implements OnDestroy {
   }
 
   private rememberName() {
+    if (this.myName().trim() === 'Friend') return; // the stand-in name for a quick join is not theirs
     try {
       localStorage.setItem('chess-name', this.myName().trim());
     } catch {}
+  }
+
+  /** One tap above the board: (ask the name the first time) → create the invite → open the share sheet. */
+  protected async quickInvite() {
+    let name = this.myName().trim();
+    if (name.length < 2) {
+      const v = await this.dialog.prompt({ title: 'Invite a friend', message: 'Your friend will see this name.', label: 'Your name', placeholder: 'e.g. Jay', confirmText: 'Create invite', validate: (x) => (x.trim().length < 2 ? 'Please type at least 2 letters.' : null) });
+      if (!v) return;
+      name = v.trim();
+      this.myName.set(name);
+    }
+    if (this.mode() !== 'online') this.setMode('online');
+    await this.create();
+    if (this.room() || this.roomId) {
+      this.boardInView();
+      this.shareInvite();
+    }
+  }
+
+  private boardInView() {
+    setTimeout(() => document.querySelector('app-chess-tool .board')?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 50);
   }
 
   protected async create() {
@@ -749,6 +787,7 @@ export class ChessTool implements OnDestroy {
       const { ok, j } = await this.api({ a: 'create', name: this.myName(), mins: this.mins() });
       if (!ok) throw new Error(j.error);
       this.enterRoom(j.id, j.token);
+      this.room.set({ id: j.id, status: 'waiting', me: j.color, host: j.color, players: { w: null, b: null, [j.color]: { name: this.myName().trim() || 'Player', away: 0 } } as RoomView['players'], moves: [], result: null, drawOffer: null, events: [], game: 0, rev: 0, clock: null });
     } catch (e) {
       this.onlineErr.set((e as Error).message || 'Could not create the game. Check your internet and try again.');
     } finally {
@@ -758,6 +797,9 @@ export class ChessTool implements OnDestroy {
 
   /** Opened from an invite link: resume if this phone is already a player, else offer to join. */
   private async openRoom(id: string) {
+    try {
+      this.myName.set(localStorage.getItem('chess-name') ?? '');
+    } catch {}
     this.mode.set('online');
     this.newGame();
     let token = '';
@@ -771,7 +813,13 @@ export class ChessTool implements OnDestroy {
       const v = (await r.json()) as RoomView;
       if (v.status !== 'waiting') return this.onlineErr.set(v.status === 'cancelled' ? 'This invite was cancelled.' : 'This game already has two players.');
       this.joinId = id;
-      this.joinFor.set(v.players[v.host]?.name ?? 'Your friend');
+      const host = v.players[v.host]?.name ?? 'Your friend';
+      if (this.myName().trim().length < 2) this.myName.set('Friend');
+      this.joining.set(host);
+      this.boardInView();
+      await this.join();
+      this.joining.set(null);
+      if (!this.room() && !this.roomId) this.joinFor.set(host); // could not join by itself: show the Join button
     } catch {
       this.onlineErr.set('This game link has expired. Ask your friend for a new one.');
     }
