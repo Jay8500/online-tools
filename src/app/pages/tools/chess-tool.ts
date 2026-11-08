@@ -1,7 +1,10 @@
-import { Component, ElementRef, OnDestroy, afterNextRender, computed, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, afterNextRender, computed, inject, signal, viewChild } from '@angular/core';
 import { Chess, Move, Square } from 'chess.js';
 import { COACH, CoachLang, LANGS, PIECE_NAME, PIECE_SVG, PIECE_TIP, PIECE_VALUE, PieceType, phoneLang } from '../../core/chess';
 import { Icon } from '../../shared/icon';
+import { DialogService } from '../../core/dialog.service';
+import { ToastService } from '../../core/toast.service';
+import { Router } from '@angular/router';
 
 type Color = 'w' | 'b';
 interface PieceView {
@@ -11,6 +14,19 @@ interface PieceView {
   sq: Square;
 }
 type Coach = { key: string; p?: PieceType; sq?: string; n?: number } | { tip: PieceType };
+interface RoomView {
+  id: string;
+  status: 'waiting' | 'playing' | 'over' | 'cancelled';
+  me: Color | null;
+  host: Color;
+  players: Record<Color, { name: string; away: number } | null>;
+  moves: string[];
+  result: { kind: 'mate' | 'resign' | 'draw' | 'stalemate' | 'left'; winner?: Color } | null;
+  drawOffer: Color | null;
+  events: { n: number; by: Color; e: string }[];
+  game: number;
+  rev: number;
+}
 
 const FILES = 'abcdefgh';
 const LEVELS = [
@@ -36,7 +52,7 @@ const at = (x: number, y: number) => (FILES[x] + (8 - y)) as Square;
       <p class="coach" aria-live="polite" [attr.lang]="lang()">{{ coachText() }}</p>
 
       <div class="who top">
-        <span>@if (mode() === 'cpu') { <b>Computer</b> · {{ level().label }} } @else { <b>{{ sideName(topSide()) }}</b>@if (turn() === topSide() && !result()) { <i class="ml-1.5 inline-block size-2 rounded-full bg-brand align-middle ring-2 ring-brand/25"></i> } }</span>
+        <span>@if (mode() === 'cpu') { <b>Computer</b> · {{ level().label }} } @else { <b>{{ nameOf(topSide()) }}</b>@if (turn() === topSide() && !result()) { <i class="ml-1.5 inline-block size-2 rounded-full bg-brand align-middle ring-2 ring-brand/25"></i> } }</span>
         <span class="caps">@for (t of lost()[bottomSide()]; track $index) { <svg viewBox="0 0 100 100" [class.w]="bottomSide() === 'w'"><path [attr.d]="svg[t].d" /></svg> }</span>
       </div>
 
@@ -81,26 +97,44 @@ const at = (x: number, y: number) => (FILES[x] + (8 - y)) as Square;
             <path [attr.d]="svg[p.t].d" /><path class="det" [attr.d]="svg[p.t].det" />
           </svg>
         }
+        @if (reaction(); as rc) {
+          <div class="animate-fade-up" style="position:absolute;left:50%;top:38%;transform:translateX(-50%);z-index:8;font-size:64px;pointer-events:none;filter:drop-shadow(0 6px 10px rgb(0 0 0/.35))">{{ rc.e }}</div>
+        }
         @if (result(); as r) {
           <div class="over">
             <div>
               <p class="text-3xl font-extrabold">{{ r.title }}</p>
               <p>{{ r.sub }}</p>
-              <button type="button" class="btn-primary mt-3" (click)="newGame()">Play again</button>
+              @if (mode() === 'online') {
+                <div class="mt-3 flex justify-center gap-2">
+                  <button type="button" class="btn-primary" (click)="act('rematch')">Rematch</button>
+                  <button type="button" class="btn-ghost bg-white/90 text-slate-900" (click)="leaveOnline()">Leave</button>
+                </div>
+              } @else {
+                <button type="button" class="btn-primary mt-3" (click)="newGame()">Play again</button>
+              }
             </div>
           </div>
         }
       </div>
 
       <div class="who bottom">
-        <span>@if (mode() === 'cpu') { <b>You</b> · White } @else { <b>{{ sideName(bottomSide()) }}</b>@if (turn() === bottomSide() && !result()) { <i class="ml-1.5 inline-block size-2 rounded-full bg-brand align-middle ring-2 ring-brand/25"></i> } }</span>
+        <span>@if (mode() === 'cpu') { <b>You</b> · White } @else { <b>{{ nameOf(bottomSide()) }}</b>@if (turn() === bottomSide() && !result()) { <i class="ml-1.5 inline-block size-2 rounded-full bg-brand align-middle ring-2 ring-brand/25"></i> } }</span>
         <span class="caps">@for (t of lost()[topSide()]; track $index) { <svg viewBox="0 0 100 100" [class.w]="topSide() === 'w'"><path [attr.d]="svg[t].d" /></svg> }</span>
       </div>
 
       <div class="btns">
-        <button type="button" class="btn-primary" (click)="askHint()" [disabled]="!myTurn()"><svg lucideIcon="sparkles" [size]="16" /> Hint</button>
-        <button type="button" class="btn-ghost" (click)="undo()" [disabled]="!movePairs().length"><svg lucideIcon="rotate-ccw" [size]="16" /> Undo</button>
-        <button type="button" class="btn-ghost" (click)="newGame()"><svg lucideIcon="refresh-ccw" [size]="16" /> New</button>
+        @if (mode() === 'online') {
+          <button type="button" class="btn-ghost" (click)="resign()" [disabled]="room()?.status !== 'playing'">🏳️ Resign</button>
+          <button type="button" [class]="room()?.drawOffer && room()?.drawOffer !== room()?.me ? 'btn-primary' : 'btn-ghost'" (click)="act('draw')" [disabled]="room()?.status !== 'playing' || room()?.drawOffer === room()?.me">
+            🤝 {{ room()?.drawOffer && room()?.drawOffer !== room()?.me ? 'Accept draw' : room()?.drawOffer === room()?.me ? 'Offered' : 'Draw' }}
+          </button>
+          <button type="button" class="btn-ghost" (click)="leaveOnline(true)">Leave</button>
+        } @else {
+          <button type="button" class="btn-primary" (click)="askHint()" [disabled]="!myTurn()"><svg lucideIcon="sparkles" [size]="16" /> Hint</button>
+          <button type="button" class="btn-ghost" (click)="undo()" [disabled]="!movePairs().length"><svg lucideIcon="rotate-ccw" [size]="16" /> Undo</button>
+          <button type="button" class="btn-ghost" (click)="newGame()"><svg lucideIcon="refresh-ccw" [size]="16" /> New</button>
+        }
       </div>
 
       <div class="opts">
@@ -108,7 +142,41 @@ const at = (x: number, y: number) => (FILES[x] + (8 - y)) as Square;
         <div class="seg" role="group" aria-label="Play against">
           <button type="button" [attr.aria-pressed]="mode() === 'cpu'" (click)="setMode('cpu')">🤖 Computer</button>
           <button type="button" [attr.aria-pressed]="mode() === 'local'" (click)="setMode('local')">👥 Friend</button>
+          <button type="button" [attr.aria-pressed]="mode() === 'online'" (click)="setMode('online')">🔗 Online</button>
         </div>
+        @if (mode() === 'online') {
+          <div class="card grid gap-2 p-3 text-sm">
+            @if (onlineErr()) { <p class="font-semibold text-rose-600" role="alert">{{ onlineErr() }}</p> }
+            @if (joinFor(); as host) {
+              <p><b>{{ host }}</b> invited you to a game of chess ♟️</p>
+              <input class="input" maxlength="20" placeholder="Your name" aria-label="Your name" [value]="myName()" (input)="myName.set($any($event.target).value)" />
+              <button type="button" class="btn-primary" [disabled]="waitingNet()" (click)="join()">Join game</button>
+            } @else if (!room()) {
+              <p>Play with a friend on their own phone. Send them a link or let them scan the QR — no sign-up.</p>
+              <input class="input" maxlength="20" placeholder="Your name" aria-label="Your name" [value]="myName()" (input)="myName.set($any($event.target).value)" />
+              <button type="button" class="btn-primary" [disabled]="waitingNet()" (click)="create()">Create invite</button>
+            } @else if (room()!.status === 'waiting') {
+              <p class="font-semibold">Waiting for your friend to join…</p>
+              @if (qr()) { <img [src]="qr()" alt="QR code to join this game" width="176" height="176" style="margin:0 auto;border-radius:12px;background:#fff;padding:6px" /> }
+              <p class="break-all text-xs text-muted">{{ inviteUrl() }}</p>
+              <div class="flex gap-2">
+                <button type="button" class="btn-primary flex-1" (click)="shareInvite()">Share link</button>
+                <button type="button" class="btn-ghost" (click)="copyInvite()">Copy</button>
+                <button type="button" class="btn-ghost" (click)="cancelInvite()">Cancel</button>
+              </div>
+            } @else {
+              @if (oppAway() > 45 && room()!.status === 'playing') {
+                <p>⏳ {{ nameOf(oppSide()) }} seems away…</p>
+                @if (oppAway() > 90) { <button type="button" class="btn-ghost" (click)="act('claim')">Claim the win</button> }
+              }
+              @if (room()!.status === 'playing') {
+                <div class="flex justify-between gap-1" role="group" aria-label="Send a reaction">
+                  @for (e of emojis; track e) { <button type="button" class="btn-ghost px-2 text-lg" [attr.aria-label]="'Send ' + e" (click)="react(e)">{{ e }}</button> }
+                </div>
+              }
+            }
+          </div>
+        }
         @if (mode() === 'cpu') {
           <div class="seg" role="group" aria-label="Computer level">
             @for (l of levels; track l.id) {
@@ -194,7 +262,31 @@ export class ChessTool implements OnDestroy {
   protected readonly svg = PIECE_SVG;
   protected readonly levels = LEVELS;
   /** 'cpu' = against the computer; 'local' = two players on one phone, the board turns to whoever moves. */
-  protected readonly mode = signal<'cpu' | 'local'>('cpu');
+  protected readonly mode = signal<'cpu' | 'local' | 'online'>('cpu');
+  private readonly dialog = inject(DialogService);
+  private readonly toast = inject(ToastService);
+  private readonly router = inject(Router);
+  /** Online game with a friend: the room as the server sees it (see netlify/functions/chess.mts). */
+  protected readonly room = signal<RoomView | null>(null);
+  private roomToken = '';
+  private roomId = '';
+  private gameNo = 0;
+  private lastEv = 0;
+  private turnSince = 0;
+  private pollTimer?: ReturnType<typeof setTimeout>;
+  private reactTimer?: ReturnType<typeof setTimeout>;
+  protected readonly myName = signal('');
+  protected readonly qr = signal('');
+  protected readonly onlineErr = signal('');
+  protected readonly waitingNet = signal(false);
+  /** Someone opened an invite link: the host's name until they join. */
+  protected readonly joinFor = signal<string | null>(null);
+  private joinId = '';
+  protected readonly reaction = signal<{ e: string } | null>(null);
+  protected readonly emojis = ['👍', '😮', '😂', '👏', '🙏', '🔥'];
+  protected readonly oppSide = computed<Color>(() => (this.room()?.me === 'b' ? 'w' : 'b'));
+  protected readonly oppAway = computed(() => this.room()?.players[this.oppSide()]?.away ?? 0);
+  protected readonly inviteUrl = computed(() => (this.room() ? `https://tools.spreadapps.in/games/chess?room=${this.room()!.id}` : ''));
   /** Board seen from Black's side (turned 180°). */
   protected readonly flip = signal(false);
   protected readonly squares = computed(() =>
@@ -233,7 +325,12 @@ export class ChessTool implements OnDestroy {
 
   protected readonly level = computed(() => LEVELS.find((l) => l.id === this.levelId())!);
   protected readonly turn = computed<Color>(() => (this.ver(), this.chess.turn()));
-  protected readonly myTurn = computed(() => (this.ver(), !this.busy() && !this.chess.isGameOver() && (this.mode() === 'local' || this.chess.turn() === 'w')));
+  protected readonly myTurn = computed(() => {
+    this.ver();
+    if (this.busy() || this.chess.isGameOver()) return false;
+    if (this.mode() === 'online') return this.room()?.status === 'playing' && this.chess.turn() === this.room()?.me;
+    return this.mode() === 'local' || this.chess.turn() === 'w';
+  });
   protected readonly checked = computed<Color | null>(() => (this.ver(), this.chess.inCheck() ? this.chess.turn() : null));
   protected readonly movePairs = computed(() => {
     this.ver();
@@ -260,6 +357,8 @@ export class ChessTool implements OnDestroy {
   protected readonly result = computed(() => {
     this.ver();
     const c = this.chess, t = COACH[this.lang()];
+    // Online, resign / draw / a friend leaving end the game without the board being over.
+    if (this.mode() === 'online') return this.onlineResult();
     if (!c.isGameOver()) return null;
     if (c.isCheckmate() && this.mode() === 'local') return { title: c.turn() === 'b' ? t['whiteWins'] : t['blackWins'], sub: t['winSub'] };
     if (c.isCheckmate()) return c.turn() === 'b' ? { title: t['win'], sub: t['winSub'] } : { title: t['lose'], sub: t['loseSub'] };
@@ -268,6 +367,12 @@ export class ChessTool implements OnDestroy {
   protected readonly status = computed(() => {
     const t = COACH[this.lang()];
     if (this.result()) return this.result()!.title;
+    if (this.mode() === 'online') {
+      const r = this.room();
+      if (!r) return '🔗 Online';
+      if (r.status === 'waiting') return 'Waiting for your friend…';
+      return this.myTurn() ? t['yourTurn'] : `${this.nameOf(this.oppSide())} is thinking…`;
+    }
     if (this.mode() === 'local') return t[this.turn() === 'w' ? 'turnWhite' : 'turnBlack'];
     return t[this.busy() ? 'thinking' : 'yourTurn'];
   });
@@ -306,6 +411,12 @@ export class ChessTool implements OnDestroy {
         this.worker.onmessage = (e) => this.onEngine(e.data);
       }
       if (this.mode() === 'cpu' && this.chess.turn() === 'b' && !this.chess.isGameOver()) this.computerMove();
+      try {
+        this.myName.set(localStorage.getItem('chess-name') ?? '');
+      } catch {}
+      const id = new URLSearchParams(location.search).get('room');
+      if (id && /^[a-z0-9]{8}$/.test(id)) this.openRoom(id);
+      document.addEventListener('visibilitychange', this.onVisible);
     });
   }
 
@@ -313,6 +424,9 @@ export class ChessTool implements OnDestroy {
     this.worker?.terminate();
     this.audio?.close();
     clearTimeout(this.flipTimer);
+    clearTimeout(this.pollTimer);
+    clearTimeout(this.reactTimer);
+    if (typeof document !== 'undefined') document.removeEventListener('visibilitychange', this.onVisible);
   }
 
   protected label(sq: Square) {
@@ -334,6 +448,12 @@ export class ChessTool implements OnDestroy {
     const n: Record<string, [string, string]> = { te: ['తెల్ల పావులు', 'నల్ల పావులు'], en: ['White', 'Black'], hi: ['सफ़ेद', 'काले'], ta: ['வெள்ளை', 'கருப்பு'], kn: ['ಬಿಳಿ', 'ಕಪ್ಪು'], mr: ['पांढरे', 'काळे'], or: ['ଧଳା', 'କଳା'] };
     const [w, b] = n[this.lang()] ?? n['en'];
     return c === 'w' ? '⚪ ' + w : '⚫ ' + b;
+  }
+
+  protected nameOf(c: Color) {
+    if (this.mode() !== 'online') return this.sideName(c);
+    const p = this.room()?.players[c];
+    return (c === 'w' ? '⚪ ' : '⚫ ') + (p?.name ?? '…') + (this.room()?.me === c ? ' (you)' : '');
   }
 
   protected place(p: PieceView) {
@@ -423,7 +543,8 @@ export class ChessTool implements OnDestroy {
       return false;
     }
     this.apply(m, true);
-    if (this.mode() === 'local') this.turnBoard();
+    if (this.mode() === 'online') this.sendMove(m);
+    else if (this.mode() === 'local') this.turnBoard();
     else if (!this.chess.isGameOver()) this.computerMove();
     return true;
   }
@@ -461,8 +582,9 @@ export class ChessTool implements OnDestroy {
     this.flipTimer = setTimeout(() => this.flip.set(this.chess.turn() === 'b'), delay);
   }
 
-  protected setMode(m: 'cpu' | 'local') {
+  protected setMode(m: 'cpu' | 'local' | 'online') {
     if (m === this.mode()) return;
+    if (this.mode() === 'online') this.leaveOnline();
     this.mode.set(m);
     this.newGame();
     this.coach.set({ key: m === 'local' ? 'passPlay' : 'start' });
@@ -537,6 +659,263 @@ export class ChessTool implements OnDestroy {
     this.save();
   }
 
+  // --- online game with a friend ---
+
+  private readonly onVisible = () => {
+    if (document.visibilityState === 'visible' && this.room()) this.poll(0);
+  };
+
+  private async api(body: Record<string, unknown>) {
+    const r = await fetch('/api/chess', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+    const j = await r.json().catch(() => ({}));
+    return { ok: r.ok, status: r.status, j };
+  }
+
+  private rememberName() {
+    try {
+      localStorage.setItem('chess-name', this.myName().trim());
+    } catch {}
+  }
+
+  protected async create() {
+    this.onlineErr.set('');
+    this.waitingNet.set(true);
+    this.rememberName();
+    try {
+      const { ok, j } = await this.api({ a: 'create', name: this.myName() });
+      if (!ok) throw new Error(j.error);
+      this.enterRoom(j.id, j.token);
+    } catch (e) {
+      this.onlineErr.set((e as Error).message || 'Could not create the game. Check your internet and try again.');
+    } finally {
+      this.waitingNet.set(false);
+    }
+  }
+
+  /** Opened from an invite link: resume if this phone is already a player, else offer to join. */
+  private async openRoom(id: string) {
+    this.mode.set('online');
+    this.newGame();
+    let token = '';
+    try {
+      token = localStorage.getItem('chess-room-' + id) ?? '';
+    } catch {}
+    if (token) return this.enterRoom(id, token);
+    try {
+      const r = await fetch(`/api/chess?id=${id}`);
+      if (!r.ok) throw new Error();
+      const v = (await r.json()) as RoomView;
+      if (v.status !== 'waiting') return this.onlineErr.set(v.status === 'cancelled' ? 'This invite was cancelled.' : 'This game already has two players.');
+      this.joinId = id;
+      this.joinFor.set(v.players[v.host]?.name ?? 'Your friend');
+    } catch {
+      this.onlineErr.set('This game link has expired. Ask your friend for a new one.');
+    }
+  }
+
+  protected async join() {
+    this.onlineErr.set('');
+    this.waitingNet.set(true);
+    this.rememberName();
+    try {
+      const { ok, j } = await this.api({ a: 'join', id: this.joinId, name: this.myName() });
+      if (!ok) throw new Error(j.error);
+      this.joinFor.set(null);
+      this.enterRoom(this.joinId, j.token);
+    } catch (e) {
+      this.onlineErr.set((e as Error).message || 'Could not join. Check your internet and try again.');
+    } finally {
+      this.waitingNet.set(false);
+    }
+  }
+
+  private enterRoom(id: string, token: string) {
+    this.roomToken = token;
+    this.roomId = id;
+    try {
+      localStorage.setItem('chess-room-' + id, token);
+    } catch {}
+    this.router.navigate([], { queryParams: { room: id }, replaceUrl: true });
+    this.gameNo = 0;
+    this.lastEv = 0;
+    this.poll(0);
+    import('qrcode').then((m) => ((m as unknown as { default?: typeof m }).default ?? m).toDataURL(`https://tools.spreadapps.in/games/chess?room=${id}`, { margin: 1, width: 360 })).then((u) => this.qr.set(u)).catch(() => undefined);
+  }
+
+  /** Ask the server for the room; quick while waiting for the friend's move, slower otherwise, paused in the background. */
+  private poll(delay: number) {
+    clearTimeout(this.pollTimer);
+    this.pollTimer = setTimeout(async () => {
+      const id = this.roomId;
+      if (!id || !this.roomToken) return;
+      if (document.visibilityState === 'visible') {
+        try {
+          const r = await fetch(`/api/chess?id=${id}&t=${this.roomToken}`);
+          if (r.status === 410) return this.endOnline('This game has ended or expired.');
+          if (r.ok) this.applyRoom((await r.json()) as RoomView);
+        } catch {}
+      }
+      this.poll(this.nextDelay());
+    }, delay);
+  }
+
+  private nextDelay() {
+    const r = this.room();
+    if (!r || r.status === 'cancelled') return 8000;
+    if (r.status === 'over') return 3000; // waiting to see if the friend asks for a rematch
+    if (r.status === 'waiting') return 2500;
+    if (this.myTurn()) return 4000;
+    const t = Date.now() - this.turnSince;
+    return t < 30_000 ? 1500 : t < 120_000 ? 3000 : 6000;
+  }
+
+  private applyRoom(v: RoomView): void {
+    // A slower, older answer (e.g. a poll that started before my move) must not undo a newer one.
+    const cur = this.room();
+    if (cur && cur.id === v.id && v.rev < cur.rev) return;
+    if (v.game !== this.gameNo) {
+      // first look, or a rematch with colours swapped
+      this.gameNo = v.game;
+      this.reqId++;
+      this.chess.reset();
+      for (const u of v.moves) this.chess.move({ from: u.slice(0, 2), to: u.slice(2, 4), promotion: u[4] || undefined });
+      this.pieces.set(this.fromBoard());
+      this.history.set([]);
+      const h = this.chess.history({ verbose: true }).at(-1);
+      this.last.set(h ? { from: h.from, to: h.to } : null);
+      this.ver.update((x) => x + 1);
+      this.turnSince = Date.now();
+    } else if (v.moves.length > this.chess.history().length) {
+      for (const u of v.moves.slice(this.chess.history().length)) {
+        this.apply(this.chess.move({ from: u.slice(0, 2), to: u.slice(2, 4), promotion: u[4] || undefined }), false);
+      }
+      this.turnSince = Date.now();
+    } else if (v.moves.length < this.chess.history().length) {
+      this.gameNo = -1; // out of step: rebuild from the server next time
+      return this.applyRoom(v);
+    }
+    this.flip.set(v.me === 'b');
+    const fresh = v.events.filter((e) => e.n > this.lastEv);
+    if (fresh.length) {
+      this.lastEv = Math.max(...fresh.map((e) => e.n));
+      const theirs = fresh.filter((e) => e.by !== v.me).at(-1);
+      if (theirs && this.gameNo) this.showReaction(theirs.e);
+    }
+    const before = this.room();
+    this.room.set(v);
+    if (before?.status === 'waiting' && v.status === 'playing') this.feedback(false);
+  }
+
+  private async sendMove(m: Move) {
+    const r = this.room();
+    if (!r) return;
+    const ply = this.chess.history().length - 1;
+    const { ok, j } = await this.api({ a: 'move', id: r.id, t: this.roomToken, ply, uci: m.from + m.to + (m.promotion ?? '') }).catch(() => ({ ok: false, j: {} as Record<string, unknown> }));
+    if (ok) this.applyRoom(j as RoomView);
+    else if (j['state']) {
+      this.gameNo = -1;
+      this.applyRoom(j['state'] as RoomView);
+    } else this.onlineErr.set('Your move did not reach your friend. Check your internet.');
+    this.turnSince = Date.now();
+    this.poll(1500);
+  }
+
+  protected async act(a: 'draw' | 'claim' | 'rematch') {
+    const r = this.room();
+    if (!r) return;
+    const { ok, j } = await this.api({ a, id: r.id, t: this.roomToken });
+    if (ok) this.applyRoom(j as RoomView);
+  }
+
+  protected async resign() {
+    if (!(await this.dialog.confirm({ title: 'Resign this game?', message: 'Your friend wins this game. You can ask for a rematch.', confirmText: 'Resign', tone: 'danger' }))) return;
+    const r = this.room();
+    if (!r) return;
+    const { ok, j } = await this.api({ a: 'resign', id: r.id, t: this.roomToken });
+    if (ok) this.applyRoom(j as RoomView);
+  }
+
+  protected async react(e: string) {
+    const r = this.room();
+    if (!r) return;
+    this.showReaction(e);
+    const { ok, j } = await this.api({ a: 'react', id: r.id, t: this.roomToken, e });
+    if (ok) {
+      this.lastEv = Math.max(this.lastEv, ...(j as RoomView).events.map((x) => x.n));
+      this.applyRoom(j as RoomView);
+    }
+  }
+
+  private showReaction(e: string) {
+    clearTimeout(this.reactTimer);
+    this.reaction.set({ e });
+    this.reactTimer = setTimeout(() => this.reaction.set(null), 2500);
+  }
+
+  protected async shareInvite() {
+    const url = this.inviteUrl();
+    const text = `♟️ Play chess with me on Spread Apps — tap to join: ${url}`;
+    try {
+      if (navigator.share) return await navigator.share({ title: 'Play chess with me', text, url });
+    } catch (e) {
+      if ((e as Error).name === 'AbortError') return;
+    }
+    open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank', 'noopener');
+  }
+
+  protected async copyInvite() {
+    try {
+      await navigator.clipboard.writeText(this.inviteUrl());
+      this.onlineErr.set('');
+      this.toast.show('Link copied — paste it in WhatsApp.', 'success');
+    } catch {}
+  }
+
+  protected async cancelInvite() {
+    const r = this.room();
+    if (r) await this.api({ a: 'cancel', id: r.id, t: this.roomToken }).catch(() => undefined);
+    this.leaveOnline();
+  }
+
+  /** Leave the online game (back to the computer). Mid-game, confirm first — the friend can then claim the win. */
+  protected async leaveOnline(ask = false) {
+    if (ask && this.room()?.status === 'playing' && !(await this.dialog.confirm({ title: 'Leave this game?', message: 'Your friend can claim the win if you do not come back.', confirmText: 'Leave', tone: 'warning' }))) return;
+    clearTimeout(this.pollTimer);
+    this.room.set(null);
+    this.roomToken = '';
+    this.roomId = '';
+    this.qr.set('');
+    this.joinFor.set(null);
+    this.onlineErr.set('');
+    if (new URLSearchParams(location.search).has('room')) this.router.navigate([], { queryParams: {}, replaceUrl: true });
+    if (this.mode() === 'online') {
+      this.mode.set('cpu');
+      this.newGame();
+    }
+  }
+
+  private endOnline(msg: string) {
+    clearTimeout(this.pollTimer);
+    this.onlineErr.set(msg);
+  }
+
+  private onlineResult() {
+    const r = this.room(), t = COACH[this.lang()];
+    if (!r?.result) return null;
+    const opp = r.players[this.oppSide()]?.name ?? 'Your friend';
+    const won = r.result.winner === r.me;
+    switch (r.result.kind) {
+      case 'mate':
+        return won ? { title: t['win'], sub: `Checkmate! You beat ${opp}.` } : { title: t['lose'], sub: `${opp} won this one. Rematch?` };
+      case 'resign':
+        return won ? { title: t['win'], sub: `${opp} resigned.` } : { title: 'You resigned', sub: `${opp} wins this game.` };
+      case 'left':
+        return won ? { title: t['win'], sub: `${opp} left the game.` } : { title: 'Game over', sub: 'You were away too long.' };
+      default:
+        return { title: t['draw'], sub: r.result.kind === 'stalemate' ? t['stalemate'] : t['drawSub'] };
+    }
+  }
+
   private fromBoard(): PieceView[] {
     return this.chess.board().flat().filter((p) => !!p).map((p) => ({ id: this.nextId++, t: p.type, c: p.color, sq: p.square }));
   }
@@ -565,6 +944,7 @@ export class ChessTool implements OnDestroy {
   }
 
   private save() {
+    if (this.mode() === 'online') return;
     try {
       if (this.chess.history().length && !this.chess.isGameOver()) localStorage.setItem(SAVE, this.chess.pgn());
       else localStorage.removeItem(SAVE);
