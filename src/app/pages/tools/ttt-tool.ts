@@ -55,6 +55,7 @@ const CSS = `
 @keyframes tt-pop{from{transform:translateX(-50%) scale(.3);opacity:0}}
 .tt .seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:3px;padding:3px;border-radius:12px;background:var(--surface-2)}
 .tt .seg button{border:0;background:none;color:var(--ink);padding:7px 4px;border-radius:9px;font-size:13px;font-weight:600}
+.tt .seg button:disabled{opacity:.4;cursor:not-allowed}
 .tt .seg button[aria-pressed=true]{background:var(--surface);color:var(--brand);box-shadow:0 1px 3px rgb(0 0 0/.15)}
 .tt-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
 @media (prefers-reduced-motion:reduce){.tt *{animation:none!important;transition:none!important}.tt-mk path,.tt-mk circle,.tt-line line{stroke-dashoffset:0}}
@@ -142,10 +143,11 @@ const CSS = `
       }
 
       <div class="seg" role="group" aria-label="Play against">
-        <button type="button" [attr.aria-pressed]="mode() === 'cpu'" (click)="setMode('cpu')">🤖 Computer</button>
-        <button type="button" [attr.aria-pressed]="mode() === 'local'" (click)="setMode('local')">👥 Friend</button>
-        <button type="button" [attr.aria-pressed]="mode() === 'online'" (click)="setMode('online')">🔗 Online</button>
+        <button type="button" [attr.aria-pressed]="mode() === 'cpu'" [disabled]="locked() && mode() !== 'cpu'" (click)="setMode('cpu')">🤖 Computer</button>
+        <button type="button" [attr.aria-pressed]="mode() === 'local'" [disabled]="locked() && mode() !== 'local'" (click)="setMode('local')">👥 Friend</button>
+        <button type="button" [attr.aria-pressed]="mode() === 'online'" [disabled]="locked() && mode() !== 'online'" (click)="setMode('online')">🔗 Online</button>
       </div>
+      @if (locked()) { <p class="text-center text-xs text-muted">🔒 Game in progress — finish it, or tap {{ mode() === 'online' ? 'Leave online game' : 'New game' }} to switch.</p> }
       @if (mode() === 'cpu') {
         <div class="seg" role="group" aria-label="Computer level">
           @for (l of levels; track l) { <button type="button" [attr.aria-pressed]="level() === l" (click)="setLevel(l)">{{ levelName(l) }}</button> }
@@ -212,6 +214,11 @@ export class TttTool implements OnDestroy {
   });
   /** Score row: you always on the left (on one phone, ✕ on the left). */
   protected readonly sides = computed<Mark[]>(() => (this.mode() === 'local' || (this.mode() === 'online' && !this.online.room()?.me) ? ['X', 'O'] : this.myMark() === 'X' ? ['X', 'O'] : ['O', 'X']));
+  protected readonly locked = computed<boolean>(() => {
+    const r = this.online.room();
+    if (this.mode() === 'online') return !!r && (r.status === 'waiting' || r.status === 'playing');
+    return this.cells().some(Boolean) && !this.over();
+  });
   protected readonly over = computed<boolean>(() => (this.mode() === 'online' ? this.online.room()?.status === 'over' : !!this.win() || this.full()));
   protected readonly myTurn = computed<boolean>(() => {
     if (this.over() || this.thinking()) return false;
@@ -502,6 +509,7 @@ export class TttTool implements OnDestroy {
 
   /** One tap: ask the name the first time → create the game → share the link. */
   protected async invite() {
+    if (this.mode() !== 'online' && this.locked() && !(await this.dialog.confirm({ title: 'Play a friend online?', message: 'Your current game will end and a new online game starts.', confirmText: 'Invite a friend' }))) return;
     let name = this.online.name().trim();
     if (name.length < 2 || name === 'Friend') {
       const v = await this.dialog.prompt({ title: 'Invite a friend', message: 'Your friend will see this name.', label: 'Your name', placeholder: 'e.g. Jay', confirmText: 'Create invite', validate: (x) => (x.trim().length < 2 ? 'Please type at least 2 letters.' : null) });

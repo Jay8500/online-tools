@@ -52,6 +52,7 @@ const CSS = `
 .rp-react{position:absolute;left:50%;top:30%;transform:translateX(-50%);z-index:6;font-size:64px;pointer-events:none;animation:rp-in .5s}
 .rp .seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:3px;padding:3px;border-radius:12px;background:var(--surface-2)}
 .rp .seg button{border:0;background:none;color:var(--ink);padding:7px 4px;border-radius:9px;font-size:13px;font-weight:600}
+.rp .seg button:disabled{opacity:.4;cursor:not-allowed}
 .rp .seg button[aria-pressed=true]{background:var(--surface);color:var(--brand);box-shadow:0 1px 3px rgb(0 0 0/.15)}
 .rp-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
 @media (prefers-reduced-motion:reduce){.rp *{animation:none!important;transition:none!important}}
@@ -148,10 +149,11 @@ const CSS = `
       }
 
       <div class="seg" role="group" aria-label="Play against">
-        <button type="button" [attr.aria-pressed]="mode() === 'cpu'" (click)="setMode('cpu')">🤖 Computer</button>
-        <button type="button" [attr.aria-pressed]="mode() === 'local'" (click)="setMode('local')">👥 Friend</button>
-        <button type="button" [attr.aria-pressed]="mode() === 'online'" (click)="setMode('online')">🔗 Online</button>
+        <button type="button" [attr.aria-pressed]="mode() === 'cpu'" [disabled]="locked() && mode() !== 'cpu'" (click)="setMode('cpu')">🤖 Computer</button>
+        <button type="button" [attr.aria-pressed]="mode() === 'local'" [disabled]="locked() && mode() !== 'local'" (click)="setMode('local')">👥 Friend</button>
+        <button type="button" [attr.aria-pressed]="mode() === 'online'" [disabled]="locked() && mode() !== 'online'" (click)="setMode('online')">🔗 Online</button>
       </div>
+      @if (locked()) { <p class="text-center text-xs text-muted">🔒 Game in progress — finish it, or tap {{ mode() === 'online' ? 'Leave online game' : 'New match' }} to switch.</p> }
       @if (mode() === 'cpu') {
         <div class="seg" role="group" aria-label="Computer level">
           <button type="button" [attr.aria-pressed]="!smart()" (click)="setSmart(false)">Easy · random</button>
@@ -230,6 +232,11 @@ export class RpsTool implements OnDestroy {
   private readonly matchDone = computed(() => this.phase() !== 'shoot' && Math.max(this.wins().l, this.wins().r) >= this.need());
 
   protected readonly picked = computed<Hand | null>(() => (this.mode() === 'online' ? (this.online.room()?.mine ?? null) : null));
+  protected readonly locked = computed<boolean>(() => {
+    const r = this.online.room();
+    if (this.mode() === 'online') return !!r && (r.status === 'waiting' || r.status === 'playing');
+    return (this.rounds().length > 0 || !!this.first()) && !this.matchDone();
+  });
   protected readonly canPick = computed<boolean>(() => {
     if (this.phase() === 'shoot' || this.pass()) return false;
     if (this.mode() === 'online') {
@@ -474,6 +481,7 @@ export class RpsTool implements OnDestroy {
   // --- online ---
 
   protected async invite() {
+    if (this.mode() !== 'online' && this.locked() && !(await this.dialog.confirm({ title: 'Play a friend online?', message: 'Your current match will end and a new online game starts.', confirmText: 'Invite a friend' }))) return;
     let name = this.online.name().trim();
     if (name.length < 2 || name === 'Friend') {
       const v = await this.dialog.prompt({ title: 'Invite a friend', message: 'Your friend will see this name.', label: 'Your name', placeholder: 'e.g. Jay', confirmText: 'Create invite', validate: (x) => (x.trim().length < 2 ? 'Please type at least 2 letters.' : null) });

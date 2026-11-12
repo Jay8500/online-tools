@@ -184,10 +184,11 @@ const at = (x: number, y: number) => (FILES[x] + (8 - y)) as Square;
       <div class="opts">
         <p class="font-bold text-brand">{{ status() }}</p>
         <div class="seg" role="group" aria-label="Play against">
-          <button type="button" [attr.aria-pressed]="mode() === 'cpu'" (click)="setMode('cpu')">🤖 Computer</button>
-          <button type="button" [attr.aria-pressed]="mode() === 'local'" (click)="setMode('local')">👥 Friend</button>
-          <button type="button" [attr.aria-pressed]="mode() === 'online'" (click)="setMode('online')">🔗 Online</button>
+          <button type="button" [attr.aria-pressed]="mode() === 'cpu'" [disabled]="locked() && mode() !== 'cpu'" (click)="setMode('cpu')">🤖 Computer</button>
+          <button type="button" [attr.aria-pressed]="mode() === 'local'" [disabled]="locked() && mode() !== 'local'" (click)="setMode('local')">👥 Friend</button>
+          <button type="button" [attr.aria-pressed]="mode() === 'online'" [disabled]="locked() && mode() !== 'online'" (click)="setMode('online')">🔗 Online</button>
         </div>
+        @if (locked()) { <p class="text-center text-xs text-muted">🔒 Game in progress — finish it, or tap {{ mode() === 'online' ? 'Leave' : 'New' }} to switch.</p> }
         @if (mode() === 'local') {
           <div class="seg" role="group" aria-label="Chess clock">
             @for (m of timers; track m) { <button type="button" [attr.aria-pressed]="activeMins() === m" (click)="setMins(m)">{{ m ? '⏱ ' + m + ' min' : 'No timer' }}</button> }
@@ -260,7 +261,7 @@ const at = (x: number, y: number) => (FILES[x] + (8 - y)) as Square;
         grid-template-columns: min(calc(100dvh - 190px), 540px, calc(100% - 276px)) minmax(260px, 1fr);
         grid-template-areas: 'top coach' 'board btns' 'board opts' 'board moves' 'bottom .'; grid-template-rows: auto auto auto 1fr auto; }
       .top { align-self: end; }
-      .coach { height: auto !important; min-height: 96px; }
+      .coach { height: 104px !important; }
       .moves { max-height: 180px; }
     }
     .coach { grid-area: coach; margin: 0; height: 5.4em; overflow: auto; padding: 8px 12px; border-radius: 12px; font-size: 13.5px; line-height: 1.35;
@@ -300,6 +301,7 @@ const at = (x: number, y: number) => (FILES[x] + (8 - y)) as Square;
     .row { display: flex; gap: 8px; } .row .seg { flex: 1; }
     .seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 3px; padding: 3px; border-radius: 12px; background: var(--surface-2); }
     .seg button { border: 0; background: none; color: var(--ink); padding: 7px 4px; border-radius: 9px; font-size: 13px; font-weight: 600; }
+    .seg button:disabled { opacity: .4; cursor: not-allowed; }
     .seg button[aria-pressed='true'] { background: var(--surface); color: var(--brand); box-shadow: 0 1px 3px rgb(0 0 0 / .15); }
     .moves { grid-area: moves; margin: 0; padding: 0; list-style: none; max-height: 120px; overflow: auto; font-size: 13px; font-variant-numeric: tabular-nums; }
     .moves li { display: grid; grid-template-columns: 32px 1fr 1fr; } .moves li span:first-child { color: var(--muted); }
@@ -408,6 +410,11 @@ export class ChessTool implements OnDestroy {
     return this.mode() === 'local' || this.chess.turn() === 'w';
   });
   protected readonly checked = computed<Color | null>(() => (this.ver(), this.chess.inCheck() ? this.chess.turn() : null));
+  /** While a game is going on (or an online invite is open) the other modes stay locked: New / Leave first. */
+  protected readonly locked = computed(() => {
+    if (this.mode() === 'online') return !!this.room() && (this.room()!.status === 'waiting' || this.room()!.status === 'playing');
+    return this.movePairs().length > 0 && !this.result();
+  });
   protected readonly movePairs = computed(() => {
     this.ver();
     const h = this.chess.history();
@@ -792,6 +799,7 @@ export class ChessTool implements OnDestroy {
 
   /** One tap above the board: (ask the name the first time) → create the invite → open the share sheet. */
   protected async quickInvite() {
+    if (this.mode() !== 'online' && this.locked() && !(await this.dialog.confirm({ title: 'Play a friend online?', message: 'Your current game will end and a new online game starts.', confirmText: 'Invite a friend' }))) return;
     let name = this.myName().trim();
     if (name.length < 2) {
       const v = await this.dialog.prompt({ title: 'Invite a friend', message: 'Your friend will see this name.', label: 'Your name', placeholder: 'e.g. Jay', confirmText: 'Create invite', validate: (x) => (x.trim().length < 2 ? 'Please type at least 2 letters.' : null) });
