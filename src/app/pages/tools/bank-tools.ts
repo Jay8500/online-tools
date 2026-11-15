@@ -251,6 +251,8 @@ const TS_AP = ['telangana', 'andhra-pradesh'];
         }
       } @else if (loading()) {
         <p class="text-sm text-muted">Loading {{ bank()![1] }} branches…</p>
+        <div class="mt-2 h-16 animate-pulse rounded-xl bg-surface-2"></div>
+        <div class="mt-2 h-16 animate-pulse rounded-xl bg-surface-2"></div>
       } @else {
         <p class="mb-2 text-xs font-semibold text-muted">
           {{ bank()![1] }} · {{ n(results().length) }} {{ results().length === 1 ? 'branch' : 'branches' }}{{ area() ? ' matching “' + area() + '”' : '' }} · {{ whereLabel() }}

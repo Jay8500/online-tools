@@ -190,9 +190,9 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
     disclaimer: 'fuel',
   },
   grocery: {
-    h1: 'Vegetable & Grocery Prices Today',
-    title: 'Vegetable Prices Today Hyderabad — Rythu Bazar & Mandi Rates, Milk, Eggs',
-    description: 'Today’s vegetable, fruit and grain prices per kg from Hyderabad Rythu Bazars and mandis in Telangana and Andhra Pradesh (government data), plus milk and NECC egg rates.',
+    h1: 'Rythu Bazar Rates & Vegetable Prices Today',
+    title: 'Rythu Bazar Rates Today — Vegetable Prices per kg in Hyderabad, Telangana & AP',
+    description: 'Today’s Rythu Bazar and mandi vegetable rates per kg — tomato, onion, potato, greens, fruits and grains — for Hyderabad and every district of Telangana and Andhra Pradesh, from government data. Plus milk and NECC egg rates.',
     intro: 'Today’s market prices for vegetables, fruits and grains near you — from government data — plus milk and egg rates.',
     steps: ['Pick your state and district (Hyderabad is selected).', 'Search an item like tomato or onion.', 'Compare prices across Rythu Bazars and markets.', 'Shop prices are usually a little higher than these.'],
     faqs: [
@@ -284,8 +284,8 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
   },
   recharge: {
     h1: 'Mobile Recharge Plans — Jio, Airtel, Vi, BSNL',
-    title: 'Jio, Airtel, Vi, BSNL Recharge Plans 2026 — Compare Price, Data & Cost per Day',
-    description: 'Compare prepaid recharge plans from Jio, Airtel (AP & Telangana), Vi and BSNL: price, validity, daily data, 5G and OTT benefits, sorted by cost per day with best-value picks. Prices from official websites.',
+    title: 'Recharge Plans 2026 — Jio, Airtel, Vi, BSNL Cheapest Plans by Cost per Day',
+    description: 'Compare all prepaid mobile recharge plans of Jio, Airtel (AP & Telangana), Vi and BSNL — short validity, monthly (28 days), 84-day and yearly packs — with daily data, 5G and free OTT, sorted by cost per day. Prices from official websites.',
     intro: 'All popular prepaid plans in one place — filter by validity and data, and see the real cost per day.',
     steps: ['Pick one or more operators (or leave all).', 'Choose validity — 1 month, 84 days or yearly.', 'Choose data per day or “With OTT”.', 'Plans are sorted by cost per day; “Best value” marks the cheapest of its kind.'],
     faqs: [
@@ -296,8 +296,8 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
     disclaimer: 'plans',
   },
   markets: {
-    h1: 'Stock Market Today — Sensex & World Markets',
-    title: 'Stock Market Today — Sensex, Top Indian Shares & World Markets, IPOs in Simple Words',
+    h1: 'Sensex Today & Stock Market — India and World',
+    title: 'Sensex Today — Stock Market, Top Indian Shares & World Markets in Simple Words',
     description: 'See Sensex, top Indian shares, Japan, UK and Germany markets, gold, crude and the dollar in one place, with easy charts and market words explained simply. How IPOs work, with official NSE, BSE and SEBI links.',
     intro: 'Indian and world markets on one page — with charts and every market word explained simply.',
     steps: ['Pick India or World.', 'Tap or hover a chart to see the value on any day.', 'Green ▲ means up, red ▼ means down.', 'Open “Market words” if a term is new to you.'],
@@ -310,13 +310,14 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
   },
   ott: {
     h1: 'OTT Subscription Prices in India',
-    title: 'OTT Subscription Prices India 2026 — Netflix, Prime Video, JioHotstar, SonyLIV, ZEE5, aha',
-    description: 'Current Netflix, Amazon Prime, JioHotstar, SonyLIV and ZEE5 plan prices in India with devices and quality, cost per month, and which recharge plans include them free. Telugu apps aha, ETV Win and Sun NXT too.',
+    title: 'OTT Subscription Prices India 2026 — Netflix ₹149, Prime Video, JioHotstar, aha',
+    description: 'All streaming platforms in India compared: Netflix, Amazon Prime Video, JioHotstar, SonyLIV, ZEE5 and Telugu apps aha, ETV Win and Sun NXT — monthly and yearly prices, screens and video quality, sports, and which recharges include them free.',
     intro: 'What every streaming app costs, what you get, and which recharges include it free.',
     steps: ['Browse the apps, or pick “Telugu-first apps”.', 'Compare monthly vs yearly — tick “Show cost per month”.', 'See which mobile recharges include the app free.', 'Tap “Official prices” to subscribe.'],
     faqs: [
       { q: 'Which is the cheapest Netflix plan?', a: 'Netflix Mobile at ₹149 a month (one phone or tablet, 480p).' },
       { q: 'Is a yearly plan worth it?', a: 'Usually yes — for example JioHotstar Super yearly works out to about ₹92 a month versus ₹149 monthly.' },
+      { q: 'How many screens can watch at the same time?', a: 'It depends on the plan. Each plan card shows how many devices or screens it allows and the video quality — cheaper mobile plans usually allow one phone, premium plans several TVs.' },
       { q: 'Can I get OTT free with my recharge?', a: 'Yes. Some Jio and Airtel plans include JioHotstar, Netflix Basic or Amazon Prime — see “Free with” on each card.' },
     ],
     disclaimer: 'plans',
@@ -336,9 +337,9 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
     disclaimer: 'nearby',
   },
   bunks: {
-    h1: 'Petrol Bunk Near Me — Nearest Petrol Pumps',
-    title: 'Petrol Bunk Near Me — Nearest Petrol Pumps in Hyderabad, Telangana & AP (Indian Oil, HP, BPCL)',
-    description: 'Find the nearest petrol bunk from your location in Hyderabad, Telangana and Andhra Pradesh: 3,300+ pumps with distance, brand (Indian Oil, HP, Bharat Petroleum, Jio-bp, Nayara) and directions.',
+    h1: 'Petrol Bunk Near Me — Nearest Petrol Pump with Distance',
+    title: 'Petrol Bunk Near Me — Nearest Petrol Pump & Distance | దగ్గర్లో పెట్రోల్ బంక్',
+    description: 'Nearby petrol bunks from your location with distance and directions — 3,300+ petrol pumps in Hyderabad, Telangana and Andhra Pradesh: Indian Oil, HP, Bharat Petroleum, Jio-bp and Nayara. దగ్గర్లో పెట్రోల్ బంక్ ఎక్కడ ఉందో చూడండి.',
     intro: 'Find the petrol bunks closest to you, filter by brand, and get directions in one tap.',
     steps: ['Tap the location button or type your area.', 'Pick a brand if you like (Indian Oil, HP, BPCL…).', 'See the nearest pumps with distance and drive time.', 'Tap Directions to go there.'],
     faqs: [
@@ -369,7 +370,7 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
   },
   travel: {
     h1: 'Travel Planner — Route, Stops & Travel Time',
-    title: 'Travel Planner India — Distance, Route, Stops & Time by Car, Bus, Train, Flight',
+    title: 'Distance Calculator & Travel Planner India — Route and Time by Car, Bus, Train',
     description: 'Plan a journey between Indian cities: road route with towns along the way, distance and travel time by car, bike, bus, walking or cycling, plus train and flight estimates with IRCTC, TGSRTC and APSRTC links.',
     intro: 'Enter where you start and where you’re going, pick how you travel, and see the distance, time and the places you pass.',
     steps: [
@@ -672,7 +673,7 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
   },
   days: {
     h1: 'Days Counter — Days Between Two Dates',
-    title: 'Days Calculator — Days Left to Exam, EMI or Any Date (Working Days Too)',
+    title: 'Days Calculator — Count Days Between Dates, Days Left & Working Days',
     description: 'Count the days between two dates or days left to your exam, EMI, trip or event, with weeks and working days (Mon–Fri). Free and instant.',
     intro: 'How many days to your exam, EMI or trip? Pick two dates to see days, weeks and working days.',
     steps: ['“From” is today by default — change it if needed.', 'Pick the “To” date (exam, EMI, event…).', 'Tick “Count the end day too” if your form asks for it.'],
@@ -697,7 +698,7 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
   },
   telugu: {
     h1: 'Telugu Typing — English to Telugu',
-    title: 'Telugu Typing Online — Type English, Get తెలుగు',
+    title: 'Telugu Typing Online — Type in English, Get తెలుగు Instantly (Free)',
     description: 'Type Telugu easily using English letters: amma → అమ్మ, telugu → తెలుగు. Copy or share to WhatsApp. Free, works offline, no app.',
     intro: 'Type in English letters and get Telugu script instantly — copy it anywhere.',
     steps: ['Type the word as it sounds in English letters (e.g. “nEnu”).', 'Use capitals for harder sounds: T ట, D డ, N ణ, L ళ, E ఏ, O ఓ.', 'Tap Copy or WhatsApp to use the Telugu text.'],

@@ -30,6 +30,8 @@ const OFFICIAL = [
       <div class="mt-2" aria-live="polite">
         @if (state() === 'loading') {
           <p class="text-sm text-muted">Loading the latest TGPSC notices…</p>
+          <div class="mt-2 h-16 animate-pulse rounded-xl bg-surface-2"></div>
+          <div class="mt-2 h-16 animate-pulse rounded-xl bg-surface-2"></div>
         } @else if (state() === 'error') {
           <p class="text-sm text-muted">Couldn’t read the TGPSC site right now. <a class="text-brand underline" href="https://websitenew.tgpsc.gov.in/" target="_blank" rel="noopener">Open TGPSC website ↗</a></p>
         } @else {
