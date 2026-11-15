@@ -123,9 +123,9 @@ export class KbTool {
 
   constructor() {
     effect(() => {
-      const title = this.generic() ? 'Resize Image to KB Online — Compress Photo to Exact Size' : `Resize Image to ${this.kb()} KB Online — Compress Photo Free`;
+      const title = this.generic() ? 'Reduce Image Size in KB — Resize Photo to 20, 50, 100 KB Online Free' : `Resize Image to ${this.kb()} KB Online — Compress Photo Free`;
       const description = this.generic()
-        ? 'Resize or compress any JPG, PNG or WebP photo to an exact size in KB — 10 KB, 20 KB, 50 KB, 100 KB or any size. Free, fast, works on mobile, no upload.'
+        ? 'Reduce or decrease image size in KB: resize or compress any JPG, PNG or WebP photo to an exact size — 10 KB, 20 KB, 50 KB, 100 KB or any size — for forms and exams. Free, fast, works on mobile, no upload.'
         : `Compress any photo to under ${this.kb()} KB in seconds. Free online image resizer for forms and exams — works on mobile, nothing is uploaded.`;
       this.seo.set({
         title,

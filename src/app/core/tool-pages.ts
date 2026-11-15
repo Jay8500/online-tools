@@ -624,13 +624,15 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
   },
   ifsc: {
     h1: 'IFSC Code Details — Bank & Branch',
-    title: 'IFSC Code Finder — Check Bank, Branch, Address & MICR from IFSC',
-    description: 'Type an IFSC code to see the bank, branch, full address, MICR code and whether NEFT, RTGS, IMPS and UPI work. Free and quick, for all Indian banks.',
+    title: 'IFSC Code Finder — Search IFSC by Bank & Branch Name, MICR & Address',
+    description: 'Find any IFSC code by bank and branch name — just type “sbi ameerpet” — or search an IFSC to see the bank, branch, full address, MICR and whether NEFT, RTGS, IMPS and UPI work. Free, for all Indian banks.',
     intro: 'Type the bank and area together — like “sbi ameerpet” — or paste an IFSC code to check it.',
     steps: ['Type the bank and the area in one box — for example “sbi ameerpet” or “hdfc kukatpally”.', 'Tap the branch to see its full address, MICR and NEFT/RTGS/UPI, and Copy.', 'Have an IFSC already? Paste it in the same box to check the branch.', 'Not in Telangana or AP? Change the state next to the box.'],
     faqs: [
       { q: 'Where do I find my IFSC?', a: 'It is printed on your cheque leaf and passbook, and shown in your bank app under account details.' },
       { q: 'What does MICR mean?', a: 'MICR is a 9-digit code printed at the bottom of cheques, used for cheque clearing.' },
+      { q: 'What is an IFSC code?', a: 'An 11-character code that identifies a bank branch for NEFT, RTGS and IMPS transfers. The first 4 letters are the bank (e.g. SBIN for SBI), the 5th is always 0, and the last 6 identify the branch.' },
+      { q: 'Is the IFSC the same for all branches of a bank?', a: 'No. Every branch has its own IFSC. Use the IFSC of the branch where the account is held — search the bank and area here to find it.' },
     ],
     disclaimer: 'ifsc',
   },
