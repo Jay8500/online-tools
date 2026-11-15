@@ -157,14 +157,13 @@ const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-p
     .pl-card:active { transform: scale(0.98); }
     .pl-card small { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #fcd34d; }
     .pl-card b { font-size: 1.125rem; line-height: 1.25; }
-    .pl-card span:not(.pl-art) { font-size: 0.75rem; color: rgb(255 255 255 / 0.78); }
+    .pl-card app-poster-art { top: 42%; right: 2px; width: 128px; height: 128px; }
+    .pl-card:hover app-poster-art { transform: translateY(-50%) scale(1.06); }
+    .pp ::ng-deep app-pin-button button { color: #fff; background: rgb(0 0 0 / .28); }
+    .pl-card span { font-size: 0.75rem; color: rgb(255 255 255 / 0.78); }
     .pl-card em { margin-top: 8px; font-style: normal; font-size: 0.75rem; font-weight: 700; color: #0f172a; background: #fff; border-radius: 6px; padding: 4px 12px; }
-    .pl-art { position: absolute; z-index: -1; line-height: 1; opacity: 0.25; transition: transform 0.5s; }
-    .pl-card:hover .pl-art { transform: scale(1.1) rotate(-5deg); }
     .pl-arrow { display: none; width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-size: 18px; line-height: 1; }
     .pl-arrow:hover { border-color: var(--brand); color: var(--brand); }
-    .pl-xo i:nth-child(odd) { color: #fff; }
-    .pl-hands { top: 10px; right: 10px; font-size: 2.6rem; opacity: 0.4; letter-spacing: -4px; transform: rotate(-8deg); }
     .pp { border: 0; min-height: 4.75rem; box-shadow: 0 10px 22px -14px rgb(15 23 42 / 0.65); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s; }
     .pp:active { transform: scale(0.97); }
     .pp::after { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgb(0 0 0 / 0.25), transparent 70%); }
@@ -175,10 +174,6 @@ const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-p
     .pp:hover app-poster-art { transform: translateY(-50%) scale(1.08) rotate(-3deg); }
     .pp::after { background: linear-gradient(90deg, rgb(0 0 0 / 0.35), rgb(0 0 0 / 0.1) 55%, transparent); }
     .pp:hover .pp-art { transform: rotate(-4deg) scale(1.1); }
-    .pl-knight { top: -12px; right: 8px; font-size: 8.5rem; color: #fff; opacity: 0.16; }
-    .pl-peacock { top: -4px; right: 12px; font-size: 6.5rem; opacity: 0.3; }
-    .pl-grid { top: 12px; right: 12px; display: grid; grid-template-columns: repeat(3, 1.75rem); gap: 4px; opacity: 0.32; }
-    .pl-grid i { display: grid; place-items: center; height: 1.75rem; border: 1px solid rgb(255 255 255 / 0.5); border-radius: 6px; font-style: normal; font-weight: 700; font-size: 0.85rem; }
     .pop-row { display: grid; grid-auto-flow: column; grid-template-rows: repeat(2, auto); grid-auto-columns: 82%; gap: 8px; margin: 0 -12px; padding: 0 12px 4px;
       overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding: 12px; scrollbar-width: none; }
     .pop-row > * { scroll-snap-align: start; }
@@ -192,7 +187,7 @@ const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-p
     .ph-today { height: 166px; }
     @media (min-width: 640px) { .ph-today { height: 114px; } }
     @keyframes ph { 50% { opacity: .5; } }
-    @media (prefers-reduced-motion: reduce) { .pl-card, .pl-art, .pp, .pp-art { transition: none; animation: none; } }
+    @media (prefers-reduced-motion: reduce) { .pl-card, .pp, .pp-art { transition: none; animation: none; } }
   `,
   imports: [PosterArt, RouterLink, FormsModule, Icon, AdSlot, LiveBadge, Sky, MarketArt, FestivalCard, PinButton, ExamPicker, ToolTicker, WhatsNew, TodayCard],
   template: `
@@ -277,25 +272,25 @@ const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-p
         <div class="pl-row" #plRow>
           <a routerLink="/games/chess" class="pl-card"
              style="background: radial-gradient(circle at 78% 18%, #4f5bd5, #141a4a 58%, #0b0f2e)">
-            <span class="pl-art pl-knight" aria-hidden="true">♞</span>
+            <app-poster-art path="play-chess" />
             <small>Game · NEW</small><b>Chess</b><span>Computer or a friend · coach in 7 languages</span><em>▶ Play</em>
           </a>
           <a routerLink="/games/sudoku" class="pl-card"
              style="--i:1; background: radial-gradient(circle at 80% 15%, #14b8a6, #0b4f4a 55%, #052926)">
-            <span class="pl-art pl-grid" aria-hidden="true">@for (d of sudokuArt; track $index) { <i>{{ d }}</i> }</span>
+            <app-poster-art path="play-sudoku" />
             <small>Game · Daily puzzle</small><b>Sudoku</b><span>A new puzzle every day · notes & hints</span><em>▶ Play today’s</em>
           </a>
           <a routerLink="/games/tic-tac-toe" class="pl-card" style="--i:2; background: radial-gradient(circle at 80% 15%, #f43f5e, #7f1d3a 55%, #2a0a16)">
-            <span class="pl-art pl-grid pl-xo" aria-hidden="true">@for (d of xoArt; track $index) { <i>{{ d }}</i> }</span>
+            <app-poster-art path="play-ttt" />
             <small>Game · NEW</small><b>Tic-Tac-Toe</b><span>Beat the Unbeatable · or a friend online</span><em>▶ Play</em>
           </a>
           <a routerLink="/games/rock-paper-scissors" class="pl-card" style="--i:3; background: radial-gradient(circle at 80% 15%, #8b5cf6, #3b0f78 55%, #140726)">
-            <span class="pl-art pl-hands" aria-hidden="true">✊✋✌️</span>
+            <app-poster-art path="play-rps" />
             <small>Game · NEW</small><b>Rock Paper Scissors</b><span>Best of 3 · Rock… Paper… Scissors… Shoot!</span><em>▶ Play</em>
           </a>
           <button type="button" (click)="stories.show()" class="pl-card"
              style="--i:4; background: radial-gradient(circle at 80% 20%, #f6a623, #7a1f3d 55%, #1a0b1f)">
-            <span class="pl-art pl-peacock" aria-hidden="true">🦚</span>
+            <app-poster-art path="play-stories" />
             <small>Spread Stories</small><b>Gita, Ramayanam & more</b><span>One short lesson per story · తెలుగు & English</span><em>▶ Watch</em>
           </button>
         </div>
@@ -463,10 +458,7 @@ export class Home {
   protected readonly toolTotal = TOOL_GROUPS.reduce((n, g) => n + g.tools.length, 0) + EXAMS.length;
   private readonly userTools = inject(UserTools);
   protected readonly stories = inject(StoriesService);
-  /** Little number grid drawn on the Sudoku card. */
-  protected readonly sudokuArt = ['5', '', '3', '', '7', '', '9', '', '1'];
   protected readonly hasPoster = POSTER_PATHS;
-  protected readonly xoArt = ['✕', '', '◯', '', '✕', '', '◯', '', '✕'];
   /** Poster colours for the Popular row (streaming-app style). */
   private readonly posters = ['#4f46e5,#1e1b4b', '#0d9488,#042f2e', '#e11d48,#4c0519', '#d97706,#451a03', '#2563eb,#0c1e4a', '#9333ea,#2e1065', '#059669,#022c22', '#db2777,#500724'];
   protected poster(i: number) {
