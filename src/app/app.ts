@@ -1,6 +1,6 @@
 import { ViewportScroller } from '@angular/common';
 import { Component, afterNextRender, computed, inject, signal } from '@angular/core';
-import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
+import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
 import { Icon } from './shared/icon';
 import { ConsentService } from './core/consent.service';
@@ -30,6 +30,7 @@ import { NavBack } from './core/nav-back.service';
   selector: 'app-root',
   imports: [RouterOutlet, RouterLink, Icon, Brand, Benefits, ToastHost, DialogHost, UpdateBanner, ConsentBanner, ScrollTop, InstallHint, InstallFooter, MoreFrom, LikeBox, NewsPanel, StoriesOverlay],
   template: `
+    @if (navLoading()) { <div class="fixed inset-x-0 top-0 z-50 h-1 animate-pulse bg-brand" aria-hidden="true"></div> }
     <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[200] focus:rounded-lg focus:bg-brand focus:px-3 focus:py-2 focus:text-brand-ink">Skip to tool</a>
     <!-- Soft colour lights behind the whole site; header, cards, chips and footer are see-through glass over them -->
     <div class="page-glow" aria-hidden="true"><span></span><span></span><span></span></div>
@@ -170,6 +171,9 @@ export class App {
   private readonly router = inject(Router);
   protected readonly nav = inject(NavBack);
   private readonly url = signal('/');
+  /** Thin brand bar at the top while the next page's code loads (only if it takes more than a moment). */
+  protected readonly navLoading = signal(false);
+  private navTimer?: ReturnType<typeof setTimeout>;
 
   protected readonly isHome = computed(() => this.url().split(/[?#]/)[0] === '/');
   /** Tool, calculator, exam, KB and category pages put "← Back" inside their breadcrumb line. */
@@ -178,6 +182,13 @@ export class App {
   constructor() {
     // Anchor links (#health-calculators…) stop below the sticky 48px header
     inject(ViewportScroller).setOffset([0, 60]);
+    this.router.events.subscribe((e) => {
+      if (e instanceof NavigationStart) this.navTimer = setTimeout(() => this.navLoading.set(true), 150);
+      else if (e instanceof NavigationEnd || e instanceof NavigationCancel || e instanceof NavigationError) {
+        clearTimeout(this.navTimer);
+        this.navLoading.set(false);
+      }
+    });
     this.router.events.pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd)).subscribe((e) => {
       this.url.set(e.urlAfterRedirects);
       // "Recent" row on home (this browser only)

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 /** Tools that have their own drawn poster (others show their big icon instead). */
-export const POSTER_PATHS = new Set(['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-price', 'weather', 'emi-calculator', 'merge-pdf', 'telugu-panchangam', 'holiday-calendar']);
+export const POSTER_PATHS = new Set(['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-price', 'weather', 'emi-calculator', 'merge-pdf', 'telugu-panchangam', 'holiday-calendar', 'travel-planner', 'ott-subscription-prices', 'festival-wishes-card', 'games/chess', 'mobile-recharge-plans', 'ifsc-code-finder', 'ssc-photo-resize', 'petrol-bunk-near-me']);
 
 /**
  * Small drawn "poster" pictures for the home cards, streaming-app style: sits on the right of a card,
@@ -99,6 +99,56 @@ export const POSTER_PATHS = new Set(['resize-image-to-kb', 'gold-price-calculato
           </g>
           <g transform="translate(86 82)"><ellipse cx="0" cy="10" rx="16" ry="7" fill="#b45309" /><path class="fl" d="M0-14c-6 8-7 13-4 18a5 5 0 008 0c3-5 2-10-4-18z" fill="#fde047" /></g>
         }
+        @case ('travel-planner') {
+          <path d="M14 96c18-6 20-30 42-30s26-22 50-24" fill="none" stroke="#fff" stroke-width="5" stroke-dasharray="2 9" stroke-linecap="round" opacity=".85" />
+          <g class="fl"><path d="M100 22c-9 0-16 7-16 16 0 12 16 28 16 28s16-16 16-28c0-9-7-16-16-16z" fill="#f43f5e" /><circle cx="100" cy="38" r="6" fill="#fff" /></g>
+          <g class="fl" transform="translate(18 70)"><rect x="0" y="8" width="38" height="16" rx="6" fill="#fde047" /><path d="M6 8l6-9h16l6 9" fill="#facc15" /><circle cx="9" cy="25" r="5" fill="#1e293b" /><circle cx="29" cy="25" r="5" fill="#1e293b" /></g>
+        }
+        @case ('ott-subscription-prices') {
+          <g class="fl">
+            <rect x="16" y="26" width="84" height="56" rx="8" fill="#0f172a" stroke="#fff" stroke-width="4" />
+            <path d="M50 42v24l20-12z" fill="#f43f5e" />
+            <rect x="46" y="84" width="24" height="5" rx="2" fill="#fff" /><rect x="36" y="89" width="44" height="5" rx="2.5" fill="#fff" />
+          </g>
+          <circle class="sh" cx="96" cy="26" r="13" fill="#facc15" /><text x="96" y="31" text-anchor="middle" font-size="13" font-weight="800" fill="#1e1b4b">₹</text>
+        }
+        @case ('festival-wishes-card') {
+          <g class="fl"><rect x="30" y="20" width="60" height="78" rx="8" fill="#fff" transform="rotate(-6 60 59)" />
+            <g transform="rotate(-6 60 59)"><rect x="36" y="26" width="48" height="48" rx="5" fill="#7c3aed" /><path d="M60 40c-5 6-6 10-3 14a4 4 0 006 0c3-4 2-8-3-14z" fill="#fde047" /><ellipse cx="60" cy="58" rx="10" ry="4" fill="#f59e0b" />
+            <rect x="40" y="80" width="40" height="4" rx="2" fill="#cbd5e1" /><rect x="46" y="88" width="28" height="4" rx="2" fill="#cbd5e1" /></g></g>
+          <path class="sh" d="M98 24l3-8 3 8 8 3-8 3-3 8-3-8-8-3z" fill="#fff" /><path class="sh" d="M20 84l2-6 2 6 6 2-6 2-2 6-2-6-6-2z" fill="#fde047" style="animation-delay:1.2s" />
+        }
+        @case ('games/chess') {
+          <g class="fl" fill="#fff" stroke="#1e1b4b" stroke-width="3" stroke-linejoin="round">
+            <path d="M44 96h52l-4-12H48z" /><path d="M52 84c0-14 4-22 12-30-8-2-14-10-10-20 4-10 18-12 26-4 8 8 8 26 2 40l4 14z" />
+          </g>
+          <circle cx="66" cy="40" r="3" fill="#1e1b4b" />
+          <g opacity=".5"><rect x="12" y="62" width="14" height="14" fill="#fff" /><rect x="26" y="76" width="14" height="14" fill="#fff" /><rect x="12" y="90" width="14" height="14" fill="#fff" /></g>
+        }
+        @case ('mobile-recharge-plans') {
+          <g class="fl"><rect x="36" y="14" width="46" height="88" rx="9" fill="#0f172a" stroke="#fff" stroke-width="4" />
+            <rect x="42" y="24" width="34" height="62" rx="3" fill="#0ea5e9" />
+            @for (b of bars; track b.x) { <rect [attr.x]="b.x" [attr.y]="b.y" width="5" [attr.height]="76 - b.y" rx="1.5" fill="#fff" /> }
+            <circle cx="59" cy="94" r="3" fill="#fff" /></g>
+          <rect class="fl" x="76" y="64" width="34" height="18" rx="9" fill="#facc15" /><text x="93" y="77" text-anchor="middle" font-size="10" font-weight="800" fill="#1e1b4b">5G</text>
+        }
+        @case ('ifsc-code-finder') {
+          <g class="fl"><path d="M22 46l38-22 38 22z" fill="#fff" /><rect x="22" y="46" width="76" height="6" fill="#e2e8f0" />
+            @for (x of cols; track x) { <rect [attr.x]="x" y="56" width="8" height="28" rx="2" fill="#fff" /> }
+            <rect x="18" y="86" width="84" height="8" rx="2" fill="#fff" /></g>
+          <g transform="translate(80 70)"><circle r="14" fill="none" stroke="#facc15" stroke-width="5" /><path d="M10 10l12 12" stroke="#facc15" stroke-width="6" stroke-linecap="round" /></g>
+        }
+        @case ('ssc-photo-resize') {
+          <g class="fl"><rect x="28" y="16" width="56" height="70" rx="6" fill="#fff" />
+            <rect x="34" y="22" width="44" height="50" rx="3" fill="#bae6fd" /><circle cx="56" cy="40" r="10" fill="#fcd34d" /><path d="M38 72c2-12 9-18 18-18s16 6 18 18z" fill="#2563eb" />
+            <rect x="40" y="76" width="32" height="5" rx="2" fill="#94a3b8" /></g>
+          <rect x="70" y="80" width="40" height="22" rx="11" fill="#22c55e" /><text x="90" y="95.5" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">✓ SSC</text>
+        }
+        @case ('petrol-bunk-near-me') {
+          <g class="fl"><path d="M60 14c-15 0-26 11-26 26 0 20 26 46 26 46s26-26 26-46c0-15-11-26-26-26z" fill="#f43f5e" />
+            <rect x="50" y="28" width="16" height="22" rx="3" fill="#fff" /><rect x="53" y="31" width="10" height="7" rx="1" fill="#f43f5e" /><path d="M66 34h4v12a3 3 0 006 0V32l-4-4" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" /></g>
+          <ellipse cx="60" cy="100" rx="26" ry="6" fill="#000" opacity=".25" />
+        }
       }
     </svg>
   `,
@@ -106,5 +156,7 @@ export const POSTER_PATHS = new Set(['resize-image-to-kb', 'gold-price-calculato
 export class PosterArt {
   readonly path = input.required<string>();
   protected readonly rays = [0, 45, 90, 135, 180, 225, 270, 315];
+  protected readonly bars = [{ x: 47, y: 62 }, { x: 55, y: 54 }, { x: 63, y: 46 }, { x: 71, y: 38 }];
+  protected readonly cols = [28, 42, 56, 70, 84];
   protected readonly cal = Array.from({ length: 12 }, (_, i) => ({ x: 30 + (i % 4) * 14, y: 54 + Math.floor(i / 4) * 12 }));
 }

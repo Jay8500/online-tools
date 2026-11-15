@@ -1,5 +1,5 @@
 import { isPlatformBrowser } from '@angular/common';
-import { afterNextRender, Component, computed, DestroyRef, inject, PLATFORM_ID, signal } from '@angular/core';
+import { afterNextRender, Component, computed, DestroyRef, inject, makeStateKey, PendingTasks, PLATFORM_ID, signal, TransferState } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { Icon } from '../shared/icon';
@@ -138,6 +138,8 @@ function matchesAny(q: string, hay: string): boolean {
 const HOME_EXAMS = 5;
 const ALL_TOOLS = TOOL_GROUPS.flatMap((g) => g.tools).filter((t) => !!t.path);
 /** Default "Popular" tab: the few tools most people open first (keeps the first screen simple). */
+/** Most-used tool paths fetched at prerender, handed to the browser so both start with the same cards. */
+const POPULAR_KEY = makeStateKey<string[]>('popular');
 const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-price', 'weather', 'emi-calculator', 'merge-pdf', 'telugu-panchangam', 'holiday-calendar'];
 
 @Component({
@@ -186,6 +188,10 @@ const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-p
       .pl-arrow { display: grid; place-items: center; }
       .pop-row { grid-auto-flow: row; grid-template-columns: repeat(4, 1fr); grid-template-rows: none; grid-auto-columns: auto; margin: 0; padding: 0; overflow: visible; }
     }
+    .ph { display: block; background: var(--surface-2); animation: ph 1.4s ease-in-out infinite; }
+    .ph-today { height: 166px; }
+    @media (min-width: 640px) { .ph-today { height: 114px; } }
+    @keyframes ph { 50% { opacity: .5; } }
     @media (prefers-reduced-motion: reduce) { .pl-card, .pl-art, .pp, .pp-art { transition: none; animation: none; } }
   `,
   imports: [PosterArt, RouterLink, FormsModule, Icon, AdSlot, LiveBadge, Sky, MarketArt, FestivalCard, PinButton, ExamPicker, ToolTicker, WhatsNew, TodayCard],
@@ -222,7 +228,7 @@ const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-p
     </div>
 
     @if (popularMode()) {
-      @defer (on idle) { <app-tool-ticker [items]="tickerItems" /> } @placeholder { <div class="mt-3 h-11" aria-hidden="true"></div> }
+      @defer (on idle) { <app-tool-ticker [items]="tickerItems" /> } @placeholder { <div class="ph mt-3" style="height:40px;border-radius:999px" aria-hidden="true"></div> }
     }
 
     <!-- Tabs appear once a type or All is open; the default Popular home stays minimal -->
@@ -260,7 +266,7 @@ const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-p
     }
 
     @if (popularMode()) {
-      @defer (on idle) { <app-today-card /> } @placeholder { <div class="mt-5 h-[7.5rem] sm:h-24" aria-hidden="true"></div> }
+      @defer (on idle) { <app-today-card /> } @placeholder { <div class="ph ph-today mt-5 rounded-2xl" aria-hidden="true"></div> }
 
       <!-- Play & learn: big cinema-style cards so visitors see the games and stories at once -->
       <section class="mt-5" aria-labelledby="h-play">
@@ -298,9 +304,9 @@ const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-p
       <section class="mt-5" aria-labelledby="h-popular">
         <h2 id="h-popular" class="mb-2 text-xs font-bold tracking-wide text-muted uppercase">Popular</h2>
         <!-- Phones: two rows that swipe sideways (like streaming apps); larger screens: a grid -->
-        <div class="pop-row">
+        <div class="pop-row" >
           @for (t of popular(); track t.path; let i = $index) {
-            <div class="card sky-card pp group relative isolate flex items-center gap-3 overflow-hidden p-3" [style.--i]="i" [style.background]="poster(i)" [class.pp-live]="!!live(t.path)">
+            <div class="card sky-card pp group relative isolate flex items-center gap-3 overflow-hidden p-3" [style.--i]="i" [style.animation]="calm() ? 'none' : null" [style.background]="poster(i)" [class.pp-live]="!!live(t.path)">
               @if (t.path === 'weather' && skyIcon()) { <app-sky [icon]="skyIcon()" class="-z-10" /> }
               @if (t.path === 'stock-market-today') { @defer (on idle) { <app-market-art /> } }
               <a [routerLink]="'/' + t.path" class="absolute inset-0 rounded-2xl" [attr.aria-label]="t.name"></a>
@@ -423,9 +429,12 @@ export class Home {
     return null;
   }
 
-  private async loadPopular() {
+  /** After the first paint the Popular cards stop animating, so a later list change doesn't flash. */
+  protected readonly calm = signal(false);
+  private readonly transfer = inject(TransferState);
+  private async loadPopular(origin = '') {
     try {
-      const r = await fetch('/api/count?popular=1');
+      const r = await fetch(origin + '/api/count?popular=1', { signal: AbortSignal.timeout(5000) });
       if (!r.ok) return;
       const { top } = (await r.json()) as { top?: [string, number][] };
       const picked = (top ?? [])
@@ -435,7 +444,8 @@ export class Home {
         .filter((t) => !!t);
       if (picked.length < 3) return; // not enough real data yet — keep the hand-picked list
       const list = [...new Map([...picked, ...this.popular()].map((t) => [t.path, t])).values()].slice(0, POPULAR.length);
-      this.popular.set(list);
+      if (list.map((t) => t.path).join() !== this.popular().map((t) => t.path).join()) this.popular.set(list);
+      if (origin) this.transfer.set(POPULAR_KEY, list.map((t) => t.path!));
     } catch {
       /* keep the hand-picked list */
     }
@@ -528,8 +538,15 @@ export class Home {
   constructor() {
     const browser = isPlatformBrowser(inject(PLATFORM_ID));
     const destroy = inject(DestroyRef);
+    // Prerender asks the live site for the most-used tools, so the page opens with the real list.
+    if (!browser) inject(PendingTasks).run(() => this.loadPopular('https://tools.spreadapps.in'));
+    else {
+      const saved = this.transfer.get(POPULAR_KEY, null)?.map((p) => ALL_TOOLS.find((t) => t.path === p)).filter((t) => !!t);
+      if (saved?.length) this.popular.set(saved);
+    }
     afterNextRender(() => {
       this.userTools.load();
+      setTimeout(() => this.calm.set(true), 1200);
       this.loadPopular();
       try {
         this.seen.set(localStorage.getItem('whatsnew-seen') === LATEST_ADDED);
