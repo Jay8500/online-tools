@@ -19,9 +19,9 @@
   --brand: #2dd4bf;
   --brand-ink: #0a1414;
   --accent: #4ade80;
-  --bg: #0a1414;
-  --surface: #112020;
-  --surface-2: #182b2b;
+  --bg: #0f1c1c;
+  --surface: #152828;
+  --surface-2: #1d3434;
   --ink: #e8ecf5;
   --muted: #9aa5bd;
   --line: #24403e;
@@ -276,8 +276,8 @@
 .page-glow span:nth-child(1) { width: 55vmax; height: 55vmax; left: -18vmax; top: -18vmax; background: var(--brand); }
 .page-glow span:nth-child(2) { width: 45vmax; height: 45vmax; right: -16vmax; top: 22vh; background: #38bdf8; animation-delay: -8s; }
 .page-glow span:nth-child(3) { width: 40vmax; height: 40vmax; left: 25vw; bottom: -20vmax; background: #fbbf24; opacity: 0.2; animation-delay: -15s; }
-.dark .page-glow span { opacity: 0.16; }
-.dark .page-glow span:nth-child(3) { opacity: 0.08; }
+.dark .page-glow span { opacity: 0.24; }
+.dark .page-glow span:nth-child(3) { opacity: 0.12; }
 @keyframes glow-drift { from { transform: translate(0, 0) scale(1); } to { transform: translate(5vw, 6vh) scale(1.12); } }
 @keyframes chip-shine { to { transform: translateX(120%); } }
 @media (prefers-reduced-motion: reduce) {

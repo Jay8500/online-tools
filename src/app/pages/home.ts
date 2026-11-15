@@ -157,9 +157,10 @@ const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-p
     .pl-card:active { transform: scale(0.98); }
     .pl-card small { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #fcd34d; }
     .pl-card b { font-size: 1.125rem; line-height: 1.25; }
-    .pl-card app-poster-art { top: 42%; right: 2px; width: 128px; height: 128px; }
-    .pl-card:hover app-poster-art { transform: translateY(-50%) scale(1.06); }
-    .pp ::ng-deep app-pin-button button { color: #fff; background: rgb(0 0 0 / .28); }
+    .pl-card app-poster-art { top: 6px; right: 8px; width: 84px; height: 84px; transform: none; }
+    .pl-card:hover app-poster-art { transform: scale(1.06); }
+    .pp ::ng-deep app-pin-button button { color: #fff; background: rgb(255 255 255 / .14); }
+    .bt { animation: rise .5s both; animation-delay: calc(var(--i) * 35ms); }
     .pl-card span { font-size: 0.75rem; color: rgb(255 255 255 / 0.78); }
     .pl-card em { margin-top: 8px; font-style: normal; font-size: 0.75rem; font-weight: 700; color: #0f172a; background: #fff; border-radius: 6px; padding: 4px 12px; }
     .pl-arrow { display: none; width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-size: 18px; line-height: 1; }
@@ -169,8 +170,9 @@ const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-p
     .pp::after { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgb(0 0 0 / 0.25), transparent 70%); }
     .pp-art { position: absolute; z-index: -1; right: -8px; bottom: -14px; opacity: 0.16; transform: rotate(-10deg); transition: transform 0.5s; }
     .pp > span { position: relative; z-index: 1; }
+    .pp app-poster-art { right: 36px; width: 82px; height: 82px; }
     .pp-live app-poster-art { opacity: 0.45; }
-    @media (min-width: 768px) { .pp app-poster-art { width: 96px; height: 96px; opacity: 0.6; } .pp-live app-poster-art { opacity: 0.35; } }
+    @media (min-width: 768px) { .pp app-poster-art { width: 88px; height: 88px; opacity: 0.6; } .pp-live app-poster-art { opacity: 0.35; } }
     .pp:hover app-poster-art { transform: translateY(-50%) scale(1.08) rotate(-3deg); }
     .pp::after { background: linear-gradient(90deg, rgb(0 0 0 / 0.35), rgb(0 0 0 / 0.1) 55%, transparent); }
     .pp:hover .pp-art { transform: rotate(-4deg) scale(1.1); }
@@ -321,8 +323,8 @@ const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-p
         <h2 id="h-browse" class="mb-2 text-xs font-bold tracking-wide text-muted uppercase">Browse by type</h2>
         <div class="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-7">
           @for (c of browse; track c.key) {
-            <button type="button" class="card group flex flex-col items-center gap-1 px-1 py-3 text-center transition hover:border-brand/50" (click)="openTab(c.key)">
-              <svg [lucideIcon]="c.icon" [size]="20" class="text-brand" />
+            <button type="button" class="card bt group flex flex-col items-center gap-1 px-1 py-3 text-center transition hover:border-brand/50 active:scale-95" [style.--i]="$index" [style.background]="tileBg($index)" (click)="openTab(c.key)">
+              <svg [lucideIcon]="c.icon" [size]="22" [style.color]="tileInk($index)" />
               <span class="text-xs font-semibold leading-tight group-hover:text-brand">{{ c.label }}</span>
               <span class="text-[10px] text-muted">{{ c.count }}</span>
             </button>
@@ -461,6 +463,13 @@ export class Home {
   protected readonly hasPoster = POSTER_PATHS;
   /** Poster colours for the Popular row (streaming-app style). */
   private readonly posters = ['#4f46e5,#1e1b4b', '#0d9488,#042f2e', '#e11d48,#4c0519', '#d97706,#451a03', '#2563eb,#0c1e4a', '#9333ea,#2e1065', '#059669,#022c22', '#db2777,#500724'];
+  private readonly tints = ['#0d9488', '#6366f1', '#f59e0b', '#ec4899', '#0ea5e9', '#22c55e', '#ef4444', '#a855f7'];
+  protected tileBg(i: number) {
+    return `linear-gradient(160deg, color-mix(in oklab, ${this.tints[i % 8]} 22%, var(--surface)), var(--surface) 75%)`;
+  }
+  protected tileInk(i: number) {
+    return `color-mix(in oklab, ${this.tints[i % 8]} 80%, var(--ink))`;
+  }
   protected poster(i: number) {
     const [a, b] = this.posters[i % this.posters.length].split(',');
     return `radial-gradient(circle at 88% 12%, ${a}, ${b} 75%)`;
