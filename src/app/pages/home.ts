@@ -1,4 +1,5 @@
 import { isPlatformBrowser } from '@angular/common';
+import { ToastService } from '../core/toast.service';
 import { afterNextRender, Component, computed, DestroyRef, inject, makeStateKey, PendingTasks, PLATFORM_ID, signal, TransferState } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -441,6 +442,7 @@ export class Home {
 
   /** After the first paint the Popular cards stop animating, so a later list change doesn't flash. */
   protected readonly calm = signal(false);
+  private readonly toast = inject(ToastService);
   private readonly transfer = inject(TransferState);
   private async loadPopular(origin = '') {
     try {
@@ -561,6 +563,10 @@ export class Home {
     afterNextRender(() => {
       this.userTools.load();
       setTimeout(() => this.calm.set(true), 1200);
+      // Price watch set on the gold page? Check it now (nothing loads when no watch is saved).
+      try {
+        if (localStorage.getItem('price-watch')) import('../shared/price-watch').then((m) => m.checkWatch()).then((msg) => msg && this.toast.show(msg, 'success', 7000));
+      } catch {}
       this.loadPopular();
       try {
         this.seen.set(localStorage.getItem('whatsnew-seen') === LATEST_ADDED);

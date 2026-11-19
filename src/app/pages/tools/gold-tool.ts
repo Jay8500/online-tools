@@ -1,4 +1,5 @@
 import { Component, computed, linkedSignal, signal } from '@angular/core';
+import { PriceWatch } from '../../shared/price-watch';
 import { rupees } from '../../core/finance';
 import { LiveMetals, MetalPrices } from '../../shared/live-metals';
 import { NumField } from '../../shared/num-field';
@@ -35,9 +36,10 @@ const WEIGHT_UNITS = [
  */
 @Component({
   selector: 'app-gold-tool',
-  imports: [NumField, LiveMetals],
+  imports: [PriceWatch, NumField, LiveMetals],
   template: `
     <div class="mb-4"><app-live-metals (use)="useLive($event)" /></div>
+    <div class="mb-4"><app-price-watch /></div>
     <div class="${SEG}" role="group" aria-label="Metal">
       <button type="button" class="${SEG_BTN}" [class.bg-surface]="metal() === 'gold'" [class.shadow-sm]="metal() === 'gold'" [attr.aria-pressed]="metal() === 'gold'" (click)="metal.set('gold')">Gold</button>
       <button type="button" class="${SEG_BTN}" [class.bg-surface]="metal() === 'silver'" [class.shadow-sm]="metal() === 'silver'" [attr.aria-pressed]="metal() === 'silver'" (click)="metal.set('silver')">Silver</button>
