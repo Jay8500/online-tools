@@ -125,7 +125,7 @@ export class WishesTool {
 
   constructor() {
     afterNextRender(() => {
-      const i = this.initial();
+      const i = this.initial() || new URLSearchParams(location.search).get('fest') || ''; // ?fest= from a festival reminder
       if (i && FESTS.some((x) => x.id === i)) this.fest.set(i);
       try {
         const l = localStorage.getItem(LANG_KEY);

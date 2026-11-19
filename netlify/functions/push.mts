@@ -10,7 +10,8 @@ import webpush from 'web-push';
  * Stored per device (key = hash of the endpoint): the push address, chosen topics and a gold target. Nothing else.
  * Removing the alert / turning notifications off deletes it. Dead addresses are removed when a push fails with 404/410.
  */
-export const TOPICS = ['gold'] as const;
+/** gold = price target, jobs = new TGPSC notice, festival = 2 days before a festival with a wishes card, news = one morning headline. */
+export const TOPICS = ['gold', 'jobs', 'festival', 'news'] as const;
 const METALS = ['gold22PerG', 'gold24PerG', 'silverPerKg'];
 const PUSH_HOSTS = /^https:\/\/([a-z0-9-]+\.)*(googleapis\.com|mozilla\.com|mozaws\.net|push\.apple\.com|notify\.windows\.com)\//;
 

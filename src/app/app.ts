@@ -212,6 +212,8 @@ export class App {
         }
     });
     this.consent.init();
+    // Morning news notification opens the news cards
+    if (typeof location !== 'undefined' && location.search.includes('news=1')) this.newsOpen.set(true);
     // Keep the browser's install offer for our own install tip (loads a moment later)
     if (typeof window !== 'undefined')
       window.addEventListener('beforeinstallprompt', (e) => {

@@ -94,7 +94,7 @@ export class PriceWatch {
   protected readonly perm = signal<NotificationPermission | 'none'>('none');
   protected readonly canNotify = signal(false);
   private readonly push = inject(PushService);
-  protected readonly pushOn = computed(() => this.push.on() || (!this.push.supported && this.perm() === 'granted'));
+  protected readonly pushOn = computed(() => (this.push.on() && this.push.topics().includes('gold')) || (!this.push.supported && this.perm() === 'granted'));
   protected readonly busy = signal(false);
   protected readonly now = computed(() => this.prices()?.[this.saved()?.metal ?? this.metal()] ?? null);
   protected readonly reached = computed(() => !!this.saved() && !!this.now() && this.now()! <= this.saved()!.below);
@@ -137,7 +137,7 @@ export class PriceWatch {
   protected async allow() {
     this.busy.set(true);
     try {
-      if (this.push.supported) await this.push.enable(this.saved() ?? undefined);
+      if (this.push.supported) await this.push.setTopic('gold', true, this.saved() ?? undefined);
       else await Notification.requestPermission();
     } catch {
       /* permission refused or offline */

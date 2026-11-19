@@ -8,8 +8,8 @@ const PRODUCTS = [
   // Hidden while employed elsewhere (similar to the employer's software) — set hidden: false to show again
   { name: 'Spread Apps AI-Lab', emoji: '🧪', line: 'Lab software: patient tokens, sample tracking, instant reports on WhatsApp', url: 'https://ailab.spreadapps.in/?ref=tools', logo: '', status: '', hidden: true },
   // status: shown as a small badge; set to '' when Circles is back online (its Supabase project is paused)
-  { name: 'Circles', emoji: '⭕', logo: 'brand/circles-logo.svg', status: '🛠 Under maintenance', line: 'Project management app — every project, one circle', url: 'https://circles.spreadapps.in/?ref=tools', hidden: false },
-  { name: 'Setu', emoji: '🌉', logo: 'brand/setu-logo.svg', status: '🚀 Coming soon', line: 'India’s bridge to people, skills & work — profiles, Q&A, genuine jobs', url: 'https://setu.spreadapps.in/?ref=tools', hidden: false },
+  { name: 'Circles', emoji: '⭕', logo: 'brand/circles-logo.svg', status: '🛠 Under maintenance', line: 'Project management app — every project, one circle', url: 'https://circles.spreadapps.in/?ref=tools', hidden: true },
+  { name: 'Setu', emoji: '🌉', logo: 'brand/setu-logo.svg', status: '🚀 Coming soon', line: 'India’s bridge to people, skills & work — profiles, Q&A, genuine jobs', url: 'https://setu.spreadapps.in/?ref=tools', hidden: true },
 ];
 const SHOWN = PRODUCTS.filter((p) => !p.hidden);
 /** The AI-Lab line on health pages follows the AI-Lab switch above */
@@ -24,7 +24,7 @@ const SHOW_LAB = !PRODUCTS[0].hidden;
         <span aria-hidden="true">🧪</span> Run a diagnostic lab? Our sister product <a [href]="products[0].url" target="_blank" rel="noopener" class="font-semibold text-brand underline">Spread Apps AI-Lab</a> handles tokens, sample tracking and instant reports on WhatsApp.
       </p>
       }
-    } @else {
+    } @else if (shown.length) {
       <section class="mx-auto max-w-6xl px-4 pb-6 text-sm" aria-labelledby="more-from-h">
         <p id="more-from-h" class="mb-2 text-xs font-semibold tracking-wide text-muted uppercase">More from Spread Apps</p>
         <div class="grid gap-2" [class.sm:grid-cols-2]="shown.length > 1">
