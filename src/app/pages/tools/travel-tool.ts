@@ -51,6 +51,7 @@ const ROAD: TravelMode[] = ['car', 'bike', 'bus', 'walk', 'cycle'];
           <p class="text-2xl font-bold text-brand">{{ hours(e.hours) }} <span class="text-base font-semibold text-ink">· about {{ e.km }} km</span></p>
           <p class="text-sm text-muted">{{ e.note }}. Straight-line distance {{ straight() }} km.</p>
           <div class="mt-3 flex flex-wrap gap-2">
+            @if (!route()) { <button type="button" class="btn-primary min-h-9 text-xs" (click)="shareTrip()"><svg lucideIcon="share-2" [size]="14" /> Share trip</button> }
             @for (l of links(); track l.url) { <a class="btn-ghost min-h-9 text-xs" [href]="l.url" target="_blank" rel="noopener">{{ l.label }} ↗</a> }
           </div>
         </div>
@@ -65,8 +66,13 @@ const ROAD: TravelMode[] = ['car', 'bike', 'bus', 'walk', 'cycle'];
 
       @if (route(); as r) {
         <div class="rounded-2xl border border-line bg-surface p-4">
-          <p class="text-xs font-semibold text-muted">Road route ({{ modeLabel() }})</p>
-          <p class="text-2xl font-bold">{{ hours(r.minutes / 60) }} <span class="text-base font-semibold">· {{ r.km }} km</span></p>
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <p class="text-xs font-semibold text-muted">Road route ({{ modeLabel() }})</p>
+              <p class="text-2xl font-bold">{{ hours(r.minutes / 60) }} <span class="text-base font-semibold">· {{ r.km }} km</span></p>
+            </div>
+            <button type="button" class="btn-primary min-h-9 shrink-0 text-xs" (click)="shareTrip()"><svg lucideIcon="share-2" [size]="14" /> Share trip</button>
+          </div>
           @if (r.roads.length) { <p class="text-sm text-muted">Via {{ r.roads.join(', ') }}</p> }
           <svg [attr.viewBox]="'0 0 ' + W + ' ' + H" class="mt-3 h-auto w-full rounded-xl bg-surface-2" role="img" [attr.aria-label]="'Route sketch from ' + r.from + ' to ' + r.to">
             <polyline [attr.points]="sketch().points" fill="none" stroke="var(--brand)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" />
@@ -106,7 +112,16 @@ export class TravelTool {
 
   constructor() {
     // Open with the example journey already shown — the visitor only changes what they need (route is CDN-cached)
-    afterNextRender(() => this.go());
+    afterNextRender(() => {
+      // A shared trip link (?from=…&to=…&mode=…) opens that journey
+      const q = new URLSearchParams(location.search), f = q.get('from') ?? '', t = q.get('to') ?? '', m = q.get('mode') as TravelMode | null;
+      if (f && t && PLACE_RE.test(f) && PLACE_RE.test(t)) {
+        this.from.set(f.slice(0, 80));
+        this.to.set(t.slice(0, 80));
+        if (m && MODES.some((x) => x.id === m)) this.mode.set(m);
+      }
+      this.go();
+    });
   }
   protected readonly mode = signal<TravelMode>('car');
   private readonly submitted = signal(false);
@@ -190,6 +205,27 @@ export class TravelTool {
     const f = this.from();
     this.from.set(this.to());
     this.to.set(f);
+  }
+  /** WhatsApp / share sheet: the journey in a few lines + a link that opens the same trip. */
+  protected async shareTrip() {
+    const q = this.asked();
+    if (!q) return;
+    const r = this.route(), e = this.est(), icon = MODES.find((m) => m.id === q.mode)?.icon ?? '🗺️';
+    const time = r ? fmtHours(r.minutes / 60) : e ? fmtHours(e.hours) : '';
+    const km = r?.km ?? e?.km;
+    const url = `https://tools.spreadapps.in/travel-planner?from=${encodeURIComponent(q.from)}&to=${encodeURIComponent(q.to)}&mode=${q.mode}&utm_source=trip-share`;
+    const lines = [`🗺️ ${q.from} → ${q.to}`, `${icon} ~${time}${km ? ' · ' + km + ' km' : ''}`];
+    const roads = [...new Set((r?.roads ?? []).flatMap((x) => x.split(/,\s*/)).filter(Boolean))].slice(0, 3);
+    if (roads.length) lines.push('Via ' + roads.join(', '));
+    if (r?.stops.length) lines.push('Stops: ' + r.stops.slice(0, 4).map((s) => s.name).join(' → '));
+    lines.push('', 'See the route: ' + url);
+    const text = lines.join('\n');
+    try {
+      if (navigator.share) return await navigator.share({ title: `${q.from} → ${q.to}`, text });
+    } catch (err) {
+      if ((err as Error).name === 'AbortError') return;
+    }
+    open('https://wa.me/?text=' + encodeURIComponent(text), '_blank', 'noopener');
   }
   protected hours(h: number) {
     return fmtHours(h);
