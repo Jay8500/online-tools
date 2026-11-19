@@ -2,6 +2,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { Component, ElementRef, PLATFORM_ID, afterNextRender, computed, effect, inject, input, signal, viewChild } from '@angular/core';
 import { CoachLang, LANGS, phoneLang } from '../../core/langs';
 import { ToastService } from '../../core/toast.service';
+import { Crop, NO_CROP, PhotoCrop, drawCropped } from '../../shared/photo-crop';
 import { Icon } from '../../shared/icon';
 
 type Lang = CoachLang;
@@ -52,7 +53,7 @@ function defaultFest(today = new Date().toISOString().slice(0, 10)): string {
 
 @Component({
   selector: 'app-wishes-tool',
-  imports: [Icon],
+  imports: [PhotoCrop, Icon],
   template: `
     <div class="grid gap-5 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
       <div class="space-y-4">
@@ -83,9 +84,13 @@ function defaultFest(today = new Date().toISOString().slice(0, 10)): string {
               <svg lucideIcon="image-up" [size]="16" /> {{ photo() ? 'Change photo' : 'Add photo' }}
               <input type="file" accept="image/*" class="sr-only" (change)="pick($event)" />
             </label>
-            @if (photo()) { <button type="button" class="btn-ghost min-h-10 text-sm" (click)="photo.set(null)">Remove</button> }
+            @if (photo()) {
+              <button type="button" class="btn-ghost min-h-10 text-sm" (click)="cropping.set(true)"><svg lucideIcon="crop" [size]="16" /> Adjust</button>
+              <button type="button" class="btn-ghost min-h-10 text-sm" (click)="photo.set(null)">Remove</button>
+            }
           </div>
           <p class="mt-1 text-xs text-muted">Your photo stays on your phone — it is never uploaded.</p>
+          @if (cropping() && photo(); as img) { <app-photo-crop [image]="img" [start]="crop()" (done)="crop.set($event); cropping.set(false)" (cancelled)="cropping.set(false)" /> }
         </div>
         <div class="flex flex-wrap gap-2 pt-1">
           <button type="button" class="btn-primary min-h-11" (click)="share()"><svg lucideIcon="share-2" [size]="16" /> Share on WhatsApp</button>
@@ -112,6 +117,9 @@ export class WishesTool {
   protected readonly langs = LANGS;
   protected readonly name = signal('');
   protected readonly photo = signal<ImageBitmap | null>(null);
+  /** Where the photo sits in the round frame (set in the Adjust step). */
+  protected readonly crop = signal<Crop>(NO_CROP);
+  protected readonly cropping = signal(false);
   private readonly fontsReady = signal(false);
   protected readonly cur = computed(() => FESTS.find((f) => f.id === this.fest()) ?? FESTS[0]);
 
@@ -131,7 +139,7 @@ export class WishesTool {
     effect(() => {
       const c = this.cv()?.nativeElement;
       if (!this.browser || !c || !this.fontsReady()) return;
-      this.draw(c, this.cur(), this.lang(), this.name().trim(), this.photo());
+      this.draw(c, this.cur(), this.lang(), this.name().trim(), this.photo(), this.crop());
     });
   }
 
@@ -147,16 +155,19 @@ export class WishesTool {
   }
 
   protected async pick(e: Event) {
-    const file = (e.target as HTMLInputElement).files?.[0];
+    const el = e.target as HTMLInputElement, file = el.files?.[0];
+    el.value = ''; // picking the same photo again still works
     if (!file) return;
     try {
       this.photo.set(await createImageBitmap(file));
+      this.crop.set(NO_CROP);
+      this.cropping.set(true); // straight to “Move and zoom”, like WhatsApp
     } catch {
       this.toast.show('Couldn’t open that photo. Try a JPG or PNG.', 'error', 2500);
     }
   }
 
-  private draw(c: HTMLCanvasElement, f: Fest, lang: Lang, name: string, photo: ImageBitmap | null) {
+  private draw(c: HTMLCanvasElement, f: Fest, lang: Lang, name: string, photo: ImageBitmap | null, crop: Crop = NO_CROP) {
     const g = c.getContext('2d')!;
     const S = SIZE;
     // Background + soft light dots (fixed pattern so the card looks the same every time)
@@ -201,8 +212,7 @@ export class WishesTool {
       g.arc(cx, cy, r, 0, Math.PI * 2);
       g.closePath();
       g.clip();
-      const scale = Math.max((r * 2) / photo.width, (r * 2) / photo.height);
-      g.drawImage(photo, cx - (photo.width * scale) / 2, cy - (photo.height * scale) / 2, photo.width * scale, photo.height * scale);
+      drawCropped(g, photo, crop, cx, cy, r);
       g.restore();
       g.strokeStyle = '#ffffff';
       g.lineWidth = 10;
