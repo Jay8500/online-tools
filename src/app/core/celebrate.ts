@@ -15,6 +15,8 @@ export interface Festival {
   wish: string;
   mood: Mood;
   theme: Theme;
+  /** A greeting day, not a public holiday (e.g. New Year). */
+  greeting?: boolean;
 }
 
 /** Days that are not celebrations (mourning / solemn) or just "day after" offs get no greeting. */
@@ -63,6 +65,8 @@ export function festivalOn(date: string): Festival | null {
       if (h) return { date, name: clean(h.name), art: holidayArt(h.name, h.kind), wish: wishOf(h), mood: TRIBUTE.test(h.name) ? 'tribute' : 'celebrate', theme: themeOf(h) };
     }
   }
+  // Greeting days that are not public holidays (fixed dates only — festival dates always come from the official lists)
+  if (date.slice(5) === '01-01') return { date, name: 'New Year', art: '🎆', wish: 'Happy New Year!', mood: 'celebrate', theme: 'festive', greeting: true };
   return null;
 }
 

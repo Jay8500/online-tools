@@ -49,28 +49,33 @@ import type { Festival } from '../core/celebrate';
             <a routerLink="/holiday-calendar" class="btn-ghost min-h-9 min-w-0 flex-1 bg-surface/70 px-2 text-[13px] whitespace-nowrap sm:flex-none sm:px-4 sm:text-sm">Holidays →</a>
           </div>
         </section>
-        @if (maker() && wishId(); as id) {
-          <section #makerBox class="card animate-fade-up relative mb-3 scroll-mt-20 p-4" aria-label="Make your festival card">
-            <div class="mb-3 flex items-center justify-between gap-2">
-              <h2 class="text-base font-bold">✨ Make your {{ f.name }} card</h2>
-              <button type="button" class="btn-icon" aria-label="Close card maker" title="Close" (click)="maker.set(false)"><svg lucideIcon="x" [size]="18" /></button>
-            </div>
-            @defer (on immediate) { <app-wishes-tool [initial]="id" /> } @placeholder { <div class="h-[36rem]"></div> }
-          </section>
-        }
       } @else {
-        <a routerLink="/holiday-calendar" class="animate-fade-up mb-3 flex items-center gap-3 rounded-2xl border border-line bg-gradient-to-r from-amber-400/20 via-rose-400/10 to-transparent px-3 py-2 text-sm hover:border-brand/50">
+        <div class="animate-fade-up mb-3 flex items-center gap-3 rounded-2xl border border-line bg-gradient-to-r from-amber-400/20 via-rose-400/10 to-transparent px-3 py-2 text-sm">
           <span class="animate-float text-2xl" aria-hidden="true">@if (f.art === 'flag') { <span class="tricolour"></span> } @else { {{ f.art }} }</span>
           <span class="min-w-0 flex-1">
             <span class="flex items-center gap-1.5 text-[10px] font-bold text-red-600 uppercase dark:text-red-400">
               <span class="relative flex size-1.5" aria-hidden="true"><span class="absolute inline-flex size-full animate-ping rounded-full bg-red-500 opacity-75"></span><span class="relative inline-flex size-1.5 rounded-full bg-red-600"></span></span>
               {{ inDays() === 1 ? 'Tomorrow' : 'In ' + inDays() + ' days' }}
             </span>
-            <b>{{ f.name }}</b><span class="text-muted">&nbsp;· {{ dateText(f.date) }} · holiday</span>
+            <b>{{ f.name }}</b><span class="text-muted">&nbsp;· {{ dateText(f.date) }}{{ f.greeting ? '' : ' · holiday' }}</span>
           </span>
-          <span class="shrink-0 text-xs font-semibold text-brand">Holidays →</span>
-        </a>
+          @if (wishId()) {
+            <button type="button" class="btn-primary min-h-9 shrink-0 px-3 text-xs" [attr.aria-expanded]="maker()" (click)="toggleMaker()">✨ {{ maker() ? 'Close' : 'Make card' }}</button>
+          } @else {
+            <a routerLink="/holiday-calendar" class="shrink-0 text-xs font-semibold text-brand hover:underline">Holidays →</a>
+          }
+        </div>
       }
+      @if (maker() && wishId(); as id) {
+        <section #makerBox class="card animate-fade-up relative mb-3 scroll-mt-20 p-4" aria-label="Make your festival card">
+          <div class="mb-3 flex items-center justify-between gap-2">
+            <h2 class="text-base font-bold">✨ Make your {{ f.name }} card</h2>
+            <button type="button" class="btn-icon" aria-label="Close card maker" title="Close" (click)="maker.set(false)"><svg lucideIcon="x" [size]="18" /></button>
+          </div>
+          @defer (on immediate) { <app-wishes-tool [initial]="id" /> } @placeholder { <div class="h-[36rem]"></div> }
+        </section>
+      }
+
     }
   `,
 })
@@ -91,7 +96,7 @@ export class FestivalCard {
       [/fitr|ramzan/, 'ramzan'],
       [/dussehra|dasara|vijaya/, 'dasara'],
     ];
-    return this.inDays() === 0 ? (map.find(([re]) => re.test(n))?.[1] ?? '') : '';
+    return this.fest()?.mood === 'tribute' ? '' : (map.find(([re]) => re.test(n))?.[1] ?? '');
   });
 
   constructor() {
@@ -99,7 +104,7 @@ export class FestivalCard {
     afterNextRender(async () => {
       if (!browser) return;
       const { festivalNear } = await import('../core/celebrate');
-      const n = festivalNear(2);
+      const n = festivalNear(3);
       if (n) {
         this.inDays.set(n.inDays);
         this.fest.set(n.f);
