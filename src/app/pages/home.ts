@@ -244,7 +244,7 @@ const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-p
     @if (!searching() && tab() === 'popular' && (pins().length || recents().length)) {
       <section class="card mt-5 grid gap-2 p-3" aria-label="Your tools">
         @if (pins().length) {
-          <div class="flex items-center gap-2">
+          <div class="flex min-w-0 items-center gap-2">
             <span class="w-16 shrink-0 text-xs font-bold text-muted">📌 Pinned</span>
             <div class="flex min-w-0 gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none]">
               @for (t of pins(); track t.path) { <a class="chip min-h-8 shrink-0 border-brand/40 bg-brand/5 text-xs" [routerLink]="'/' + t.path"><svg [lucideIcon]="t.icon" [size]="14" /> {{ t.name }}</a> }
@@ -252,7 +252,7 @@ const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-p
           </div>
         }
         @if (recents().length) {
-          <div class="flex items-center gap-2">
+          <div class="flex min-w-0 items-center gap-2">
             <span class="w-16 shrink-0 text-xs font-bold text-muted">🕘 Recent</span>
             <div class="flex min-w-0 gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none]">
               @for (t of recents(); track t.path) { <a class="chip min-h-8 shrink-0 text-xs" [routerLink]="'/' + t.path"><svg [lucideIcon]="t.icon" [size]="14" /> {{ t.name }}</a> }
