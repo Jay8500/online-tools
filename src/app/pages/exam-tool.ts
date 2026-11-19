@@ -5,6 +5,7 @@ import { Icon } from '../shared/icon';
 import { BackLink } from '../shared/back-link';
 import { CounterService } from '../core/counter.service';
 import { DOC_LABEL, DOC_SHORT, DocKind, DocSpec, EXAMS, Exam, examPath } from '../core/exams';
+import { DOC_NOTES, EXAM_TIPS } from '../core/exam-notes';
 import { Faq, SeoService } from '../core/seo.service';
 import { SITE } from '../core/site.config';
 import { AdSlot } from '../shared/ad-slot';
@@ -71,11 +72,11 @@ import { ImageTool, ToolSpec } from '../shared/image-tool';
                 <tr><th class="w-36 bg-surface-2 px-3 py-2 font-semibold text-ink">File size</th><td class="px-3 py-2">{{ d.minKb }} KB to {{ d.maxKb }} KB</td></tr>
                 <tr><th class="bg-surface-2 px-3 py-2 font-semibold text-ink">Dimensions</th><td class="px-3 py-2">{{ d.width }} × {{ d.height }} pixels (width × height){{ d.pxRange ? ' — allowed ' + d.pxRange : '' }}</td></tr>
                 <tr><th class="bg-surface-2 px-3 py-2 font-semibold text-ink">Format</th><td class="px-3 py-2">JPG / JPEG</td></tr>
-                <tr><th class="bg-surface-2 px-3 py-2 font-semibold text-ink">Other rules</th><td class="px-3 py-2">{{ d.note }}</td></tr>
+                <tr><th class="bg-surface-2 px-3 py-2 font-semibold text-ink">Other rules</th><td class="px-3 py-2">{{ noteOf(e, d) }}</td></tr>
               </tbody>
             </table>
           </div>
-          <p class="mt-3 rounded-xl border border-amber-300/50 bg-amber-500/10 p-3 text-ink"><strong>Tip:</strong> {{ e.tip }}</p>
+          <p class="mt-3 rounded-xl border border-amber-300/50 bg-amber-500/10 p-3 text-ink"><strong>Tip:</strong> {{ tips[e.slug] }}</p>
 
           <app-ad-slot slot="inContent" />
 
@@ -97,6 +98,10 @@ import { ImageTool, ToolSpec } from '../shared/image-tool';
   `,
 })
 export class ExamTool {
+  protected readonly tips = EXAM_TIPS;
+  protected noteOf(e: Exam, d: DocSpec) {
+    return DOC_NOTES[e.slug + '/' + d.kind] ?? '';
+  }
   /** From route data */
   readonly exam = input.required<string>();
   readonly kind = input.required<DocKind>();
@@ -187,7 +192,7 @@ function faqsFor(e: Exam, d: DocSpec): Faq[] {
   const faqs: Faq[] = [
     {
       q: `What is the ${e.name} ${label} size?`,
-      a: `${d.width} × ${d.height} pixels and ${d.minKb} KB to ${d.maxKb} KB in JPG format${d.pxRange ? ` (the portal accepts ${d.pxRange})` : ''}. ${d.note} Always confirm with the latest official ${e.name} notification.`,
+      a: `${d.width} × ${d.height} pixels and ${d.minKb} KB to ${d.maxKb} KB in JPG format${d.pxRange ? ` (the portal accepts ${d.pxRange})` : ''}. ${DOC_NOTES[e.slug + '/' + d.kind] ?? ''} Always confirm with the latest official ${e.name} notification.`,
     },
     {
       q: `How do I reduce my ${e.name} ${label} to ${d.maxKb} KB?`,

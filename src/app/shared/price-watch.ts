@@ -1,4 +1,6 @@
-import { ChangeDetectionStrategy, Component, afterNextRender, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, afterNextRender, computed, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { PushService } from '../core/push.service';
 
 /** Saved on this phone only. */
 export interface Watch {
@@ -51,6 +53,7 @@ export async function checkWatch(): Promise<string | null> {
 /** "🔔 Price watch" on the gold page: pick a metal and a target; checked whenever the site is opened. */
 @Component({
   selector: 'app-price-watch',
+  imports: [RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section class="card p-3" aria-labelledby="pw-h">
@@ -74,8 +77,8 @@ export async function checkWatch(): Promise<string | null> {
           @else { Watching {{ label(w.metal) }} for {{ money(w.below) }} }
         </p>
         <div class="mt-2 flex flex-wrap gap-2">
-          @if (canNotify() && perm() !== 'granted') { <button type="button" class="btn-ghost min-h-9 text-xs" (click)="allow()">📲 Also notify me on this phone</button> }
-          @if (perm() === 'granted') { <span class="text-xs text-muted">📲 Notifications on</span> }
+          @if (pushOn()) { <a routerLink="/notifications" class="btn-ghost min-h-9 text-xs">🔔 Notifications on · manage</a> }
+          @else if (canNotify()) { <button type="button" class="btn-primary min-h-9 text-xs" [disabled]="busy()" (click)="allow()">🔔 Notify me on this phone</button> }
           <button type="button" class="btn-ghost min-h-9 text-xs" (click)="clear()">Remove alert</button>
         </div>
       }
@@ -90,6 +93,9 @@ export class PriceWatch {
   private readonly prices = signal<Record<string, number> | null>(null);
   protected readonly perm = signal<NotificationPermission | 'none'>('none');
   protected readonly canNotify = signal(false);
+  private readonly push = inject(PushService);
+  protected readonly pushOn = computed(() => this.push.on() || (!this.push.supported && this.perm() === 'granted'));
+  protected readonly busy = signal(false);
   protected readonly now = computed(() => this.prices()?.[this.saved()?.metal ?? this.metal()] ?? null);
   protected readonly reached = computed(() => !!this.saved() && !!this.now() && this.now()! <= this.saved()!.below);
   /** A target ~2% under today's price, as a hint. */
@@ -121,18 +127,29 @@ export class PriceWatch {
   protected save() {
     const w: Watch = { metal: this.metal(), below: Math.round(this.target()) };
     this.saved.set(w);
+    this.push.updateGold(w);
     try {
       localStorage.setItem(KEY, JSON.stringify(w));
     } catch {}
   }
 
+  /** Real push (works while the site is closed) where supported; otherwise a notification when the site is opened. */
   protected async allow() {
+    this.busy.set(true);
     try {
-      this.perm.set(await Notification.requestPermission());
-    } catch {}
+      if (this.push.supported) await this.push.enable(this.saved() ?? undefined);
+      else await Notification.requestPermission();
+    } catch {
+      /* permission refused or offline */
+    } finally {
+      if ('Notification' in window) this.perm.set(Notification.permission);
+      this.busy.set(false);
+    }
   }
 
+
   protected clear() {
+    this.push.updateGold(null);
     this.saved.set(null);
     this.target.set(0);
     try {
