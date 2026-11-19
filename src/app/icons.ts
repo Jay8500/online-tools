@@ -1,4 +1,5 @@
 import {
+  Bell,
   TrendingUp,
   TrendingDown,
   Heart,
@@ -104,6 +105,7 @@ export const ICONS: Record<string, IconNode> = {
   'graduation-cap': GraduationCap,
   'layout-grid': LayoutGrid,
   newspaper: Newspaper,
+  bell: Bell,
   users: Users,
   'calendar-days': CalendarDays,
   'message-square': MessageSquare,

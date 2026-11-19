@@ -48,6 +48,10 @@ import { NavBack } from './core/nav-back.service';
             <svg lucideIcon="newspaper" [size]="18" />
             <span class="absolute top-1.5 right-1.5 size-1.5 rounded-full bg-rose-500" aria-hidden="true"></span>
           </button>
+          <a routerLink="/notifications" class="btn-icon relative size-9 border-transparent bg-transparent" aria-label="Notifications" title="Notifications">
+            <svg lucideIcon="bell" [size]="18" />
+            @if (bellDot()) { <span class="absolute top-1.5 right-1.5 size-1.5 rounded-full bg-amber-500" aria-hidden="true"></span> }
+          </a>
           <button class="btn-icon size-9 border-transparent bg-transparent" (click)="theme.toggle()"
                   [attr.aria-label]="theme.dark() ? 'Switch to light theme' : 'Switch to dark theme'">
             <svg [lucideIcon]="theme.dark() ? 'sun' : 'moon'" [size]="18" />
@@ -173,6 +177,8 @@ export class App {
   private readonly url = signal('/');
   /** Thin brand bar at the top while the next page's code loads (only if it takes more than a moment). */
   protected readonly navLoading = signal(false);
+  /** Small dot on the bell until the visitor has opened the notifications page once. */
+  protected readonly bellDot = signal(false);
   private navTimer?: ReturnType<typeof setTimeout>;
 
   protected readonly isHome = computed(() => this.url().split(/[?#]/)[0] === '/');
@@ -191,6 +197,10 @@ export class App {
     });
     this.router.events.pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd)).subscribe((e) => {
       this.url.set(e.urlAfterRedirects);
+      try {
+        if (e.urlAfterRedirects.startsWith('/notifications')) localStorage.setItem('notif-seen', '1');
+        this.bellDot.set(localStorage.getItem('notif-seen') !== '1');
+      } catch {}
       // "Recent" row on home (this browser only)
       const path = e.urlAfterRedirects.split(/[?#]/)[0].replace(/^\//, '');
       if (path && typeof localStorage !== 'undefined')
