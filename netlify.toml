@@ -5,6 +5,8 @@
 
 [build.environment]
   NODE_VERSION = "22"
+  # The push public key is meant to be in the app (browsers need it); only VAPID_PRIVATE_KEY is secret.
+  SECRETS_SCAN_OMIT_KEYS = "VAPID_PUBLIC_KEY"
 
 # Every tool page is a prerendered folder (/ssc-photo-resize/index.html); unknown URLs get /404.html with status 404.
 
