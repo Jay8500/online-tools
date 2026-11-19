@@ -349,8 +349,31 @@ export class StepsTool {
   }
 
   private add(n: number) {
+    const before = this.steps();
     this.days.update((d) => ({ ...d, [today()]: (d[today()] ?? 0) + n }));
     if (this.steps() % 20 === 0) this.save();
+    if (before < this.goal() && this.steps() >= this.goal()) this.goalReached();
+  }
+
+  /** Daily goal crossed while counting: confetti + one phone notification (if allowed), once a day. */
+  private goalReached() {
+    try {
+      if (localStorage.getItem('steps-goal-day') === today()) return;
+      localStorage.setItem('steps-goal-day', today());
+    } catch {}
+    this.save();
+    import('../../core/game-fx').then(({ GameFx, confetti }) => {
+      const fx = new GameFx();
+      fx.unlock();
+      fx.win();
+      const host = document.querySelector<HTMLElement>('app-steps-tool');
+      if (host) confetti(host);
+    });
+    const body = `🎉 ${this.fmt(this.goal())} steps done today — goal reached! ${this.km().toFixed(1)} km walked.`;
+    if ('Notification' in window && Notification.permission === 'granted')
+      navigator.serviceWorker?.ready
+        .then((r) => r.showNotification('Spread Apps™ Tools', { body, icon: '/icons/icon-192x192.png', badge: '/icons/badge-96.png', tag: 'steps' }))
+        .catch(() => new Notification('Spread Apps™ Tools', { body, icon: '/icons/icon-192x192.png' }));
   }
 
   protected setManual() {

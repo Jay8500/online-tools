@@ -6,7 +6,7 @@ import { firstValueFrom } from 'rxjs';
 const VAPID_PUBLIC = 'BBk-VNCqjSdNjucFILuiLxTq18nO0A3-8-9piTH336kKkHKHFqpMXi_1t0wHaDKkYEGcyra_2bpNBn-lLBC0Qog';
 const ON = 'push-on';
 const TOPICS_KEY = 'push-topics';
-export type Topic = 'gold' | 'jobs' | 'festival' | 'news';
+export type Topic = 'gold' | 'jobs' | 'festival' | 'news' | 'walk';
 export interface GoldWatch {
   metal: string;
   below: number;

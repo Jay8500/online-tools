@@ -62,7 +62,7 @@ const UPDATED = '19 November 2026';
       <p>If you tap the location button, your position is used only on your device to sort cinemas by distance — it is never sent. An area you type that isn’t in our built-in list is sent through our server to OpenRouteService once to find it on the map. We don’t store it.</p>
 
       <h2>2e. Notifications (only if you turn them on)</h2>
-      <p>If you tap “Notify me”, your browser gives us a push address for this phone (from Google, Apple, Mozilla or Microsoft — no name or number) and we keep it with the alerts you switched on — a gold price target, new govt job notices, festival reminders or one morning headline. We use it only to send those alerts, at most one a day each, through your browser’s own push service — no third-party notification company. Tap “Turn off all notifications” on the My notifications page (or remove the alert) and we delete it; addresses that stop working are deleted automatically.</p>
+      <p>If you tap “Notify me”, your browser gives us a push address for this phone (from Google, Apple, Mozilla or Microsoft — no name or number) and we keep it with the alerts you switched on — a gold price target, new govt job notices, festival reminders, one morning headline or a 6 PM walk reminder. We use it only to send those alerts, at most one a day each, through your browser’s own push service — no third-party notification company. Tap “Turn off all notifications” on the My notifications page (or remove the alert) and we delete it; addresses that stop working are deleted automatically.</p>
 
       <h2>3. Usage counter</h2>
       <p>

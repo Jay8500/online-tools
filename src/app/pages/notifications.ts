@@ -57,7 +57,7 @@ import { METALS, readWatch, rupees, type Watch } from '../shared/price-watch';
           <button type="button" class="btn-ghost min-h-10" [disabled]="busy()" (click)="off()">Turn off all notifications</button>
         </div>
       }
-      <p class="mt-3 text-xs text-muted">Alerts arrive around 9:15 AM. We keep only this phone’s push address and the alerts you chose — no name, no number. “Turn off” deletes them from our server.</p>
+      <p class="mt-3 text-xs text-muted">Alerts arrive around 9:15 AM (walk reminder at 6 PM). We keep only this phone’s push address and the alerts you chose — no name, no number. “Turn off” deletes them from our server.</p>
     </div>
   `,
   styles: `
@@ -77,6 +77,7 @@ export class Notifications {
     { id: 'jobs', icon: '🏛️', name: 'Govt job notifications', note: 'When TGPSC posts a new notice' },
     { id: 'festival', icon: '🪔', name: 'Festival reminders', note: '2 days before — make your wishes card' },
     { id: 'news', icon: '📰', name: 'Morning news', note: 'One calm headline a day' },
+    { id: 'walk', icon: '🚶', name: 'Evening walk reminder', note: '6 PM — did you walk today?' },
   ];
 
   constructor() {
