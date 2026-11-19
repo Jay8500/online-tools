@@ -59,6 +59,16 @@ export class UserTools {
     return on;
   }
 
+  /** Forget the recently used list (pins stay). */
+  clearRecent() {
+    this.recent.set([]);
+    try {
+      localStorage.removeItem(RECENT_KEY);
+    } catch {
+      /* nothing saved */
+    }
+  }
+
   ref(path: string): ToolRef | undefined {
     return BY_PATH.get(path);
   }

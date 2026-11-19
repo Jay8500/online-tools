@@ -241,12 +241,25 @@ const POPULAR = ['resize-image-to-kb', 'gold-price-calculator', 'petrol-diesel-p
     }
 
     @if (!searching() && tab() === 'popular' && (pins().length || recents().length)) {
-      <section class="mt-5 flex items-center gap-2" aria-label="Your tools">
-        <span class="shrink-0 text-xs font-bold text-muted">Your tools</span>
-        <div class="flex gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none]">
-          @for (t of pins(); track t.path) { <a class="chip min-h-8 shrink-0 border-brand/40 bg-brand/5 text-xs" [routerLink]="'/' + t.path"><span aria-hidden="true">📌</span> {{ t.name }}</a> }
-          @for (t of recents(); track t.path) { <a class="chip min-h-8 shrink-0 text-xs" [routerLink]="'/' + t.path"><svg [lucideIcon]="t.icon" [size]="14" /> {{ t.name }}</a> }
-        </div>
+      <section class="card mt-5 grid gap-2 p-3" aria-label="Your tools">
+        @if (pins().length) {
+          <div class="flex items-center gap-2">
+            <span class="w-16 shrink-0 text-xs font-bold text-muted">📌 Pinned</span>
+            <div class="flex gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none]">
+              @for (t of pins(); track t.path) { <a class="chip min-h-8 shrink-0 border-brand/40 bg-brand/5 text-xs" [routerLink]="'/' + t.path"><svg [lucideIcon]="t.icon" [size]="14" /> {{ t.name }}</a> }
+            </div>
+          </div>
+        }
+        @if (recents().length) {
+          <div class="flex items-center gap-2">
+            <span class="w-16 shrink-0 text-xs font-bold text-muted">🕘 Recent</span>
+            <div class="flex gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none]">
+              @for (t of recents(); track t.path) { <a class="chip min-h-8 shrink-0 text-xs" [routerLink]="'/' + t.path"><svg [lucideIcon]="t.icon" [size]="14" /> {{ t.name }}</a> }
+              <button type="button" class="chip min-h-8 shrink-0 text-xs text-muted" (click)="userTools.clearRecent()" aria-label="Clear recently used tools">✕ Clear</button>
+            </div>
+          </div>
+        }
+        @if (!pins().length) { <p class="text-xs text-muted">Tip: tap 📌 on any tool to keep it here.</p> }
       </section>
     }
 
@@ -458,7 +471,7 @@ export class Home {
     }
   }
   protected readonly toolTotal = TOOL_GROUPS.reduce((n, g) => n + g.tools.length, 0) + EXAMS.length;
-  private readonly userTools = inject(UserTools);
+  protected readonly userTools = inject(UserTools);
   protected readonly stories = inject(StoriesService);
   protected readonly hasPoster = POSTER_PATHS;
   /** Poster colours for the Popular row (streaming-app style). */
@@ -485,7 +498,7 @@ export class Home {
   }
   /** Pinned tools, then recently opened ones (not already pinned) — this browser only */
   protected readonly pins = computed(() => this.userTools.pinned().map((p) => this.userTools.ref(p)).filter((t) => !!t));
-  protected readonly recents = computed(() => this.userTools.recent().filter((p) => !this.userTools.pinned().includes(p)).slice(0, 6).map((p) => this.userTools.ref(p)).filter((t) => !!t));
+  protected readonly recents = computed(() => this.userTools.recent().filter((p) => !this.userTools.pinned().includes(p)).slice(0, 8).map((p) => this.userTools.ref(p)).filter((t) => !!t));
   protected readonly chips = [...TOPICS.map(({ key, label, icon }) => ({ key, label, icon })), ...CHIPS];
   /** Sky behind the weather card once its badge has loaded */
   protected readonly skyIcon = WEATHER_ICON;
