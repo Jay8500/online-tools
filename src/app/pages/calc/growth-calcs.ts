@@ -1,6 +1,7 @@
 import { Component, computed, input, linkedSignal, signal, viewChildren } from '@angular/core';
 import { Compounding, PPF_MAX, PPF_MIN, PPF_RATE, emi, fd, inWords, lumpsum, ppf, rupees, sip } from '../../core/finance';
 import { Bar, Donut, StackBars } from '../../shared/charts';
+import { ShareResult } from '../../shared/share-result';
 import { NumField } from '../../shared/num-field';
 
 /** Shown above results while a field holds an invalid value. */
@@ -9,7 +10,7 @@ const STALE = `@if (invalid()) { <p class="mb-2 rounded-lg bg-rose-500/10 px-3 p
 // ---------------- EMI ----------------
 @Component({
   selector: 'app-emi-calc',
-  imports: [NumField, Donut, StackBars],
+  imports: [ShareResult, NumField, Donut, StackBars],
   template: `
     <div class="grid gap-4 md:grid-cols-2">
       <div class="space-y-4">
@@ -24,6 +25,7 @@ const STALE = `@if (invalid()) { <p class="mb-2 rounded-lg bg-rose-500/10 px-3 p
           <p class="text-3xl font-bold text-brand tabular-nums">{{ money(r().emi) }}</p>
           <div class="mt-3"><app-donut [slices]="slices()" /></div>
           <p class="mt-3 border-t border-line pt-2 text-sm">Total payment <strong class="tabular-nums">{{ money(r().totalPayment) }}</strong> ({{ words(r().totalPayment) }})</p>
+          <app-share-result [text]="shareText()" />
         </div>
       </div>
     </div>
@@ -52,6 +54,9 @@ export class EmiCalc {
   private readonly fields = viewChildren(NumField);
   protected readonly invalid = computed(() => this.fields().some((f) => !!f.error()));
   protected readonly r = computed(() => emi(this.amount(), this.rate(), Math.round(this.years() * 12)));
+  protected readonly shareText = computed(() => `🏦 Loan ${this.money(this.amount())} at ${this.rate()}% for ${this.years()} years
+EMI: ${this.money(this.r().emi)} / month
+Total interest: ${this.money(this.r().totalInterest)}`);
   protected readonly slices = computed(() => [
     { label: 'Principal', value: this.amount(), color: 'var(--brand)' },
     { label: 'Total interest', value: this.r().totalInterest, color: '#f59e0b' },

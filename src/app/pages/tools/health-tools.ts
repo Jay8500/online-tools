@@ -2,6 +2,7 @@ import { Component, computed, model, signal, viewChildren } from '@angular/core'
 import { daysAgoIso, localIso } from '../../core/dates';
 import { ACTIVITY, BMI_BANDS, bmi, bmiBand, bmr, devine, dueDate, fmtDate, ftInToCm, healthyWeight, whoBmiLabel } from '../../core/health';
 import { NumField } from '../../shared/num-field';
+import { ShareResult } from '../../shared/share-result';
 
 const SEG = 'flex rounded-xl border border-line bg-surface-2 p-1 text-sm font-semibold';
 const SEG_BTN = 'flex-1 rounded-lg px-3 py-1.5 transition';
@@ -50,7 +51,7 @@ export class HeightInput {
 // ---------------- BMI ----------------
 @Component({
   selector: 'app-bmi-tool',
-  imports: [NumField, HeightInput],
+  imports: [ShareResult, NumField, HeightInput],
   template: `
     <div class="grid gap-4 md:grid-cols-2">
       <div class="space-y-4">
@@ -72,6 +73,8 @@ export class HeightInput {
             <div class="flex justify-between gap-2"><dt class="text-muted">Healthy weight for you</dt><dd class="font-semibold">{{ healthy().min }}–{{ healthy().max }} kg</dd></div>
             <div class="flex justify-between gap-2"><dt class="text-muted">WHO international category</dt><dd>{{ who() }}</dd></div>
           </dl>
+          <app-share-result [text]="'❤️ My BMI: ' + value() + ' — ' + band().label + '
+Healthy weight for my height: ' + healthy().min + '–' + healthy().max + ' kg'" />
         </div>
       </div>
     </div>

@@ -3,6 +3,7 @@ import { localIso } from '../../core/dates';
 import { CGPA_FORMULAS, age, cgpaToPercent, daysBetween, percentChange, percentOf, settle, whatPercent } from '../../core/everyday';
 import { fmtDate } from '../../core/health';
 import { NumField } from '../../shared/num-field';
+import { ShareResult } from '../../shared/share-result';
 
 const SEG = 'flex rounded-xl border border-line bg-surface-2 p-1 text-sm font-semibold';
 const SEG_BTN = 'flex-1 rounded-lg px-2 py-1.5 transition';
@@ -11,6 +12,7 @@ const NUM = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 });
 // ---------------- Age calculator ----------------
 @Component({
   selector: 'app-age-tool',
+  imports: [ShareResult],
   template: `
     <div class="grid gap-4 md:grid-cols-2">
       <div class="space-y-4">
@@ -31,6 +33,8 @@ const NUM = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 });
             <p class="text-xs font-semibold text-muted">Your age</p>
             <p class="text-2xl font-bold text-brand">{{ a.years }} {{ a.years === 1 ? 'year' : 'years' }} {{ a.months }} {{ a.months === 1 ? 'month' : 'months' }} {{ a.days }} {{ a.days === 1 ? 'day' : 'days' }}</p>
             <p class="text-sm text-muted">Born on a {{ a.bornOn }}</p>
+            <app-share-result [text]="'🎂 Age: ' + a.years + ' years ' + a.months + ' months ' + a.days + ' days
+Next birthday ' + (a.daysToBirthday === 0 ? 'is today! 🎉' : 'in ' + a.daysToBirthday + ' days')" />
             <ul class="mt-3 space-y-1 border-t border-line pt-2 text-sm">
               <li class="flex justify-between gap-2"><span class="text-muted">🎂 Next birthday</span><span>{{ a.daysToBirthday === 0 ? 'Today! Happy birthday 🎉' : 'in ' + a.daysToBirthday + ' days' }}</span></li>
               <li class="flex justify-between gap-2"><span class="text-muted">On</span><span>{{ fmt(a.nextBirthday) }}</span></li>
