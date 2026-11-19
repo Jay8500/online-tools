@@ -18,6 +18,8 @@
         var t = null, c = null;
         try { t = localStorage.getItem('theme'); c = localStorage.getItem('consent'); } catch (e) {}
         if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('dark');
+        // Installed app (home-screen PWA): fixed like a normal app, no pinch zoom. In the browser zoom stays on (accessibility).
+        if (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone) document.querySelector('meta[name=viewport]').content = 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover';
         window.dataLayer = window.dataLayer || [];
         window.gtag = function () { window.dataLayer.push(arguments); };
         gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied', wait_for_update: 500 });
