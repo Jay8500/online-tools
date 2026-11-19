@@ -28,7 +28,7 @@ import { Icon } from './icon';
   `,
   styles: `
     .ticker { mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); }
-    .track { animation: slide 60s linear infinite; }
+    .track { animation: slide 60s linear 2; }
     .ticker:hover .track, .ticker:focus-within .track, .ticker:active .track { animation-play-state: paused; }
     @keyframes slide { to { transform: translateX(calc(-50% - 0.25rem)); } }
     @media (prefers-reduced-motion: reduce) {

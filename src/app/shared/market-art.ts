@@ -58,8 +58,8 @@ export class BearHead {}
     <svg appBear class="bear absolute -right-3 bottom-0 size-14 text-rose-600 opacity-20 dark:text-rose-400 dark:opacity-25"></svg>
   `,
   styles: `
-    .bull { animation: charge 2.4s ease-in-out infinite; }
-    .bear { animation: sway 2.8s ease-in-out infinite; }
+    .bull { animation: charge 2.4s ease-in-out 8; }
+    .bear { animation: sway 2.8s ease-in-out 7; }
     @keyframes charge { 0%, 100% { translate: -3px -50%; } 50% { translate: 3px calc(-50% - 2px); } }
     @keyframes sway { 0%, 100% { rotate: -5deg; } 50% { rotate: 5deg; } }
     @media (prefers-reduced-motion: reduce) { .bull, .bear { animation: none; } }

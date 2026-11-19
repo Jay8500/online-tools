@@ -14,19 +14,19 @@ export const POSTER_PATHS = new Set(['resize-image-to-kb', 'gold-price-calculato
   styles: `
     :host { position: absolute; z-index: -1; right: -6px; top: 50%; width: 120px; height: 120px; transform: translateY(-50%); pointer-events: none; opacity: 0.9; transition: transform 0.5s; }
     svg { width: 100%; height: 100%; overflow: visible; }
-    .fl { animation: pa-float 4s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
-    .sh { animation: pa-shine 3.2s ease-in-out infinite; }
-    .sp { animation: pa-spin 24s linear infinite; transform-origin: center; transform-box: fill-box; }
+    .fl { animation: pa-float 4s ease-in-out 5; transform-origin: center; transform-box: fill-box; }
+    .sh { animation: pa-shine 3.2s ease-in-out 6; }
+    .sp { animation: pa-spin 24s linear 1; transform-origin: center; transform-box: fill-box; }
     @keyframes pa-float { 50% { transform: translateY(-5px); } }
     @keyframes pa-shine { 0%, 60% { opacity: 0; } 75% { opacity: 0.9; } 100% { opacity: 0; } }
     @keyframes pa-spin { to { transform: rotate(360deg); } }
-    .rd { animation: pa-road 1.6s linear infinite; }
-    .dr { stroke-dasharray: 60; animation: pa-draw 3.6s ease-in-out infinite; }
-    .pp1, .pp2, .pp3 { animation: pa-pop 3.6s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
+    .rd { animation: pa-road 1.6s linear 12; }
+    .dr { stroke-dasharray: 60; animation: pa-draw 3.6s ease-in-out 5; }
+    .pp1, .pp2, .pp3 { animation: pa-pop 3.6s ease-in-out 5; transform-origin: center; transform-box: fill-box; }
     .pp2 { animation-delay: .6s; } .pp3 { animation-delay: 1.2s; }
-    .bl { animation: pa-bump .9s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
-    .br { animation: pa-bump .9s ease-in-out infinite reverse; transform-origin: center; transform-box: fill-box; }
-    .sw { animation: pa-sway 3s ease-in-out infinite; transform-origin: 50% 100%; transform-box: fill-box; }
+    .bl { animation: pa-bump .9s ease-in-out 22; transform-origin: center; transform-box: fill-box; }
+    .br { animation: pa-bump .9s ease-in-out 22 reverse; transform-origin: center; transform-box: fill-box; }
+    .sw { animation: pa-sway 3s ease-in-out 7; transform-origin: 50% 100%; transform-box: fill-box; }
     @keyframes pa-road { to { stroke-dashoffset: -22; } }
     @keyframes pa-draw { 0% { stroke-dashoffset: 60; } 40%, 80% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: -60; } }
     @keyframes pa-pop { 0%, 100% { transform: scale(.6); opacity: 0; } 20%, 70% { transform: scale(1); opacity: 1; } }

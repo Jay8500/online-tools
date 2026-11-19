@@ -64,7 +64,7 @@ const T = (d: Date) => d.toLocaleTimeString('en-IN', { hour: 'numeric', minute: 
     .today { position: relative; isolation: isolate; overflow: hidden; animation: in 0.35s ease-out both;
       background-image: radial-gradient(circle at 100% 0, color-mix(in oklab, #f59e0b 16%, transparent), transparent 55%); }
     .today app-poster-art { top: auto; bottom: -26px; right: -18px; width: 120px; height: 120px; transform: none; opacity: .16; }
-    .today h2 svg { animation: sun 16s linear infinite; }
+    .today h2 svg { animation: sun 16s linear 1; }
     @keyframes sun { to { transform: rotate(360deg); } }
     @keyframes in { from { opacity: 0; transform: translateY(6px); } }
     @media (prefers-reduced-motion: reduce) { .today, .today h2 svg { animation: none; } }

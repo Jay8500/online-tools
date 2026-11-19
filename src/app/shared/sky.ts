@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, afterNextRender, computed, input, signal } from '@angular/core';
 
 export type Scene = 'clear-day' | 'clear-night' | 'cloudy-day' | 'cloudy-night' | 'rain' | 'storm' | 'mist';
 
@@ -20,8 +20,9 @@ export function sceneOf(icon: string | null | undefined): Scene {
 @Component({
   selector: 'app-sky',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'sky pointer-events-none absolute inset-0 overflow-hidden', '[attr.data-scene]': 'scene()', 'aria-hidden': 'true' },
+  host: { class: 'sky pointer-events-none absolute inset-0 overflow-hidden', '[attr.data-scene]': 'scene()', '[class.still]': 'still()', 'aria-hidden': 'true' },
   styles: `
+:host(.still) *, :host(.still) *::before, :host(.still) *::after { animation-play-state: paused !important; }
 :host { background: linear-gradient(180deg, #3b8fd9 0%, #74b9ec 55%, #b9dcf5 100%); }
 :host([data-scene='cloudy-day']) { background: linear-gradient(180deg, #5f88ad 0%, #8fb3cf 55%, #c7d9e6 100%); }
 :host([data-scene='clear-night']) { background: linear-gradient(180deg, #0b1533 0%, #1b2d5c 60%, #2f4a7a 100%); }
@@ -86,6 +87,11 @@ export function sceneOf(icon: string | null | undefined): Scene {
   `,
 })
 export class Sky {
+  /** After half a minute the sky holds still (saves battery); the picture stays. */
+  protected readonly still = signal(false);
+  constructor() {
+    afterNextRender(() => setTimeout(() => this.still.set(true), 30000));
+  }
   readonly icon = input<string | null>(null);
   readonly scene = computed(() => sceneOf(this.icon()));
   /** [top %, width %, seconds per pass, start offset s, opacity] */

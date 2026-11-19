@@ -184,7 +184,9 @@
   0%, 100% { transform: translateY(0) rotate(0); }
   50% { transform: translateY(-4px) rotate(-4deg); }
 }
-.animate-float { animation: float 2.6s ease-in-out infinite; }
+.animate-float { animation: float 2.6s ease-in-out 8; }
+/* Live dots ping a few times, then rest (battery) */
+.animate-ping { animation-iteration-count: 6; }
 
 @media (prefers-reduced-motion: reduce) {
   .animate-fade-up, .animate-fade-in, .animate-float { animation: none; }
@@ -272,13 +274,12 @@
 
 /* Whole site: soft colour lights fixed behind everything (app.ts .page-glow); cards, chips, header and footer are see-through glass */
 .page-glow { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
-.page-glow span { position: absolute; border-radius: 9999px; filter: blur(90px); opacity: 0.32; animation: glow-drift 22s ease-in-out infinite alternate; }
+.page-glow span { position: absolute; border-radius: 9999px; filter: blur(90px); opacity: 0.32; }
 .page-glow span:nth-child(1) { width: 55vmax; height: 55vmax; left: -18vmax; top: -18vmax; background: var(--brand); }
 .page-glow span:nth-child(2) { width: 45vmax; height: 45vmax; right: -16vmax; top: 22vh; background: #38bdf8; animation-delay: -8s; }
 .page-glow span:nth-child(3) { width: 40vmax; height: 40vmax; left: 25vw; bottom: -20vmax; background: #fbbf24; opacity: 0.2; animation-delay: -15s; }
 .dark .page-glow span { opacity: 0.24; }
 .dark .page-glow span:nth-child(3) { opacity: 0.12; }
-@keyframes glow-drift { from { transform: translate(0, 0) scale(1); } to { transform: translate(5vw, 6vh) scale(1.12); } }
 @keyframes chip-shine { to { transform: translateX(120%); } }
 @media (prefers-reduced-motion: reduce) {
   .chip, .chip::after, .page-glow span { animation: none !important; }
@@ -286,10 +287,10 @@
 
 /* Spread Stories ring in the header: a slowly turning colour ring that pulses */
 .story-ring { position: relative; width: 30px; height: 30px; margin: 0 3px; border: 0; border-radius: 50%; padding: 2px; cursor: pointer;
-  background: conic-gradient(#f6a623, #e8436b, #8b5cf6, #0d9488, #f6a623); animation: story-spin 3s linear infinite; }
-.story-ring span { display: grid; place-items: center; width: 100%; height: 100%; border-radius: 50%; background: #0c0a1f; border: 2px solid var(--surface); box-sizing: border-box; animation: story-spin 3s linear infinite reverse; }
+  background: conic-gradient(#f6a623, #e8436b, #8b5cf6, #0d9488, #f6a623); animation: story-spin 3s linear 4; }
+.story-ring span { display: grid; place-items: center; width: 100%; height: 100%; border-radius: 50%; background: #0c0a1f; border: 2px solid var(--surface); box-sizing: border-box; animation: story-spin 3s linear 4 reverse; }
 .story-ring span { font-size: 14px; line-height: 1; }
-.story-ring::after { content: ""; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid #f6a623; animation: story-pulse 1.8s ease-out infinite; pointer-events: none; }
+.story-ring::after { content: ""; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid #f6a623; animation: story-pulse 1.8s ease-out 6; pointer-events: none; }
 @keyframes story-spin { to { rotate: 360deg; } }
 @keyframes story-pulse { from { opacity: .9; scale: .9; } to { opacity: 0; scale: 1.4; } }
 @media (prefers-reduced-motion: reduce) { .story-ring, .story-ring span, .story-ring::after { animation: none; } }
