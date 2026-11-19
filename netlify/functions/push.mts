@@ -19,6 +19,8 @@ export interface Sub {
   sub: { endpoint: string; keys: { p256dh: string; auth: string } };
   topics: string[];
   gold?: { metal: string; below: number };
+  /** Walk reminder hour, India time (0–23); 18 = 6 PM when not chosen. */
+  walkAt?: number;
   sent?: Record<string, string>;
   at: number;
 }
@@ -73,7 +75,9 @@ export default async (req: Request, context: Context) => {
     const gold = g && METALS.includes(String(g.metal)) && Number(g.below) > 0 && Number(g.below) < 1e8 ? { metal: String(g.metal), below: Math.round(Number(g.below)) } : undefined;
     const key = await keyOf(s.endpoint);
     const old = (await store.get(key, { type: 'json' })) as Sub | null;
-    const rec: Sub = { sub: { endpoint: s.endpoint, keys: { p256dh: s.keys.p256dh, auth: s.keys.auth } }, topics, gold, sent: old?.sent ?? {}, at: Date.now() };
+    const w = Number(b['walkAt']);
+    const walkAt = Number.isInteger(w) && w >= 0 && w <= 23 ? w : undefined;
+    const rec: Sub = { sub: { endpoint: s.endpoint, keys: { p256dh: s.keys.p256dh, auth: s.keys.auth } }, topics, gold, walkAt, sent: old?.sent ?? {}, at: Date.now() };
     await store.setJSON(key, rec); // kept while notifications are on, even with no topic yet (for the test message)
     return json({ ok: true });
   }

@@ -43,6 +43,14 @@ import { METALS, readWatch, rupees, type Watch } from '../shared/price-watch';
             <div class="min-w-0 flex-1"><p class="font-semibold">{{ t.name }}</p><p class="text-xs text-muted">{{ t.note }}</p></div>
             <button type="button" role="switch" class="sw" [attr.aria-checked]="has(t.id)" [disabled]="busy() || !push.supported" (click)="toggle(t.id)" [attr.aria-label]="t.name"><i></i></button>
           </div>
+          @if (t.id === 'walk' && has('walk')) {
+            <label class="flex items-center justify-between gap-3 px-3 pb-3 pl-14 text-sm">
+              <span class="text-muted">⏰ Remind me at</span>
+              <select class="input min-h-10 w-auto" [value]="push.walkAt()" (change)="setWalk(+$any($event.target).value)" aria-label="Walk reminder time">
+                @for (h of hours; track h) { <option [value]="h" [selected]="h === push.walkAt()">{{ hourLabel(h) }}</option> }
+              </select>
+            </label>
+          }
         }
         <div class="flex items-center gap-3 p-3 opacity-60">
           <span class="text-2xl" aria-hidden="true">🧩</span>
@@ -57,7 +65,7 @@ import { METALS, readWatch, rupees, type Watch } from '../shared/price-watch';
           <button type="button" class="btn-ghost min-h-10" [disabled]="busy()" (click)="off()">Turn off all notifications</button>
         </div>
       }
-      <p class="mt-3 text-xs text-muted">Alerts arrive around 9:15 AM (walk reminder at 6 PM). We keep only this phone’s push address and the alerts you chose — no name, no number. “Turn off” deletes them from our server.</p>
+      <p class="mt-3 text-xs text-muted">Alerts arrive around 9:15 AM; the walk reminder comes at the time you pick. We keep only this phone’s push address and the alerts you chose — no name, no number. “Turn off” deletes them from our server.</p>
     </div>
   `,
   styles: `
@@ -77,12 +85,24 @@ export class Notifications {
     { id: 'jobs', icon: '🏛️', name: 'Govt job notifications', note: 'When TGPSC posts a new notice' },
     { id: 'festival', icon: '🪔', name: 'Festival reminders', note: '2 days before — make your wishes card' },
     { id: 'news', icon: '📰', name: 'Morning news', note: 'One calm headline a day' },
-    { id: 'walk', icon: '🚶', name: 'Evening walk reminder', note: '6 PM — did you walk today?' },
+    { id: 'walk', icon: '🚶', name: 'Walk reminder', note: 'Every day at the time you choose' },
   ];
 
   constructor() {
     inject(SeoService).set({ title: 'My notifications — Spread Apps Tools', description: 'Choose the alerts you get from Spread Apps Tools.', path: 'notifications', noindex: true });
     afterNextRender(() => this.watch.set(readWatch()));
+  }
+
+  /** 5 AM … 11 PM */
+  protected readonly hours = Array.from({ length: 19 }, (_, i) => i + 5);
+  protected hourLabel(h: number) {
+    return `${h % 12 || 12}:00 ${h < 12 ? 'AM' : 'PM'}`;
+  }
+  protected async setWalk(h: number) {
+    await this.run(async () => {
+      await this.push.setWalkAt(h);
+      this.toast.show(`🚶 Walk reminder at ${this.hourLabel(h)} every day.`, 'success');
+    });
   }
 
   protected has(t: Topic) {

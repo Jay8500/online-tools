@@ -23,6 +23,8 @@ export class PushService {
   readonly supported = typeof window !== 'undefined' && this.sw.isEnabled && 'PushManager' in window;
   readonly on = signal(this.read(ON) === '1');
   readonly topics = signal<Topic[]>(this.readTopics());
+  /** Walk reminder hour, India time (0–23). */
+  readonly walkAt = signal(Number(this.read('push-walk-at') ?? 18));
   private gold: GoldWatch | undefined;
 
   private read(k: string) {
@@ -43,6 +45,7 @@ export class PushService {
   private remember() {
     try {
       localStorage.setItem(TOPICS_KEY, JSON.stringify(this.topics()));
+      localStorage.setItem('push-walk-at', String(this.walkAt()));
       if (this.on()) localStorage.setItem(ON, '1');
       else localStorage.removeItem(ON);
     } catch {}
@@ -69,7 +72,7 @@ export class PushService {
     if (!sub && ask) sub = await this.sw.requestSubscription({ serverPublicKey: VAPID_PUBLIC });
     if (!sub) return false;
     const gold = this.topics().includes('gold') ? (this.gold ?? this.goldFromPhone()) : undefined;
-    await this.post({ a: 'sub', sub: sub.toJSON(), topics: this.topics(), gold });
+    await this.post({ a: 'sub', sub: sub.toJSON(), topics: this.topics(), gold, walkAt: this.walkAt() });
     this.on.set(true);
     this.remember();
     return true;
@@ -96,6 +99,13 @@ export class PushService {
     if (!this.on()) return;
     if (!gold) this.topics.update((t) => t.filter((x) => x !== 'gold'));
     await this.sync(false).catch(() => undefined);
+  }
+
+  /** Change the walk reminder time (no permission prompt). */
+  async setWalkAt(hour: number) {
+    this.walkAt.set(hour);
+    this.remember();
+    if (this.on()) await this.sync(false);
   }
 
   async test() {
