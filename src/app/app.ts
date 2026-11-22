@@ -24,11 +24,13 @@ import { APP_VERSION } from './core/version';
 import { NewsPanel } from './shared/news-panel';
 import { StoriesOverlay } from './shared/stories-overlay';
 import { StoriesService } from './core/stories.service';
+import { LearnService } from './core/learn.service';
+import { LearnOverlay } from './shared/learn-overlay';
 import { NavBack } from './core/nav-back.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, Icon, Brand, Benefits, ToastHost, DialogHost, UpdateBanner, ConsentBanner, ScrollTop, InstallHint, InstallFooter, MoreFrom, LikeBox, NewsPanel, StoriesOverlay],
+  imports: [RouterOutlet, RouterLink, Icon, Brand, Benefits, ToastHost, DialogHost, UpdateBanner, ConsentBanner, ScrollTop, InstallHint, InstallFooter, MoreFrom, LikeBox, NewsPanel, StoriesOverlay, LearnOverlay],
   template: `
     @if (navLoading()) { <div class="fixed inset-x-0 top-0 z-50 h-1 animate-pulse bg-brand" aria-hidden="true"></div> }
     <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[200] focus:rounded-lg focus:bg-brand focus:px-3 focus:py-2 focus:text-brand-ink">Skip to tool</a>
@@ -43,6 +45,9 @@ import { NavBack } from './core/nav-back.service';
           <a routerLink="/money-calculators" class="hidden rounded-lg px-2.5 py-1.5 text-muted hover:bg-surface-2 hover:text-ink sm:block">Calculators</a>
           <button type="button" class="story-ring" (click)="stories.showFrom($event)" (pointerenter)="stories.warm()" (pointerdown)="stories.warm()" aria-label="Spread Stories" title="Spread Stories" aria-haspopup="dialog">
             <span aria-hidden="true">🦚</span>
+          </button>
+          <button type="button" class="btn-icon size-9 border-transparent bg-transparent text-[19px] leading-none" (click)="learn.showFrom($event)" (pointerenter)="learn.warm()" (pointerdown)="learn.warm()" aria-label="Spread Learn — universe, scientists, human body, first aid" title="Spread Learn" aria-haspopup="dialog">
+            <span aria-hidden="true">🔭</span>
           </button>
           <button type="button" class="btn-icon relative size-9 border-transparent bg-transparent" (click)="openNews($event)" (pointerenter)="warmNews()" (pointerdown)="warmNews()" aria-label="Latest news" title="Latest news" aria-haspopup="dialog">
             <svg lucideIcon="newspaper" [size]="18" />
@@ -130,6 +135,9 @@ import { NavBack } from './core/nav-back.service';
     @if (stories.open()) {
       @defer { <app-stories /> }
     }
+    @if (learn.open()) {
+      @defer { <app-learn /> }
+    }
     @if (newsOpen()) {
       @defer { <app-news-panel [origin]="newsOrigin()" (closed)="newsOpen.set(false)" /> }
     }
@@ -166,6 +174,8 @@ export class App {
   }
   /** Header ring → Spread Stories (stories, pictures and styles load only when opened) */
   protected readonly stories = inject(StoriesService);
+  /** 🔭 header button → Spread Learn (cards and pictures load only when opened) */
+  protected readonly learn = inject(LearnService);
   /** Footer sections folded on phones/tablets (all open on large screens) */
   protected readonly open = signal<Record<string, boolean>>({});
   protected toggle(k: string) {
@@ -214,6 +224,11 @@ export class App {
     this.consent.init();
     // Morning news notification opens the news cards
     if (typeof location !== 'undefined' && location.search.includes('news=1')) this.newsOpen.set(true);
+    // A shared Spread Learn card: ?learn=universe.mars
+    if (typeof location !== 'undefined') {
+      const m = /[?&]learn=([a-z]+)(?:.([a-z0-9-]+))?/.exec(location.search);
+      if (m) this.learn.show(m[1], m[2] ?? '');
+    }
     // Keep the browser's install offer for our own install tip (loads a moment later)
     if (typeof window !== 'undefined')
       window.addEventListener('beforeinstallprompt', (e) => {
