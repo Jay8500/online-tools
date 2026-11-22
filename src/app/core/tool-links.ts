@@ -47,6 +47,7 @@ export type ToolKind =
   | 'rent-receipt'
   | 'ifsc'
   | 'wishes'
+  | 'invite'
   | 'jobs'
   | 'chess'
   | 'sudoku'
@@ -95,6 +96,7 @@ export const TOOL_LINKS: ToolLinkLite[] = [
   { id: 'travel', path: 'travel-planner', name: 'Travel planner', group: 'Daily tools', icon: 'map-pin', blurb: 'Route, stops & time by road, rail, air' },
   { id: 'age', path: 'age-calculator', name: 'Age calculator', group: 'Daily tools', icon: 'cake', blurb: 'Exact age in years, months, days' },
   { id: 'jobs', path: 'govt-job-notifications', name: 'Govt job notifications', group: 'Daily tools', icon: 'graduation-cap', blurb: 'Latest TGPSC notices + official job sites' },
+  { id: 'invite', path: 'invitation-card-maker', name: 'Invitation card maker', group: 'Daily tools', icon: 'heart', blurb: 'Pelli, gruhapravesam, birthday invites for WhatsApp' },
   { id: 'wishes', path: 'festival-wishes-card', name: 'Festival wishes card', group: 'Daily tools', icon: 'sparkles', blurb: 'Diwali, Sankranti, birthday cards in 7 languages' },
   { id: 'ifsc', path: 'ifsc-code-finder', name: 'IFSC code details', group: 'Daily tools', icon: 'banknote', blurb: 'Bank, branch, address & MICR' },
   { id: 'pf', path: 'pf-balance-check', name: 'PF balance check', group: 'Daily tools', icon: 'banknote', blurb: 'Missed call, SMS, passbook + monthly PF' },

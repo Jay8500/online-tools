@@ -40,6 +40,7 @@ import { FuelTool } from './tools/fuel-tool';
 import { GroceryTool } from './tools/grocery-tool';
 import { IfscTool, RentReceiptTool } from './tools/bank-tools';
 import { WishesTool } from './tools/wishes-tool';
+import { InviteTool } from './tools/invite-tool';
 import { JobsTool } from './tools/jobs-tool';
 import { ChessTool } from './tools/chess-tool';
 import { SudokuTool } from './tools/sudoku-tool';
@@ -93,6 +94,7 @@ import { AgeTool, CgpaTool, DaysTool, PercentTool, PfTool, SplitTool } from './t
     RentReceiptTool,
     IfscTool,
     WishesTool,
+    InviteTool,
     JobsTool,
     ChessTool,
     SudokuTool,
@@ -169,6 +171,7 @@ import { AgeTool, CgpaTool, DaysTool, PercentTool, PfTool, SplitTool } from './t
             @case ('sudoku') { @defer (on immediate; hydrate on immediate) { <app-sudoku-tool /> } @placeholder { <app-skel class="aspect-square" /> } }
             @case ('ttt') { @defer (on immediate; hydrate on immediate) { <app-ttt-tool /> } @placeholder { <app-skel class="aspect-square" /> } }
             @case ('rps') { @defer (on immediate; hydrate on immediate) { <app-rps-tool /> } @placeholder { <app-skel style="min-height:420px" /> } }
+            @case ('invite') { @defer (on immediate; hydrate on immediate) { <app-invite-tool /> } @placeholder { <app-skel class="h-[48rem]" /> } }
             @case ('wishes') { @defer (on immediate; hydrate on immediate) { <app-wishes-tool /> } @placeholder { <app-skel class="h-[36rem]" /> } }
             @case ('rent-receipt') { @defer (on immediate; hydrate on immediate) { <app-rent-receipt-tool /> } @placeholder { <app-skel class="h-[40rem]" /> } }
             @case ('ifsc') { @defer (on immediate; hydrate on immediate) { <app-ifsc-tool /> } @placeholder { <app-skel class="h-48" /> } }

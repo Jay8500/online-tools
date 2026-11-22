@@ -1,7 +1,7 @@
 import { Faq } from './seo.service';
 import { TOOL_LINKS, ToolKind, ToolLinkLite } from './tool-links';
 
-export type Disclaimer = 'files' | 'health' | 'invoice' | 'upi' | 'language' | 'land' | 'units' | 'gold' | 'weather' | 'travel' | 'metro' | 'fuel' | 'grocery' | 'cinema' | 'holidays' | 'traffic' | 'nearby' | 'currency' | 'plans' | 'panchangam' | 'markets' | 'everyday' | 'pf' | 'rent' | 'ifsc' | 'wishes' | 'jobs' | 'games';
+export type Disclaimer = 'files' | 'health' | 'invoice' | 'upi' | 'language' | 'land' | 'units' | 'gold' | 'weather' | 'travel' | 'metro' | 'fuel' | 'grocery' | 'cinema' | 'holidays' | 'traffic' | 'nearby' | 'currency' | 'plans' | 'panchangam' | 'markets' | 'everyday' | 'pf' | 'rent' | 'ifsc' | 'wishes' | 'invite' | 'jobs' | 'games';
 
 export interface ToolPageInfo extends ToolLinkLite {
   h1: string;
@@ -528,6 +528,27 @@ const CONTENT: Record<ToolKind, Omit<ToolPageInfo, keyof ToolLinkLite>> = {
     ],
     disclaimer: 'jobs',
   },
+  invite: {
+    h1: 'Invitation Card Maker — Pelli Patrika, Gruhapravesam, Birthday',
+    title: 'Wedding Invitation Card Maker Free — Telugu, Hindi & English, with Photo & Location QR',
+    description: 'Make a wedding (pelli patrika / shubhalekha), engagement, gruhapravesam, birthday, barasala, seemantham or upanayanam invitation in Telugu, Hindi or English. Add names, muhurtham, venue, photo and a Google Maps QR — share on WhatsApp or print as PDF. Free, no signup, no watermark fee.',
+    intro: 'Pick the function, type the names, date and venue — get a beautiful invitation to share on WhatsApp or print, in two minutes.',
+    steps: [
+      'Choose the function — Wedding, Engagement, Gruhapravesam, Birthday, Barasala, Seemantham, Upanayanam or Other.',
+      'Pick the card language (తెలుగు, English or हिन्दी) and a design colour.',
+      'Type the names, date, muhurtham time and venue. Add a photo if you like — drag and pinch to fit it in the circle.',
+      'Optional: open “More options” to paste a Google Maps link (adds a location QR) or change the wording.',
+      'Tap “Share on WhatsApp”, or download the Image or an A5 PDF for printing.',
+    ],
+    faqs: [
+      { q: 'Is it really free? Any watermark?', a: 'Yes, fully free with no sign-up. Only a small “Made free at tools.spreadapps.in” line at the bottom.' },
+      { q: 'Is my photo or family information uploaded?', a: 'No. The card is drawn on your phone. Your details are kept only on this device so you can come back and edit; the photo is never saved or uploaded.' },
+      { q: 'Can I change the wording?', a: 'Yes. Open “More options” to edit the heading, the invitation line and the blessing line on top (or leave it empty). Tap “Use suggested wording” to go back.' },
+      { q: 'How do guests find the venue?', a: 'Paste your Google Maps link (Maps → Share → Copy link) in “More options”. The card gets a QR code to scan, and the WhatsApp message includes the tappable link.' },
+      { q: 'Can I print it?', a: 'Yes. Tap “PDF to print” for an A5 page, or download the image for a print shop.' },
+    ],
+    disclaimer: 'invite',
+  },
   wishes: {
     h1: 'Festival Wishes Card Maker — Telugu, Hindi, Tamil & More',
     title: 'Diwali Wishes Card Maker in Telugu, Hindi, Tamil, Kannada, Marathi, Odia & English — Free with Name & Photo',
@@ -723,6 +744,7 @@ export function toolPage(id: string): ToolPageInfo | undefined {
 export const DISCLAIMERS: Record<Disclaimer, string> = {
   games: 'Your game and settings are saved only on this device. Playing the computer or a friend on one phone runs fully in your browser. Online games send only the moves and the name you type, and are deleted within a day.',
   jobs: 'Titles and links come from the official commission websites and refresh every few hours. Always confirm dates, fees and eligibility in the official notice before applying. We are not connected to any commission.',
+  invite: 'Your details stay on this device and your photo is never uploaded. Check names, date and muhurtham with your family or purohit before sharing.',
   wishes: 'Your name and photo stay on your device; nothing is uploaded. Share the card freely.',
   rent: 'A format commonly accepted by employers for HRA — check with your HR or CA. Receipts must be signed by the owner; we don’t store anything you type.',
   ifsc: 'Branch data from the open Razorpay IFSC dataset (sourced from RBI). Always confirm the account details with the person you pay.',

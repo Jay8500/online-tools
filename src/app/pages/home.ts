@@ -83,6 +83,7 @@ const HINTS = [
 const KEYWORDS: Record<string, string> = {
   'age-calculator': 'age calculator date of birth dob birthday years old exam cut-off',
   'govt-job-notifications': 'job jobs notification notifications recruitment vacancy govt government tgpsc tspsc appsc upsc ssc ibps rrb railway police exam hall ticket result key',
+  'invitation-card-maker': 'invitation invite card maker wedding marriage pelli patrika shubhalekha subhalekha lagna patrika engagement nischitartham housewarming gruhapravesam griha pravesh birthday party barasala naming ceremony namakaranam seemantham baby shower upanayanam e-invite whatsapp telugu hindi',
   'festival-wishes-card': 'diwali deepavali wishes greeting card image happy sankranti pongal ugadi christmas new year ramzan eid dasara dussehra birthday shubhakankshalu telugu whatsapp status photo name',
   'rent-receipt-generator': 'rent receipt hra house rent landlord owner tenant pdf print format',
   'ifsc-code-finder': 'ifsc code bank branch micr neft rtgs imps sbi hdfc icici address finder',
