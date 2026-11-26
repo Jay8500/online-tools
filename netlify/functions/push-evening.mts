@@ -23,18 +23,18 @@ const MORNING = [
   '👟 Ready for your morning walk? Your steps and calories are one tap away.',
 ];
 
-/** Every hour on the hour (India time): the walk reminder to devices that chose this hour (default 6 PM), once a day. */
+/** Every 15 minutes: the walk reminder to devices whose chosen time (India) falls in this quarter hour (default 6 PM), once a day. */
 export default async () => {
   if (!vapid()) return new Response('VAPID keys missing', { status: 500 });
   const store = getStore({ name: 'push', consistency: 'strong' });
   const ist = new Date(Date.now() + 5.5 * 3600_000), today = ist.toISOString().slice(0, 10);
-  const hour = ist.getUTCHours();
+  const hour = ist.getUTCHours(), slot = hour * 60 + Math.floor(ist.getUTCMinutes() / 15) * 15;
   const body = (hour < 12 ? MORNING : EVENING)[ist.getUTCDay()];
   let sent = 0, gone = 0;
   const { blobs } = await store.list({ prefix: 's/' });
   for (const { key } of blobs) {
     const rec = (await store.get(key, { type: 'json' })) as Sub | null;
-    if (!rec?.topics.includes('walk') || (rec.walkAt ?? 18) !== hour || rec.sent?.['walk'] === today) continue;
+    if (!rec?.topics.includes('walk') || (rec.walkAt ?? 1080) !== slot || rec.sent?.['walk'] === today) continue;
     try {
       await webpush.sendNotification(rec.sub, payload(body, '/step-counter?utm_source=push', 'walk'), { TTL: 2 * 3600 });
       await store.setJSON(key, { ...rec, sent: { ...rec.sent, walk: today } });
@@ -49,5 +49,5 @@ export default async () => {
   return new Response(JSON.stringify({ sent, gone, checked: blobs.length }), { headers: { 'content-type': 'application/json' } });
 };
 
-// :30 past every UTC hour = on the hour in India (UTC+5:30)
-export const config: Config = { schedule: '30 * * * *' };
+// every quarter hour (India is UTC+5:30, so UTC quarters are India quarters too)
+export const config: Config = { schedule: '*/15 * * * *' };

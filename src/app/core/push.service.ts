@@ -23,8 +23,8 @@ export class PushService {
   readonly supported = typeof window !== 'undefined' && this.sw.isEnabled && 'PushManager' in window;
   readonly on = signal(this.read(ON) === '1');
   readonly topics = signal<Topic[]>(this.readTopics());
-  /** Walk reminder hour, India time (0–23). */
-  readonly walkAt = signal(Number(this.read('push-walk-at') ?? 18));
+  /** Walk reminder time in minutes after midnight (older saves stored the hour). */
+  readonly walkAt = signal(((v) => (v <= 23 ? v * 60 : v))(Number(this.read('push-walk-at') ?? 1080)));
   private gold: GoldWatch | undefined;
 
   private read(k: string) {
@@ -102,8 +102,8 @@ export class PushService {
   }
 
   /** Change the walk reminder time (no permission prompt). */
-  async setWalkAt(hour: number) {
-    this.walkAt.set(hour);
+  async setWalkAt(minutes: number) {
+    this.walkAt.set(minutes);
     this.remember();
     if (this.on()) await this.sync(false);
   }

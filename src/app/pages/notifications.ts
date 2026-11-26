@@ -46,9 +46,8 @@ import { METALS, readWatch, rupees, type Watch } from '../shared/price-watch';
           @if (t.id === 'walk' && has('walk')) {
             <label class="flex items-center justify-between gap-3 px-3 pb-3 pl-14 text-sm">
               <span class="text-muted">⏰ Remind me at</span>
-              <select class="input min-h-10 w-auto" [value]="push.walkAt()" (change)="setWalk(+$any($event.target).value)" aria-label="Walk reminder time">
-                @for (h of hours; track h) { <option [value]="h" [selected]="h === push.walkAt()">{{ hourLabel(h) }}</option> }
-              </select>
+              <input type="time" step="900" class="input min-h-10 w-auto font-semibold" [value]="hhmm(push.walkAt())" (change)="setWalk($any($event.target).value)" aria-label="Walk reminder time" />
+              <span class="sr-only">{{ timeLabel(push.walkAt()) }}</span>
             </label>
           }
         }
@@ -65,7 +64,7 @@ import { METALS, readWatch, rupees, type Watch } from '../shared/price-watch';
           <button type="button" class="btn-ghost min-h-10" [disabled]="busy()" (click)="off()">Turn off all notifications</button>
         </div>
       }
-      <p class="mt-3 text-xs text-muted">Alerts arrive around 9:15 AM; the walk reminder comes at the time you pick. We keep only this phone’s push address and the alerts you chose — no name, no number. “Turn off” deletes them from our server.</p>
+      <p class="mt-3 text-xs text-muted">Alerts arrive around 9:15 AM; the walk reminder comes at the time you pick (in 15-minute steps). We keep only this phone’s push address and the alerts you chose — no name, no number. “Turn off” deletes them from our server.</p>
     </div>
   `,
   styles: `
@@ -93,15 +92,22 @@ export class Notifications {
     afterNextRender(() => this.watch.set(readWatch()));
   }
 
-  /** 5 AM … 11 PM */
-  protected readonly hours = Array.from({ length: 19 }, (_, i) => i + 5);
-  protected hourLabel(h: number) {
-    return `${h % 12 || 12}:00 ${h < 12 ? 'AM' : 'PM'}`;
+  /** Minutes after midnight → "07:30" for the time picker (the phone shows its own clock dial). */
+  protected hhmm(m: number) {
+    return `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
   }
-  protected async setWalk(h: number) {
+  protected timeLabel(m: number) {
+    const h = Math.floor(m / 60);
+    return `${h % 12 || 12}:${String(m % 60).padStart(2, '0')} ${h < 12 ? 'AM' : 'PM'}`;
+  }
+  /** Any time of day, rounded down to a quarter hour (the reminder is checked every 15 minutes). */
+  protected async setWalk(v: string) {
+    const [h, mm] = v.split(':').map(Number);
+    if (!Number.isFinite(h) || !Number.isFinite(mm)) return;
+    const m = h * 60 + Math.floor(mm / 15) * 15;
     await this.run(async () => {
-      await this.push.setWalkAt(h);
-      this.toast.show(`🚶 Walk reminder at ${this.hourLabel(h)} every day.`, 'success');
+      await this.push.setWalkAt(m);
+      this.toast.show(`🚶 Walk reminder at ${this.timeLabel(m)} every day.`, 'success');
     });
   }
 
